@@ -1,0 +1,45 @@
+name: elf
+version: '0.31'
+synopsis: An Elf parser
+description: Parser for ELF object format
+category: Data
+author: Erik Charlebois
+maintainer: aleksey.makarov@gmail.com
+copyright: Erik Charlebois
+license: BSD3
+homepage: https://github.com/aleksey-makarov/elf
+dependencies:
+- base >=4.6 && <5.0
+extra-source-files:
+- testdata/tiny
+- testdata/bloated
+- testdata/HOWTO
+- testdata/bloated.cpp
+- testdata/tiny.asm
+- testdata/empty
+- testdata/vdso
+tested-with: GHC == 8.6.2, GHC == 8.4.4, GHC == 8.2.2, GHC == 8.0.2
+
+github: aleksey-makarov/elf
+
+library:
+  dependencies:
+    - base >= 2 && < 5
+    - bytestring
+    - binary
+  source-dirs: src
+  exposed-modules:
+    - Data.Elf
+
+tests:
+  tests:
+    main: Spec.hs
+    source-dirs: tests
+    other-modules:
+      - Data.ElfSpec
+    dependencies:
+      - base
+      - bytestring
+      - hspec >= 2.4 && < 3
+      - containers >= 0.5.9.2
+      - elf

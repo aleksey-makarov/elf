@@ -1,47 +1,62 @@
-Name:               elf
-Version:            0.30
-License:            BSD3
-License-file:       LICENSE
-Category:           Data
-Author:             Erik Charlebois
-Copyright:          Erik Charlebois
-Maintainer:         Baojun Wang <wangbj@gmail.com>
-Stability:          stable
-Cabal-Version:      >= 1.10
-Homepage:           https://github.com/wangbj/elf
-Build-Type:         Simple
-Synopsis:           An Elf parser
-Description:        Parser for ELF object format.
-Extra-Source-Files: testdata/tiny testdata/bloated testdata/HOWTO
-                    testdata/bloated.cpp testdata/tiny.asm
-                    testdata/empty testdata/vdso
+cabal-version: 1.12
 
-tested-with:
-    GHC == 8.6.2
-  , GHC == 8.4.4
-  , GHC == 8.2.2
-  , GHC == 8.0.2
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: fe0c9f0a2e581504ece33a3ed58a8ac119ac9dfd37d013472025a28fee314cbb
+
+name:           elf
+version:        0.31
+synopsis:       An Elf parser
+description:    Parser for ELF object format
+category:       Data
+homepage:       https://github.com/aleksey-makarov/elf
+bug-reports:    https://github.com/aleksey-makarov/elf/issues
+author:         Erik Charlebois
+maintainer:     aleksey.makarov@gmail.com
+copyright:      Erik Charlebois
+license:        BSD3
+license-file:   LICENSE
+tested-with:    GHC == 8.6.2, GHC == 8.4.4, GHC == 8.2.2, GHC == 8.0.2
+build-type:     Simple
+extra-source-files:
+    testdata/tiny
+    testdata/bloated
+    testdata/HOWTO
+    testdata/bloated.cpp
+    testdata/tiny.asm
+    testdata/empty
+    testdata/vdso
 
 source-repository head
-  type:     git
-  location: https://github.com/wangbj/elf.git
+  type: git
+  location: https://github.com/aleksey-makarov/elf
 
 library
-  build-depends:       base >= 2 && < 5
-                     , bytestring
-                     , binary
-  hs-source-dirs:    src
-  exposed-modules:   Data.Elf
-  default-language:  Haskell2010
+  exposed-modules:
+      Data.Elf
+  other-modules:
+      Paths_elf
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=2 && <5
+    , binary
+    , bytestring
+  default-language: Haskell2010
 
 test-suite tests
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      tests
-  main-is:             Spec.hs
-  other-modules:       Data.ElfSpec
-  build-depends:       base
-                     , bytestring
-                     , hspec >= 2.4 && < 3
-                     , containers >= 0.5.9.2
-                     , elf
-  default-language:  Haskell2010
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Data.ElfSpec
+  hs-source-dirs:
+      tests
+  build-depends:
+      base
+    , bytestring
+    , containers >=0.5.9.2
+    , elf
+    , hspec >=2.4 && <3
+  default-language: Haskell2010
