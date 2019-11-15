@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fe0c9f0a2e581504ece33a3ed58a8ac119ac9dfd37d013472025a28fee314cbb
+-- hash: 64bac2332cab079b87994c2c1096afa9b4f50cf155c1324ee4909d6963f0f408
 
 name:           elf
 version:        0.31
@@ -44,6 +44,20 @@ library
       base >=2 && <5
     , binary
     , bytestring
+  default-language: Haskell2010
+
+executable hobjdump
+  main-is: Main.hs
+  other-modules:
+      Paths_elf
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.6 && <5.0
+    , bytestring
+    , elf
+    , prettyprinter
   default-language: Haskell2010
 
 test-suite tests

@@ -43,3 +43,13 @@ tests:
       - hspec >= 2.4 && < 3
       - containers >= 0.5.9.2
       - elf
+
+executables:
+  hobjdump:
+    main: Main.hs
+    source-dirs: app
+    ghc-options: -Wall -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
+    dependencies:
+      - elf
+      - bytestring
+      - prettyprinter
