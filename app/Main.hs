@@ -11,6 +11,9 @@ import Data.Word
 import Numeric
 import System.Environment
 
+showHexDoc :: (Integral a, Show a) => a -> Doc ()
+showHexDoc n = pretty $ "0x" <> showHex n ""
+
 formatBytestringChar :: ByteString -> Doc ()
 formatBytestringChar = hcat . L.map formatChar . BC8.unpack
 
@@ -18,7 +21,9 @@ formatBytestringHex :: ByteString -> Doc ()
 formatBytestringHex = hsep . L.map formatHex . B.unpack
 
 formatBytestringLine :: ByteString -> Doc ()
-formatBytestringLine s = formatBytestringHex s <+> formatBytestringChar s
+formatBytestringLine s = (fill (16 * 2 + 15) $ formatBytestringHex s)
+                      <+> pretty '#'
+                      <+> formatBytestringChar s
 
 splitBy :: Int -> ByteString -> [ByteString]
 splitBy n = L.unfoldr f
@@ -37,22 +42,22 @@ formatHex w = pretty $ case showHex w "" of
 formatBytestring :: ByteString -> Doc ()
 formatBytestring = align . vsep . L.map formatBytestringLine . splitBy 16
 
-obj :: [Doc a] -> Doc a
-obj = D.group . encloseSep (flatAlt "{ " "{")
-                           (flatAlt " }" "}")
-                           ", "
-
 formatPairs :: [(Doc a, Doc a)] -> Doc a
-formatPairs ls = align $ obj $ fmap f ls
+formatPairs ls = align $ vsep $ fmap f ls
     where
-        f (n, v) = fillBreak 20 (dquotes n <> ":") <+> v
+        f (n, v) = fill 20 (n <> ":") <+> v
+
+formatList :: [Doc ()] -> Doc ()
+formatList = align . vsep . fmap f
+    where
+        f x = pretty '-' <+> x
 
 formatSection :: ElfSection -> Doc ()
 formatSection s =
     formatPairs [ ("elfSectionName",      viaShow $ elfSectionName s)
                 , ("elfSectionType",      viaShow $ elfSectionType s)
-                , ("elfSectionFlags",     viaShow $ elfSectionFlags s)
-                , ("elfSectionAddr",      viaShow $ elfSectionAddr s)
+                , ("elfSectionFlags",     formatList $ fmap viaShow $ elfSectionFlags s)
+                , ("elfSectionAddr",      showHexDoc $ elfSectionAddr s)
                 , ("elfSectionSize",      viaShow $ elfSectionSize s)
                 , ("elfSectionLink",      viaShow $ elfSectionLink s)
                 , ("elfSectionInfo",      viaShow $ elfSectionInfo s)
@@ -62,21 +67,21 @@ formatSection s =
                 ]
 
 formatSections :: [ElfSection] -> Doc ()
-formatSections s = align $ list $ formatSection <$> s
+formatSections s = formatList  $ formatSection <$> s
 
 formatSegment :: ElfSegment -> Doc ()
 formatSegment s =
     formatPairs [ ("elfSegmentType",     viaShow $ elfSegmentType s)
-                , ("elfSegmentFlags",    viaShow $ elfSegmentFlags s)
-                , ("elfSegmentVirtAddr", viaShow $ elfSegmentVirtAddr s)
-                , ("elfSegmentPhysAddr", viaShow $ elfSegmentPhysAddr s)
+                , ("elfSegmentFlags",    formatList $ fmap viaShow $ elfSegmentFlags s)
+                , ("elfSegmentVirtAddr", showHexDoc $ elfSegmentVirtAddr s)
+                , ("elfSegmentPhysAddr", showHexDoc $ elfSegmentPhysAddr s)
                 , ("elfSegmentAlign",    viaShow $ elfSegmentAlign s)
                 , ("elfSegmentData",     formatBytestring $ elfSegmentData s)
                 , ("elfSegmentMemSize",  viaShow $ elfSegmentMemSize s)
                 ]
 
 formatSegments :: [ElfSegment] -> Doc ()
-formatSegments s = align $ list $ formatSegment <$> s
+formatSegments s = formatList $ formatSegment <$> s
 
 formatElf :: Elf -> Doc ()
 formatElf elf =
@@ -87,7 +92,7 @@ formatElf elf =
                 , ("elfABIVersion", viaShow $ elfABIVersion elf)
                 , ("elfType",       viaShow $ elfType elf)
                 , ("elfMachine",    viaShow $ elfMachine elf)
-                , ("elfEntry",      viaShow $ elfEntry elf)
+                , ("elfEntry",      showHexDoc $ elfEntry elf)
                 , ("elfSections",   formatSections $ elfSections elf)
                 , ("elfSegments",   formatSegments $ elfSegments elf)
                 ]
