@@ -5,7 +5,6 @@ import Test.Hspec
 import Control.Exception (evaluate)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as C
-import Data.Either
 import Data.Foldable (find)
 import qualified Data.Map as Map
 import Data.Maybe

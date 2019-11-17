@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 64bac2332cab079b87994c2c1096afa9b4f50cf155c1324ee4909d6963f0f408
+-- hash: 447e3a48a1cb782197d2cd489ea95a39f02109642cafb5ed648bf9c287a53388
 
 name:           elf
 version:        0.31
@@ -40,6 +40,7 @@ library
       Paths_elf
   hs-source-dirs:
       src
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
       base >=2 && <5
     , binary
@@ -52,7 +53,7 @@ executable hobjdump
       Paths_elf
   hs-source-dirs:
       app
-  ghc-options: -Wall -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.6 && <5.0
     , bytestring
@@ -67,6 +68,7 @@ test-suite tests
       Data.ElfSpec
   hs-source-dirs:
       tests
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
       base
     , bytestring

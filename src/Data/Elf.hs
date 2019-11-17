@@ -2,6 +2,7 @@
 module Data.Elf ( parseElf
                 , parseSymbolTables
                 , findSymbolDefinition
+                , findSectionByName
                 , Elf(..)
                 , ElfSection(..)
                 , ElfSectionType(..)
@@ -112,7 +113,7 @@ data ElfSectionFlags
     deriving (Eq, Show)
 
 getElfSectionFlags :: Bits a => Int -> a -> [ElfSectionFlags]
-getElfSectionFlags 0 word = []
+getElfSectionFlags 0 _ = []
 getElfSectionFlags 1 word | testBit word 0     = SHF_WRITE     : getElfSectionFlags 0 word
 getElfSectionFlags 2 word | testBit word 1     = SHF_ALLOC     : getElfSectionFlags 1 word
 getElfSectionFlags 3 word | testBit word 2     = SHF_EXECINSTR : getElfSectionFlags 2 word
@@ -466,7 +467,7 @@ data TableInfo = TableInfo { tableOffset :: Int, entrySize :: Int, entryNum :: I
 
 getElf_Ehdr :: Get (Elf, TableInfo, TableInfo, Word16)
 getElf_Ehdr = do
-    ei_magic    <- getElfMagic
+    _           <- getElfMagic
     ei_class    <- getElfClass
     ei_data     <- getElfData
     ei_version  <- liftM fromIntegral getElfVersion
@@ -478,12 +479,12 @@ getElf_Ehdr = do
         ELFCLASS32 -> do
             e_type      <- getElfType er
             e_machine   <- getElfMachine er
-            e_version   <- getWord32 er
+            _           <- getWord32 er
             e_entry     <- liftM fromIntegral $ getWord32 er
             e_phoff     <- getWord32 er
-            e_shoff     <- liftM fromIntegral $ getWord32 er
-            e_flags     <- getWord32 er
-            e_ehsize    <- getWord16 er
+            e_shoff     <- getWord32 er
+            _           <- getWord32 er
+            _           <- getWord16 er
             e_phentsize <- getWord16 er
             e_phnum     <- getWord16 er
             e_shentsize <- getWord16 er
@@ -505,12 +506,12 @@ getElf_Ehdr = do
         ELFCLASS64 -> do
             e_type      <- getElfType er
             e_machine   <- getElfMachine er
-            e_version   <- getWord32 er
+            _           <- getWord32 er
             e_entry     <- getWord64 er
             e_phoff     <- getWord64 er
             e_shoff     <- getWord64 er
-            e_flags     <- getWord32 er
-            e_ehsize    <- getWord16 er
+            _           <- getWord32 er
+            _           <- getWord16 er
             e_phentsize <- getWord16 er
             e_phnum     <- getWord16 er
             e_shentsize <- getWord16 er
@@ -632,7 +633,7 @@ parseElfSegmentEntry elf_class er elf_file = case elf_class of
        , elfSegmentVirtAddr = p_vaddr
        , elfSegmentPhysAddr = p_paddr
        , elfSegmentAlign    = p_align
-       , elfSegmentData     = B.take (fromIntegral p_filesz) $ B.drop (fromIntegral p_offset) elf_file
+       , elfSegmentData     = B.take p_filesz $ B.drop p_offset elf_file
        , elfSegmentMemSize  = p_memsz
        }
 
@@ -680,7 +681,7 @@ getSymbolTableEntries :: Elf -> ElfSection -> [ElfSymbolTableEntry]
 getSymbolTableEntries e s = go decoder (L.fromChunks [elfSectionData s])
   where
     link   = elfSectionLink s
-    strtab = lookup (fromIntegral link) (zip [0..] (elfSections e))
+    strtab = lookup link (zip [0..] (elfSections e))
     decoder = runGetIncremental (getSymbolTableEntry e strtab)
     go :: Decoder ElfSymbolTableEntry -> L.ByteString -> [ElfSymbolTableEntry]
     go (Done leftover _ entry) input =
@@ -784,6 +785,7 @@ instance Enum ElfSymbolBinding where
     toEnum 12 = STBHiOS
     toEnum 13 = STBLoProc
     toEnum 15 = STBHiProc
+    toEnum  _ = STBLocal -- FIXME
 
 data ElfSymbolType
     = STTNoType
@@ -822,6 +824,7 @@ instance Enum ElfSymbolType where
     toEnum 12 = STTHiOS
     toEnum 13 = STTLoProc
     toEnum 15 = STTHiProc
+    toEnum  _ = STTNoType
 
 data ElfSectionIndex
     = SHNUndef
