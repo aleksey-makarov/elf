@@ -45,7 +45,7 @@ formatBytestring = align . vsep . L.map formatBytestringLine . splitBy 16
 formatPairs :: [(Doc a, Doc a)] -> Doc a
 formatPairs ls = align $ vsep $ fmap f ls
     where
-        f (n, v) = fill 20 (n <> ":") <+> v
+        f (n, v) = fill 10 (n <> ":") <+> v
 
 formatList :: [Doc ()] -> Doc ()
 formatList = align . vsep . fmap f
@@ -54,16 +54,16 @@ formatList = align . vsep . fmap f
 
 formatSection :: ElfSection -> Doc ()
 formatSection s =
-    formatPairs [ ("elfSectionName",      viaShow $ elfSectionName s)
-                , ("elfSectionType",      viaShow $ elfSectionType s)
-                , ("elfSectionFlags",     formatList $ fmap viaShow $ elfSectionFlags s)
-                , ("elfSectionAddr",      showHexDoc $ elfSectionAddr s)
-                , ("elfSectionSize",      viaShow $ elfSectionSize s)
-                , ("elfSectionLink",      viaShow $ elfSectionLink s)
-                , ("elfSectionInfo",      viaShow $ elfSectionInfo s)
-                , ("elfSectionAddrAlign", viaShow $ elfSectionAddrAlign s)
-                , ("elfSectionEntSize",   viaShow $ elfSectionEntSize s)
-                , ("elfSectionData",      formatBytestring $ elfSectionData s)
+    formatPairs [ ("Name",      viaShow $ elfSectionName s)
+                , ("Type",      viaShow $ elfSectionType s)
+                , ("Flags",     formatList $ fmap viaShow $ elfSectionFlags s)
+                , ("Addr",      showHexDoc $ elfSectionAddr s)
+                , ("Size",      viaShow $ elfSectionSize s)
+                , ("Link",      viaShow $ elfSectionLink s)
+                , ("Info",      viaShow $ elfSectionInfo s)
+                , ("AddrAlign", viaShow $ elfSectionAddrAlign s)
+                , ("EntSize",   viaShow $ elfSectionEntSize s)
+                , ("Data",      formatBytestring $ elfSectionData s)
                 ]
 
 formatSections :: [ElfSection] -> Doc ()
@@ -71,13 +71,13 @@ formatSections s = formatList  $ formatSection <$> s
 
 formatSegment :: ElfSegment -> Doc ()
 formatSegment s =
-    formatPairs [ ("elfSegmentType",     viaShow $ elfSegmentType s)
-                , ("elfSegmentFlags",    formatList $ fmap viaShow $ elfSegmentFlags s)
-                , ("elfSegmentVirtAddr", showHexDoc $ elfSegmentVirtAddr s)
-                , ("elfSegmentPhysAddr", showHexDoc $ elfSegmentPhysAddr s)
-                , ("elfSegmentAlign",    viaShow $ elfSegmentAlign s)
-                , ("elfSegmentData",     formatBytestring $ elfSegmentData s)
-                , ("elfSegmentMemSize",  viaShow $ elfSegmentMemSize s)
+    formatPairs [ ("Type",     viaShow $ elfSegmentType s)
+                , ("Flags",    formatList $ fmap viaShow $ elfSegmentFlags s)
+                , ("VirtAddr", showHexDoc $ elfSegmentVirtAddr s)
+                , ("PhysAddr", showHexDoc $ elfSegmentPhysAddr s)
+                , ("Align",    viaShow $ elfSegmentAlign s)
+                , ("Data",     formatBytestring $ elfSegmentData s)
+                , ("MemSize",  viaShow $ elfSegmentMemSize s)
                 ]
 
 formatSegments :: [ElfSegment] -> Doc ()
@@ -85,16 +85,16 @@ formatSegments s = formatList $ formatSegment <$> s
 
 formatElf :: Elf -> Doc ()
 formatElf elf =
-    formatPairs [ ("elfClass",      viaShow $ elfClass elf)
-                , ("elfData",       viaShow $ elfData elf)
-                , ("elfVersion",    viaShow $ elfVersion elf)
-                , ("elfOSABI",      viaShow $ elfOSABI elf)
-                , ("elfABIVersion", viaShow $ elfABIVersion elf)
-                , ("elfType",       viaShow $ elfType elf)
-                , ("elfMachine",    viaShow $ elfMachine elf)
-                , ("elfEntry",      showHexDoc $ elfEntry elf)
-                , ("elfSections",   formatSections $ elfSections elf)
-                , ("elfSegments",   formatSegments $ elfSegments elf)
+    formatPairs [ ("Class",      viaShow $ elfClass elf)
+                , ("Data",       viaShow $ elfData elf)
+                , ("Version",    viaShow $ elfVersion elf)
+                , ("OSABI",      viaShow $ elfOSABI elf)
+                , ("ABIVersion", viaShow $ elfABIVersion elf)
+                , ("Type",       viaShow $ elfType elf)
+                , ("Machine",    viaShow $ elfMachine elf)
+                , ("Entry",      showHexDoc $ elfEntry elf)
+                , ("Sections",   formatSections $ elfSections elf)
+                , ("Segments",   formatSegments $ elfSegments elf)
                 ]
 
 printElf :: String -> IO ()
