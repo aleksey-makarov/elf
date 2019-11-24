@@ -28,9 +28,13 @@ library:
     - base >= 2 && < 5
     - bytestring
     - binary
+    - template-haskell
   source-dirs: src
+  other-modules:
+    - Data.Elf.TH
   exposed-modules:
     - Data.Elf
+  ghc-options: -ddump-splices
 
 tests:
   tests:

@@ -1,8 +1,31 @@
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE PatternSynonyms #-}
+
 -- | Data.Elf is a module for parsing a ByteString of an ELF file into an Elf record.
 module Data.Elf ( parseElf
                 , parseSymbolTables
                 , findSymbolDefinition
                 , findSectionByName
+
+                , ElfOSABI(..)
+                , pattern ELFOSABI_SYSV
+                , pattern ELFOSABI_HPUX
+                , pattern ELFOSABI_NETBSD
+                , pattern ELFOSABI_LINUX
+                , pattern ELFOSABI_SOLARIS
+                , pattern ELFOSABI_AIX
+                , pattern ELFOSABI_IRIX
+                , pattern ELFOSABI_FREEBSD
+                , pattern ELFOSABI_TRU64
+                , pattern ELFOSABI_MODESTO
+                , pattern ELFOSABI_OPENBSD
+                , pattern ELFOSABI_OPENVMS
+                , pattern ELFOSABI_NSK
+                , pattern ELFOSABI_AROS
+                , pattern ELFOSABI_ARM
+                , pattern ELFOSABI_STANDALONE
+                , pattern ELFOSABI_EXT
+
                 , Elf(..)
                 , ElfSection(..)
                 , ElfSectionType(..)
@@ -12,7 +35,6 @@ module Data.Elf ( parseElf
                 , ElfSegmentFlag(..)
                 , ElfClass(..)
                 , ElfData(..)
-                , ElfOSABI(..)
                 , ElfType(..)
                 , ElfMachine(..)
                 , ElfSymbolTableEntry(..)
@@ -29,6 +51,27 @@ import qualified Data.ByteString               as B
 import qualified Data.ByteString.Internal      as B
 import qualified Data.ByteString.Lazy          as L
 import qualified Data.ByteString.Lazy.Internal as L
+
+import Data.Elf.TH
+
+$(mkDeclarations ''Word8 "ElfOSABI" "ELFOSABI" "ELFOSABI_EXT"
+    [ ("_SYSV",       0  ) -- No extensions or unspecified
+    , ("_HPUX",       1  ) -- Hewlett-Packard HP-UX
+    , ("_NETBSD",     2  ) -- NetBSD
+    , ("_LINUX",      3  ) -- Linux
+    , ("_SOLARIS",    6  ) -- Sun Solaris
+    , ("_AIX",        7  ) -- AIX
+    , ("_IRIX",       8  ) -- IRIX
+    , ("_FREEBSD",    9  ) -- FreeBSD
+    , ("_TRU64",      10 ) -- Compaq TRU64 UNIX
+    , ("_MODESTO",    11 ) -- Novell Modesto
+    , ("_OPENBSD",    12 ) -- Open BSD
+    , ("_OPENVMS",    13 ) -- Open VMS
+    , ("_NSK",        14 ) -- Hewlett-Packard Non-Stop Kernel
+    , ("_AROS",       15 ) -- Amiga Research OS
+    , ("_ARM",        97 ) -- ARM
+    , ("_STANDALONE", 255) -- Standalone (embedded) application
+    ])
 
 data Elf = Elf
     { elfClass      :: ElfClass      -- ^ Identifies the class of the object file.
@@ -146,46 +189,6 @@ getElfData = getWord8 >>= getElfData_
     where getElfData_ 1 = return ELFDATA2LSB
           getElfData_ 2 = return ELFDATA2MSB
           getElfData_ _ = fail "Invalid ELF data"
-
-data ElfOSABI
-    = ELFOSABI_SYSV       -- ^ No extensions or unspecified
-    | ELFOSABI_HPUX       -- ^ Hewlett-Packard HP-UX
-    | ELFOSABI_NETBSD     -- ^ NetBSD
-    | ELFOSABI_LINUX      -- ^ Linux
-    | ELFOSABI_SOLARIS    -- ^ Sun Solaris
-    | ELFOSABI_AIX        -- ^ AIX
-    | ELFOSABI_IRIX       -- ^ IRIX
-    | ELFOSABI_FREEBSD    -- ^ FreeBSD
-    | ELFOSABI_TRU64      -- ^ Compaq TRU64 UNIX
-    | ELFOSABI_MODESTO    -- ^ Novell Modesto
-    | ELFOSABI_OPENBSD    -- ^ Open BSD
-    | ELFOSABI_OPENVMS    -- ^ Open VMS
-    | ELFOSABI_NSK        -- ^ Hewlett-Packard Non-Stop Kernel
-    | ELFOSABI_AROS       -- ^ Amiga Research OS
-    | ELFOSABI_ARM        -- ^ ARM
-    | ELFOSABI_STANDALONE -- ^ Standalone (embedded) application
-    | ELFOSABI_EXT Word8  -- ^ Other
-    deriving (Eq, Show)
-
-getElfOsabi :: Get ElfOSABI
-getElfOsabi = liftM getElfOsabi_ getWord8
-    where getElfOsabi_ 0   = ELFOSABI_SYSV
-          getElfOsabi_ 1   = ELFOSABI_HPUX
-          getElfOsabi_ 2   = ELFOSABI_NETBSD
-          getElfOsabi_ 3   = ELFOSABI_LINUX
-          getElfOsabi_ 6   = ELFOSABI_SOLARIS
-          getElfOsabi_ 7   = ELFOSABI_AIX
-          getElfOsabi_ 8   = ELFOSABI_IRIX
-          getElfOsabi_ 9   = ELFOSABI_FREEBSD
-          getElfOsabi_ 10  = ELFOSABI_TRU64
-          getElfOsabi_ 11  = ELFOSABI_MODESTO
-          getElfOsabi_ 12  = ELFOSABI_OPENBSD
-          getElfOsabi_ 13  = ELFOSABI_OPENVMS
-          getElfOsabi_ 14  = ELFOSABI_NSK
-          getElfOsabi_ 15  = ELFOSABI_AROS
-          getElfOsabi_ 97  = ELFOSABI_ARM
-          getElfOsabi_ 255 = ELFOSABI_STANDALONE
-          getElfOsabi_ n   = ELFOSABI_EXT n
 
 data ElfType
     = ET_NONE       -- ^ Unspecified type
@@ -471,7 +474,7 @@ getElf_Ehdr = do
     ei_class    <- getElfClass
     ei_data     <- getElfData
     ei_version  <- liftM fromIntegral getElfVersion
-    ei_osabi    <- getElfOsabi
+    ei_osabi    <- get
     ei_abiver   <- liftM fromIntegral getWord8
     skip 7
     er          <- return $ elfReader ei_data
