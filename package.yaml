@@ -44,6 +44,17 @@ tests:
       - hspec >= 2.4 && < 3
       - containers >= 0.5.9.2
       - elf
+  golden:
+    main: Golden.hs
+    source-dirs: tests
+    other-modules:
+      - Paths_elf
+    dependencies:
+      - base
+      - filepath
+      - typed-process
+      - tasty
+      - tasty-golden
 
 executables:
   hobjdump:

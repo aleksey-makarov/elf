@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 447e3a48a1cb782197d2cd489ea95a39f02109642cafb5ed648bf9c287a53388
+-- hash: bfb5a0a9f0a9890a6a40208edaa2663bc61290bf36bd54c45124a7d02bcb5d2a
 
 name:           elf
 version:        0.31
@@ -59,6 +59,22 @@ executable hobjdump
     , bytestring
     , elf
     , prettyprinter
+  default-language: Haskell2010
+
+test-suite golden
+  type: exitcode-stdio-1.0
+  main-is: Golden.hs
+  other-modules:
+      Paths_elf
+  hs-source-dirs:
+      tests
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
+  build-depends:
+      base
+    , filepath
+    , tasty
+    , tasty-golden
+    , typed-process
   default-language: Haskell2010
 
 test-suite tests
