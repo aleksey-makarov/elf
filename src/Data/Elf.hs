@@ -173,22 +173,28 @@ data ElfClass
     | ELFCLASS64 -- ^ 64-bit ELF format
     deriving (Eq, Show)
 
-getElfClass :: Get ElfClass
-getElfClass = getWord8 >>= getElfClass_
-    where getElfClass_ 1 = return ELFCLASS32
-          getElfClass_ 2 = return ELFCLASS64
-          getElfClass_ _ = fail "Invalid ELF class"
+instance Binary ElfClass where
+    get = getWord8 >>= getElfClass_
+        where
+            getElfClass_ 1 = return ELFCLASS32
+            getElfClass_ 2 = return ELFCLASS64
+            getElfClass_ _ = fail "Invalid ELF class"
+    put ELFCLASS32 = putWord8 1
+    put ELFCLASS64 = putWord8 2
 
 data ElfData
     = ELFDATA2LSB -- ^ Little-endian ELF format
     | ELFDATA2MSB -- ^ Big-endian ELF format
     deriving (Eq, Show)
 
-getElfData :: Get ElfData
-getElfData = getWord8 >>= getElfData_
-    where getElfData_ 1 = return ELFDATA2LSB
-          getElfData_ 2 = return ELFDATA2MSB
-          getElfData_ _ = fail "Invalid ELF data"
+instance Binary ElfData where
+    get = getWord8 >>= getElfData_
+        where
+            getElfData_ 1 = return ELFDATA2LSB
+            getElfData_ 2 = return ELFDATA2MSB
+            getElfData_ _ = fail "Invalid ELF data"
+    put ELFDATA2LSB = putWord8 1
+    put ELFDATA2MSB = putWord8 2
 
 data ElfType
     = ET_NONE       -- ^ Unspecified type
@@ -471,8 +477,8 @@ data TableInfo = TableInfo { tableOffset :: Int, entrySize :: Int, entryNum :: I
 getElf_Ehdr :: Get (Elf, TableInfo, TableInfo, Word16)
 getElf_Ehdr = do
     _           <- getElfMagic
-    ei_class    <- getElfClass
-    ei_data     <- getElfData
+    ei_class    <- get
+    ei_data     <- get
     ei_version  <- liftM fromIntegral getElfVersion
     ei_osabi    <- get
     ei_abiver   <- liftM fromIntegral getWord8
