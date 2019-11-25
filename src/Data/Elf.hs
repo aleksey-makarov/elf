@@ -27,6 +27,8 @@ module Data.Elf ( parseElf
                 , pattern ELFOSABI_EXT
 
                 , Elf(..)
+                , elfVersion
+
                 , ElfSection(..)
                 , ElfSectionType(..)
                 , ElfSectionFlags(..)
@@ -76,7 +78,6 @@ $(mkDeclarations ''Word8 "ElfOSABI" "ELFOSABI" "ELFOSABI_EXT"
 data Elf = Elf
     { elfClass      :: ElfClass      -- ^ Identifies the class of the object file.
     , elfData       :: ElfData       -- ^ Identifies the data encoding of the object file.
-    , elfVersion    :: Int           -- ^ Identifies the version of the object file format.
     , elfOSABI      :: ElfOSABI      -- ^ Identifies the operating system and ABI for which the object is prepared.
     , elfABIVersion :: Int           -- ^ Identifies the ABI version for which the object is prepared.
     , elfType       :: ElfType       -- ^ Identifies the object file type.
@@ -85,6 +86,9 @@ data Elf = Elf
     , elfSections   :: [ElfSection]  -- ^ List of sections in the file.
     , elfSegments   :: [ElfSegment]  -- ^ List of segments in the file.
     } deriving (Eq, Show)
+
+elfVersion :: Elf -> Int
+elfVersion _ = elfSupportedVersion
 
 data ElfSection = ElfSection
     { elfSectionName      :: String            -- ^ Identifies the name of the section.
@@ -102,19 +106,22 @@ data ElfSection = ElfSection
 elfMagic :: [Word8]
 elfMagic = [0x7f, 0x45, 0x4c, 0x46] -- "\DELELF"
 
-getElfMagic :: Get [Word8]
-getElfMagic = do
+elfSupportedVersion :: Int
+elfSupportedVersion = 1
+
+verifyElfMagic :: Get ()
+verifyElfMagic = do
     ei_magic <- replicateM 4 getWord8
     if ei_magic /= elfMagic
         then fail "Invalid magic number for ELF"
-        else return ei_magic
+        else return ()
 
-getElfVersion :: Get Word8
-getElfVersion = do
+verifyElfVersion :: Get ()
+verifyElfVersion = do
     ei_version <- getWord8
     if ei_version /= 1
         then fail "Invalid version number for ELF"
-        else return ei_version
+        else return ()
 
 data ElfSectionType
     = SHT_NULL          -- ^ Identifies an empty section header.
@@ -476,10 +483,10 @@ data TableInfo = TableInfo { tableOffset :: Int, entrySize :: Int, entryNum :: I
 
 getElf_Ehdr :: Get (Elf, TableInfo, TableInfo, Word16)
 getElf_Ehdr = do
-    _           <- getElfMagic
+    verifyElfMagic
     ei_class    <- get
     ei_data     <- get
-    ei_version  <- liftM fromIntegral getElfVersion
+    verifyElfVersion
     ei_osabi    <- get
     ei_abiver   <- liftM fromIntegral getWord8
     skip 7
@@ -501,7 +508,6 @@ getElf_Ehdr = do
             e_shstrndx  <- getWord16 er
             return (Elf { elfClass      = ei_class
                         , elfData       = ei_data
-                        , elfVersion    = ei_version
                         , elfOSABI      = ei_osabi
                         , elfABIVersion = ei_abiver
                         , elfType       = e_type
@@ -528,7 +534,6 @@ getElf_Ehdr = do
             e_shstrndx  <- getWord16 er
             return (Elf { elfClass      = ei_class
                         , elfData       = ei_data
-                        , elfVersion    = ei_version
                         , elfOSABI      = ei_osabi
                         , elfABIVersion = ei_abiver
                         , elfType       = e_type
