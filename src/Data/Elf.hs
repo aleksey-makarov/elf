@@ -1,30 +1,10 @@
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 -- | Data.Elf is a module for parsing a ByteString of an ELF file into an Elf record.
 module Data.Elf ( parseElf
                 , parseSymbolTables
                 , findSymbolDefinition
                 , findSectionByName
-
-                , ElfOSABI(..)
-                , pattern ELFOSABI_SYSV
-                , pattern ELFOSABI_HPUX
-                , pattern ELFOSABI_NETBSD
-                , pattern ELFOSABI_LINUX
-                , pattern ELFOSABI_SOLARIS
-                , pattern ELFOSABI_AIX
-                , pattern ELFOSABI_IRIX
-                , pattern ELFOSABI_FREEBSD
-                , pattern ELFOSABI_TRU64
-                , pattern ELFOSABI_MODESTO
-                , pattern ELFOSABI_OPENBSD
-                , pattern ELFOSABI_OPENVMS
-                , pattern ELFOSABI_NSK
-                , pattern ELFOSABI_AROS
-                , pattern ELFOSABI_ARM
-                , pattern ELFOSABI_STANDALONE
-                , pattern ELFOSABI_EXT
 
                 , Elf(..)
                 , elfVersion
@@ -37,12 +17,13 @@ module Data.Elf ( parseElf
                 , ElfSegmentFlag(..)
                 , ElfClass(..)
                 , ElfData(..)
-                , ElfType(..)
+
                 , ElfMachine(..)
                 , ElfSymbolTableEntry(..)
                 , ElfSymbolType(..)
                 , ElfSymbolBinding(..)
-                , ElfSectionIndex(..)) where
+                , ElfSectionIndex(..)
+                , module Data.Elf.Generated) where
 
 import Data.Binary
 import Data.Binary.Get as G
@@ -54,26 +35,8 @@ import qualified Data.ByteString.Internal      as B
 import qualified Data.ByteString.Lazy          as L
 import qualified Data.ByteString.Lazy.Internal as L
 
-import Data.Elf.TH
-
-$(mkDeclarations ''Word8 "ElfOSABI" "ELFOSABI" "ELFOSABI_EXT"
-    [ ("_SYSV",       0  ) -- No extensions or unspecified
-    , ("_HPUX",       1  ) -- Hewlett-Packard HP-UX
-    , ("_NETBSD",     2  ) -- NetBSD
-    , ("_LINUX",      3  ) -- Linux
-    , ("_SOLARIS",    6  ) -- Sun Solaris
-    , ("_AIX",        7  ) -- AIX
-    , ("_IRIX",       8  ) -- IRIX
-    , ("_FREEBSD",    9  ) -- FreeBSD
-    , ("_TRU64",      10 ) -- Compaq TRU64 UNIX
-    , ("_MODESTO",    11 ) -- Novell Modesto
-    , ("_OPENBSD",    12 ) -- Open BSD
-    , ("_OPENVMS",    13 ) -- Open VMS
-    , ("_NSK",        14 ) -- Hewlett-Packard Non-Stop Kernel
-    , ("_AROS",       15 ) -- Amiga Research OS
-    , ("_ARM",        97 ) -- ARM
-    , ("_STANDALONE", 255) -- Standalone (embedded) application
-    ])
+-- https://stackoverflow.com/questions/10672981/export-template-haskell-generated-definitions
+import Data.Elf.Generated
 
 data Elf = Elf
     { elfClass      :: ElfClass      -- ^ Identifies the class of the object file.
@@ -202,24 +165,6 @@ instance Binary ElfData where
             getElfData_ _ = fail "Invalid ELF data"
     put ELFDATA2LSB = putWord8 1
     put ELFDATA2MSB = putWord8 2
-
-data ElfType
-    = ET_NONE       -- ^ Unspecified type
-    | ET_REL        -- ^ Relocatable object file
-    | ET_EXEC       -- ^ Executable object file
-    | ET_DYN        -- ^ Shared object file
-    | ET_CORE       -- ^ Core dump object file
-    | ET_EXT Word16 -- ^ Other
-    deriving (Eq, Show)
-
-getElfType :: ElfReader -> Get ElfType
-getElfType = liftM getElfType_ . getWord16
-    where getElfType_ 0 = ET_NONE
-          getElfType_ 1 = ET_REL
-          getElfType_ 2 = ET_EXEC
-          getElfType_ 3 = ET_DYN
-          getElfType_ 4 = ET_CORE
-          getElfType_ n = ET_EXT n
 
 data ElfMachine
     = EM_NONE        -- ^ No machine
@@ -481,6 +426,10 @@ getElf_Shdr ei_class er elf_file string_section =
 
 data TableInfo = TableInfo { tableOffset :: Int, entrySize :: Int, entryNum :: Int }
 
+getWithEndianness :: (Binary (Le a), Binary (Be a)) => ElfData -> Get a
+getWithEndianness ELFDATA2LSB = fromLe <$> get
+getWithEndianness ELFDATA2MSB = fromBe <$> get
+
 getElf_Ehdr :: Get (Elf, TableInfo, TableInfo, Word16)
 getElf_Ehdr = do
     verifyElfMagic
@@ -493,7 +442,7 @@ getElf_Ehdr = do
     er          <- return $ elfReader ei_data
     case ei_class of
         ELFCLASS32 -> do
-            e_type      <- getElfType er
+            e_type      <- getWithEndianness ei_data
             e_machine   <- getElfMachine er
             _           <- getWord32 er
             e_entry     <- liftM fromIntegral $ getWord32 er
@@ -519,7 +468,7 @@ getElf_Ehdr = do
                    , TableInfo { tableOffset = fromIntegral e_shoff, entrySize = fromIntegral e_shentsize, entryNum = fromIntegral e_shnum }
                    , e_shstrndx)
         ELFCLASS64 -> do
-            e_type      <- getElfType er
+            e_type      <- getWithEndianness ei_data
             e_machine   <- getElfMachine er
             _           <- getWord32 er
             e_entry     <- getWord64 er

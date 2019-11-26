@@ -1,85 +1,144 @@
 {-# OPTIONS_GHC -Wall -fwarn-tabs #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Data.Elf.TH (mkDeclarations) where
+module Data.Elf.TH (mkDeclarations, BaseWord(..)) where
 
 import Control.Monad
 import Language.Haskell.TH
 
-mkDeclarations :: Name -> String -> String -> String -> [(String, Integer)] -> Q [Dec]
-mkDeclarations baseTypeName typeNameString patternPrefixString defaultPatternNameString enums = do
+data BaseWord = BaseWord8 | BaseWord16
+
+newNamePE :: String -> Q (Q Pat, Q Exp)
+newNamePE s = do
+    n <- newName s
+    return (varP n, varE n)
+
+mkDeclarations :: BaseWord -> String -> String -> String -> [(String, Integer)] -> Q [Dec]
+mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameString enums = do
 
     let typeName = mkName typeNameString
     let patternName s = mkName (patternPrefixString ++ s)
     let defaultPatternName = mkName defaultPatternNameString
+    let
+        baseTypeT =
+            case baseType of
+                BaseWord8  -> conT $ mkName "Word8"
+                BaseWord16 -> conT $ mkName "Word16"
 
-    let newTypeDef = newtypeD
+    let
+        newTypeDef =
+            newtypeD
                 (cxt [])
                 typeName
                 []
                 Nothing
-                (normalC typeName [ bangType (bang noSourceUnpackedness noSourceStrictness) (conT baseTypeName) ])
+                (normalC typeName [ bangType (bang noSourceUnpackedness noSourceStrictness) baseTypeT ])
                 [ derivClause Nothing [ conT (mkName "Eq") ] ]
 
     let
-        mkShowClause (s, n) = clause
-                                [ conP typeName [litP $ IntegerL n] ]
-                                (normalB [| patternPrefixString ++ s |])
-                                []
+        mkShowClause (s, n) =
+            clause
+                [ conP typeName [litP $ IntegerL n] ]
+                (normalB [| patternPrefixString ++ s |])
+                []
 
     let showClauses = map mkShowClause enums
 
-    localName <- newName "n"
-    let defaultShowClause = clause
-                                [ conP typeName [varP localName] ]
-                                (normalB [| typeNameString ++ " " ++ show $(varE localName) |])
-                                []
+    (nP, nE) <- newNamePE "n"
+    let
+        defaultShowClause =
+            clause
+                [ conP typeName [nP] ]
+                (normalB [| typeNameString ++ " " ++ show $(nE) |])
+                []
 
     let showInstanceFunctions = funD (mkName "show") (showClauses ++ [ defaultShowClause ])
 
     let showInstance = instanceD (cxt []) (appT (conT (mkName "Show")) (conT typeName)) [ showInstanceFunctions ]
 
     let
-        newNamePE s = do
-            n <- newName s
-            return (varP n, varE n)
+        mkBinaryInstance :: Q Type -> Q Pat -> Q Exp -> Q Exp -> Q Dec
+        mkBinaryInstance typeT putP putE getE =
+            instanceD
+                (cxt [])
+                (appT (conT (mkName "Binary")) typeT)
+                [ binaryInstanceGet, binaryInstancePut ]
+            where
+                binaryInstancePut =
+                    funD
+                        (mkName "put")
+                        [ clause
+                            [putP]
+                            (normalB $ putE)
+                            []
+                        ]
+                binaryInstanceGet =
+                    funD
+                        (mkName "get")
+                        [ clause
+                            []
+                            (normalB getE)
+                            []
+                        ]
 
-    (n3P, n3E) <- newNamePE "n"
-    let binaryInstancePut = funD
-                                (mkName "put")
-                                [ clause
-                                    [conP typeName [n3P]]
-                                    (normalB
-                                        (appE
-                                            (varE $ mkName "put")
-                                            n3E))
-                                    []
-                                ]
 
-    let binaryInstanceGet = funD
-                                (mkName "get")
-                                [ clause
-                                    []
-                                    (normalB
-                                        (uInfixE
-                                            (conE typeName)
-                                            (varE $ mkName "<$>")
-                                            (varE $ mkName "get")))
-                                    []
-                                ]
-
-    let binaryInstance = instanceD (cxt []) (appT (conT (mkName "Binary")) (conT typeName)) [ binaryInstanceGet, binaryInstancePut ]
+    let
+        binaryInstances =
+            case baseType of
+                BaseWord8 ->
+                    [ do
+                        (n3P, n3E) <- newNamePE "n"
+                        mkBinaryInstance
+                            (conT typeName)
+                            (conP typeName [n3P])
+                            [| putWord8 $n3E |]
+                            [| $(conE typeName) <$> getWord8 |]
+                    ]
+                BaseWord16 ->
+                    [ do
+                        (n3P, n3E) <- newNamePE "n"
+                        mkBinaryInstance
+                            (appT (conT $ mkName "Be") (conT typeName))
+                            (conP (mkName "Be") [conP typeName [n3P]])
+                            [| putWord16be $n3E |]
+                            [| $(conE $ mkName "Be") <$> ($(conE typeName) <$> getWord16be) |]
+                    , do
+                        (n3P, n3E) <- newNamePE "n"
+                        mkBinaryInstance
+                            (appT (conT $ mkName "Le") (conT typeName))
+                            (conP (mkName "Le") [conP typeName [n3P]])
+                            [| putWord16le $n3E |]
+                            [| $(conE $ mkName "Le") <$> ($(conE typeName) <$> getWord16le) |]
+                    ]
 
     let
         mkPatterns (s, n) =
-            [ patSynSigD (patternName s) (conT typeName)
-            , patSynD (patternName s) (prefixPatSyn []) implBidir (conP typeName [litP $ IntegerL n])
+            [ patSynSigD
+                (patternName s)
+                (conT typeName)
+            , patSynD
+                (patternName s)
+                (prefixPatSyn [])
+                implBidir
+                (conP typeName [litP $ IntegerL n])
             ]
 
-    let defaultPatternSig = patSynSigD defaultPatternName (appT (appT arrowT (conT baseTypeName)) (conT typeName))
-    localName2 <- newName "n"
-    let defaultPatternDef = patSynD defaultPatternName (prefixPatSyn [localName2]) implBidir (conP typeName [varP localName2])
+    let
+        defaultPatternSig =
+            patSynSigD
+                defaultPatternName
+                (appT (appT arrowT baseTypeT) (conT typeName))
+
+    localName3 <- newName "n"
+
+    let
+        defaultPatternDef =
+            patSynD
+                defaultPatternName
+                (prefixPatSyn [localName3])
+                implBidir
+                (conP typeName [varP localName3])
 
     let patterns = (join $ map mkPatterns enums) ++ [ defaultPatternSig, defaultPatternDef ]
 
-    sequence $ newTypeDef : showInstance : binaryInstance : patterns
+    sequence $ newTypeDef : showInstance : (patterns ++ binaryInstances)
