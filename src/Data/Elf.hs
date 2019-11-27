@@ -39,10 +39,10 @@ import qualified Data.ByteString.Lazy.Internal as L
 import Data.Elf.Generated
 
 data Elf = Elf
-    { elfClass      :: ElfClass      -- ^ Identifies the class of the object file.
-    , elfData       :: ElfData       -- ^ Identifies the data encoding of the object file.
+    { elfClass      :: ElfClass      -- ^ Identifies the class of the object file (32/64 bit).
+    , elfData       :: ElfData       -- ^ Identifies the data encoding of the object file (endianness).
     , elfOSABI      :: ElfOSABI      -- ^ Identifies the operating system and ABI for which the object is prepared.
-    , elfABIVersion :: Int           -- ^ Identifies the ABI version for which the object is prepared.
+    , elfABIVersion :: Word8         -- ^ Identifies the ABI version for which the object is prepared.
     , elfType       :: ElfType       -- ^ Identifies the object file type.
     , elfMachine    :: ElfMachine    -- ^ Identifies the target architecture.
     , elfEntry      :: Word64        -- ^ Virtual address of the program entry point. 0 for non-executable Elfs.
@@ -166,200 +166,6 @@ instance Binary ElfData where
     put ELFDATA2LSB = putWord8 1
     put ELFDATA2MSB = putWord8 2
 
-data ElfMachine
-    = EM_NONE        -- ^ No machine
-    | EM_M32         -- ^ AT&T WE 32100
-    | EM_SPARC       -- ^ SPARC
-    | EM_386         -- ^ Intel 80386
-    | EM_68K         -- ^ Motorola 68000
-    | EM_88K         -- ^ Motorola 88000
-    | EM_486         -- ^ Intel i486 (DO NOT USE THIS ONE)
-    | EM_860         -- ^ Intel 80860
-    | EM_MIPS        -- ^ MIPS I Architecture
-    | EM_S370        -- ^ IBM System/370 Processor
-    | EM_MIPS_RS3_LE -- ^ MIPS RS3000 Little-endian
-    | EM_SPARC64     -- ^ SPARC 64-bit
-    | EM_PARISC      -- ^ Hewlett-Packard PA-RISC
-    | EM_VPP500      -- ^ Fujitsu VPP500
-    | EM_SPARC32PLUS -- ^ Enhanced instruction set SPARC
-    | EM_960         -- ^ Intel 80960
-    | EM_PPC         -- ^ PowerPC
-    | EM_PPC64       -- ^ 64-bit PowerPC
-    | EM_S390        -- ^ IBM System/390 Processor
-    | EM_SPU         -- ^ Cell SPU
-    | EM_V800        -- ^ NEC V800
-    | EM_FR20        -- ^ Fujitsu FR20
-    | EM_RH32        -- ^ TRW RH-32
-    | EM_RCE         -- ^ Motorola RCE
-    | EM_ARM         -- ^ Advanced RISC Machines ARM
-    | EM_ALPHA       -- ^ Digital Alpha
-    | EM_SH          -- ^ Hitachi SH
-    | EM_SPARCV9     -- ^ SPARC Version 9
-    | EM_TRICORE     -- ^ Siemens TriCore embedded processor
-    | EM_ARC         -- ^ Argonaut RISC Core, Argonaut Technologies Inc.
-    | EM_H8_300      -- ^ Hitachi H8/300
-    | EM_H8_300H     -- ^ Hitachi H8/300H
-    | EM_H8S         -- ^ Hitachi H8S
-    | EM_H8_500      -- ^ Hitachi H8/500
-    | EM_IA_64       -- ^ Intel IA-64 processor architecture
-    | EM_MIPS_X      -- ^ Stanford MIPS-X
-    | EM_COLDFIRE    -- ^ Motorola ColdFire
-    | EM_68HC12      -- ^ Motorola M68HC12
-    | EM_MMA         -- ^ Fujitsu MMA Multimedia Accelerator
-    | EM_PCP         -- ^ Siemens PCP
-    | EM_NCPU        -- ^ Sony nCPU embedded RISC processor
-    | EM_NDR1        -- ^ Denso NDR1 microprocessor
-    | EM_STARCORE    -- ^ Motorola Star*Core processor
-    | EM_ME16        -- ^ Toyota ME16 processor
-    | EM_ST100       -- ^ STMicroelectronics ST100 processor
-    | EM_TINYJ       -- ^ Advanced Logic Corp. TinyJ embedded processor family
-    | EM_X86_64      -- ^ AMD x86-64 architecture
-    | EM_PDSP        -- ^ Sony DSP Processor
-    | EM_FX66        -- ^ Siemens FX66 microcontroller
-    | EM_ST9PLUS     -- ^ STMicroelectronics ST9+ 8/16 bit microcontroller
-    | EM_ST7         -- ^ STMicroelectronics ST7 8-bit microcontroller
-    | EM_68HC16      -- ^ Motorola MC68HC16 Microcontroller
-    | EM_68HC11      -- ^ Motorola MC68HC11 Microcontroller
-    | EM_68HC08      -- ^ Motorola MC68HC08 Microcontroller
-    | EM_68HC05      -- ^ Motorola MC68HC05 Microcontroller
-    | EM_SVX         -- ^ Silicon Graphics SVx
-    | EM_ST19        -- ^ STMicroelectronics ST19 8-bit microcontroller
-    | EM_VAX         -- ^ Digital VAX
-    | EM_CRIS        -- ^ Axis Communications 32-bit embedded processor
-    | EM_JAVELIN     -- ^ Infineon Technologies 32-bit embedded processor
-    | EM_FIREPATH    -- ^ Element 14 64-bit DSP Processor
-    | EM_ZSP         -- ^ LSI Logic 16-bit DSP Processor
-    | EM_MMIX        -- ^ Donald Knuth's educational 64-bit processor
-    | EM_HUANY       -- ^ Harvard University machine-independent object files
-    | EM_PRISM       -- ^ SiTera Prism
-    | EM_AVR         -- ^ Atmel AVR 8-bit microcontroller
-    | EM_FR30        -- ^ Fujitsu FR30
-    | EM_D10V        -- ^ Mitsubishi D10V
-    | EM_D30V        -- ^ Mitsubishi D30V
-    | EM_V850        -- ^ NEC v850
-    | EM_M32R        -- ^ Mitsubishi M32R
-    | EM_MN10300     -- ^ Matsushita MN10300
-    | EM_MN10200     -- ^ Matsushita MN10200
-    | EM_PJ          -- ^ picoJava
-    | EM_OPENRISC    -- ^ OpenRISC 32-bit embedded processor
-    | EM_ARC_A5      -- ^ ARC Cores Tangent-A5
-    | EM_XTENSA      -- ^ Tensilica Xtensa Architecture
-    | EM_VIDEOCORE   -- ^ Alphamosaic VideoCore processor
-    | EM_TMM_GPP     -- ^ Thompson Multimedia General Purpose Processor
-    | EM_NS32K       -- ^ National Semiconductor 32000 series
-    | EM_TPC         -- ^ Tenor Network TPC processor
-    | EM_SNP1K       -- ^ Trebia SNP 1000 processor
-    | EM_ST200       -- ^ STMicroelectronics (www.st.com) ST200 microcontroller
-    | EM_IP2K        -- ^ Ubicom IP2xxx microcontroller family
-    | EM_MAX         -- ^ MAX Processor
-    | EM_CR          -- ^ National Semiconductor CompactRISC microprocessor
-    | EM_F2MC16      -- ^ Fujitsu F2MC16
-    | EM_MSP430      -- ^ Texas Instruments embedded microcontroller msp430
-    | EM_BLACKFIN    -- ^ Analog Devices Blackfin (DSP) processor
-    | EM_SE_C33      -- ^ S1C33 Family of Seiko Epson processors
-    | EM_SEP         -- ^ Sharp embedded microprocessor
-    | EM_ARCA        -- ^ Arca RISC Microprocessor
-    | EM_UNICORE     -- ^ Microprocessor series from PKU-Unity Ltd. and MPRC of Peking University
-    | EM_EXT Word16  -- ^ Other
-    deriving (Eq, Show)
-
-getElfMachine :: ElfReader -> Get ElfMachine
-getElfMachine = liftM getElfMachine_ . getWord16
-    where getElfMachine_ 0   = EM_NONE
-          getElfMachine_ 1   = EM_M32
-          getElfMachine_ 2   = EM_SPARC
-          getElfMachine_ 3   = EM_386
-          getElfMachine_ 4   = EM_68K
-          getElfMachine_ 5   = EM_88K
-          getElfMachine_ 6   = EM_486
-          getElfMachine_ 7   = EM_860
-          getElfMachine_ 8   = EM_MIPS
-          getElfMachine_ 9   = EM_S370
-          getElfMachine_ 10  = EM_MIPS_RS3_LE
-          getElfMachine_ 11  = EM_SPARC64
-          getElfMachine_ 15  = EM_PARISC
-          getElfMachine_ 17  = EM_VPP500
-          getElfMachine_ 18  = EM_SPARC32PLUS
-          getElfMachine_ 19  = EM_960
-          getElfMachine_ 20  = EM_PPC
-          getElfMachine_ 21  = EM_PPC64
-          getElfMachine_ 22  = EM_S390
-          getElfMachine_ 23  = EM_SPU
-          getElfMachine_ 36  = EM_V800
-          getElfMachine_ 37  = EM_FR20
-          getElfMachine_ 38  = EM_RH32
-          getElfMachine_ 39  = EM_RCE
-          getElfMachine_ 40  = EM_ARM
-          getElfMachine_ 41  = EM_ALPHA
-          getElfMachine_ 42  = EM_SH
-          getElfMachine_ 43  = EM_SPARCV9
-          getElfMachine_ 44  = EM_TRICORE
-          getElfMachine_ 45  = EM_ARC
-          getElfMachine_ 46  = EM_H8_300
-          getElfMachine_ 47  = EM_H8_300H
-          getElfMachine_ 48  = EM_H8S
-          getElfMachine_ 49  = EM_H8_500
-          getElfMachine_ 50  = EM_IA_64
-          getElfMachine_ 51  = EM_MIPS_X
-          getElfMachine_ 52  = EM_COLDFIRE
-          getElfMachine_ 53  = EM_68HC12
-          getElfMachine_ 54  = EM_MMA
-          getElfMachine_ 55  = EM_PCP
-          getElfMachine_ 56  = EM_NCPU
-          getElfMachine_ 57  = EM_NDR1
-          getElfMachine_ 58  = EM_STARCORE
-          getElfMachine_ 59  = EM_ME16
-          getElfMachine_ 60  = EM_ST100
-          getElfMachine_ 61  = EM_TINYJ
-          getElfMachine_ 62  = EM_X86_64
-          getElfMachine_ 63  = EM_PDSP
-          getElfMachine_ 66  = EM_FX66
-          getElfMachine_ 67  = EM_ST9PLUS
-          getElfMachine_ 68  = EM_ST7
-          getElfMachine_ 69  = EM_68HC16
-          getElfMachine_ 70  = EM_68HC11
-          getElfMachine_ 71  = EM_68HC08
-          getElfMachine_ 72  = EM_68HC05
-          getElfMachine_ 73  = EM_SVX
-          getElfMachine_ 74  = EM_ST19
-          getElfMachine_ 75  = EM_VAX
-          getElfMachine_ 76  = EM_CRIS
-          getElfMachine_ 77  = EM_JAVELIN
-          getElfMachine_ 78  = EM_FIREPATH
-          getElfMachine_ 79  = EM_ZSP
-          getElfMachine_ 80  = EM_MMIX
-          getElfMachine_ 81  = EM_HUANY
-          getElfMachine_ 82  = EM_PRISM
-          getElfMachine_ 83  = EM_AVR
-          getElfMachine_ 84  = EM_FR30
-          getElfMachine_ 85  = EM_D10V
-          getElfMachine_ 86  = EM_D30V
-          getElfMachine_ 87  = EM_V850
-          getElfMachine_ 88  = EM_M32R
-          getElfMachine_ 89  = EM_MN10300
-          getElfMachine_ 90  = EM_MN10200
-          getElfMachine_ 91  = EM_PJ
-          getElfMachine_ 92  = EM_OPENRISC
-          getElfMachine_ 93  = EM_ARC_A5
-          getElfMachine_ 94  = EM_XTENSA
-          getElfMachine_ 95  = EM_VIDEOCORE
-          getElfMachine_ 96  = EM_TMM_GPP
-          getElfMachine_ 97  = EM_NS32K
-          getElfMachine_ 98  = EM_TPC
-          getElfMachine_ 99  = EM_SNP1K
-          getElfMachine_ 100 = EM_ST200
-          getElfMachine_ 101 = EM_IP2K
-          getElfMachine_ 102 = EM_MAX
-          getElfMachine_ 103 = EM_CR
-          getElfMachine_ 104 = EM_F2MC16
-          getElfMachine_ 105 = EM_MSP430
-          getElfMachine_ 106 = EM_BLACKFIN
-          getElfMachine_ 107 = EM_SE_C33
-          getElfMachine_ 108 = EM_SEP
-          getElfMachine_ 109 = EM_ARCA
-          getElfMachine_ 110 = EM_UNICORE
-          getElfMachine_ n   = EM_EXT n
-
 getElf_Shdr_OffsetSize :: ElfClass -> ElfReader -> Get (Word64, Word64)
 getElf_Shdr_OffsetSize ei_class er =
     case ei_class of
@@ -437,14 +243,14 @@ getElf_Ehdr = do
     ei_data     <- get
     verifyElfVersion
     ei_osabi    <- get
-    ei_abiver   <- liftM fromIntegral getWord8
+    ei_abiver   <- get
     skip 7
     er          <- return $ elfReader ei_data
+    e_type      <- getWithEndianness ei_data
+    e_machine   <- getWithEndianness ei_data
+    _           <- getWord32 er
     case ei_class of
         ELFCLASS32 -> do
-            e_type      <- getWithEndianness ei_data
-            e_machine   <- getElfMachine er
-            _           <- getWord32 er
             e_entry     <- liftM fromIntegral $ getWord32 er
             e_phoff     <- getWord32 er
             e_shoff     <- getWord32 er
@@ -468,9 +274,6 @@ getElf_Ehdr = do
                    , TableInfo { tableOffset = fromIntegral e_shoff, entrySize = fromIntegral e_shentsize, entryNum = fromIntegral e_shnum }
                    , e_shstrndx)
         ELFCLASS64 -> do
-            e_type      <- getWithEndianness ei_data
-            e_machine   <- getElfMachine er
-            _           <- getWord32 er
             e_entry     <- getWord64 er
             e_phoff     <- getWord64 er
             e_shoff     <- getWord64 er
