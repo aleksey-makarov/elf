@@ -12,12 +12,10 @@ module Data.Elf ( parseElf
                 , ElfSection(..)
                 , ElfSectionFlags(..)
                 , ElfSegment(..)
-                , ElfSegmentType(..)
                 , ElfSegmentFlag(..)
                 , ElfClass(..)
                 , ElfData(..)
 
-                , ElfMachine(..)
                 , ElfSymbolTableEntry(..)
                 , ElfSymbolType(..)
                 , ElfSymbolBinding(..)
@@ -286,7 +284,7 @@ parseElf b =
         sh                                             = table secTab
         (shstroff, shstrsize)                          = parseEntry getElf_Shdr_OffsetSize $ head $ drop (fromIntegral e_shstrndx) sh
         sh_str                                         = B.take (fromIntegral shstrsize) $ B.drop (fromIntegral shstroff) b
-        segments                                       = map (parseEntry (\c r -> parseElfSegmentEntry c r b)) ph
+        segments                                       = map (parseEntry (\c r -> parseElfSegmentEntry (elfData e) c r b)) ph
         sections                                       = map (parseEntry (\c r -> getElf_Shdr (elfData e) c r b sh_str)) sh
     in e { elfSections = sections, elfSegments = segments }
 
@@ -305,35 +303,10 @@ data ElfSegment = ElfSegment
   , elfSegmentMemSize   :: Word64           -- ^ Size in memory  (may be larger then the segment's data)
   } deriving (Eq,Show)
 
--- | Segment Types.
-data ElfSegmentType
-  = PT_NULL         -- ^ Unused entry
-  | PT_LOAD         -- ^ Loadable segment
-  | PT_DYNAMIC      -- ^ Dynamic linking tables
-  | PT_INTERP       -- ^ Program interpreter path name
-  | PT_NOTE         -- ^ Note sectionks
-  | PT_SHLIB        -- ^ Reserved
-  | PT_PHDR         -- ^ Program header table
-  | PT_Other Word32 -- ^ Some other type
-    deriving (Eq,Show)
-
-parseElfSegmentType :: Word32 -> ElfSegmentType
-parseElfSegmentType x =
-  case x of
-    0 -> PT_NULL
-    1 -> PT_LOAD
-    2 -> PT_DYNAMIC
-    3 -> PT_INTERP
-    4 -> PT_NOTE
-    5 -> PT_SHLIB
-    6 -> PT_PHDR
-    _ -> PT_Other x
-
-
-parseElfSegmentEntry :: ElfClass -> ElfReader -> B.ByteString -> Get ElfSegment
-parseElfSegmentEntry elf_class er elf_file = case elf_class of
+parseElfSegmentEntry :: ElfData -> ElfClass -> ElfReader -> B.ByteString -> Get ElfSegment
+parseElfSegmentEntry ei_data elf_class er elf_file = case elf_class of
   ELFCLASS64 -> do
-     p_type   <- parseElfSegmentType  `fmap` getWord32 er
+     p_type   <- getWithEndianness ei_data
      p_flags  <- parseElfSegmentFlags `fmap` getWord32 er
      p_offset <- getWord64 er
      p_vaddr  <- getWord64 er
@@ -352,7 +325,7 @@ parseElfSegmentEntry elf_class er elf_file = case elf_class of
        }
 
   ELFCLASS32 -> do
-     p_type   <- parseElfSegmentType  `fmap` getWord32 er
+     p_type   <- getWithEndianness ei_data
      p_offset <- fromIntegral `fmap` getWord32 er
      p_vaddr  <- fromIntegral `fmap` getWord32 er
      p_paddr  <- fromIntegral `fmap` getWord32 er

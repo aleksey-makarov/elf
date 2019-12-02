@@ -150,3 +150,13 @@ $(mkDeclarations BaseWord32 "ElfSectionType" "SHT" "SHT_EXT"
     , ("_SHLIB",   10) -- Reserved
     , ("_DYNSYM",  11) -- Contains a dynamic loader symbol table
     ])
+
+$(mkDeclarations BaseWord32 "ElfSegmentType" "PT" "PT_Other"
+    [ ("_NULL",    0) -- Unused entry
+    , ("_LOAD",    1) -- Loadable segment
+    , ("_DYNAMIC", 2) -- Dynamic linking tables
+    , ("_INTERP",  3) -- Program interpreter path name
+    , ("_NOTE",    4) -- Note section
+    , ("_SHLIB",   5) -- Reserved
+    , ("_PHDR",    6) -- Program header table
+    ])
