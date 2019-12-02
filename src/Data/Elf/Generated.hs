@@ -14,21 +14,21 @@ newtype Be a = Be { fromBe :: a }
 newtype Le a = Le { fromLe :: a }
 
 $(mkDeclarations BaseWord8 "ElfOSABI" "ELFOSABI" "ELFOSABI_EXT"
-    [ ("_SYSV",       0  ) -- No extensions or unspecified
-    , ("_HPUX",       1  ) -- Hewlett-Packard HP-UX
-    , ("_NETBSD",     2  ) -- NetBSD
-    , ("_LINUX",      3  ) -- Linux
-    , ("_SOLARIS",    6  ) -- Sun Solaris
-    , ("_AIX",        7  ) -- AIX
-    , ("_IRIX",       8  ) -- IRIX
-    , ("_FREEBSD",    9  ) -- FreeBSD
-    , ("_TRU64",      10 ) -- Compaq TRU64 UNIX
-    , ("_MODESTO",    11 ) -- Novell Modesto
-    , ("_OPENBSD",    12 ) -- Open BSD
-    , ("_OPENVMS",    13 ) -- Open VMS
-    , ("_NSK",        14 ) -- Hewlett-Packard Non-Stop Kernel
-    , ("_AROS",       15 ) -- Amiga Research OS
-    , ("_ARM",        97 ) -- ARM
+    [ ("_SYSV",         0) -- No extensions or unspecified
+    , ("_HPUX",         1) -- Hewlett-Packard HP-UX
+    , ("_NETBSD",       2) -- NetBSD
+    , ("_LINUX",        3) -- Linux
+    , ("_SOLARIS",      6) -- Sun Solaris
+    , ("_AIX",          7) -- AIX
+    , ("_IRIX",         8) -- IRIX
+    , ("_FREEBSD",      9) -- FreeBSD
+    , ("_TRU64",       10) -- Compaq TRU64 UNIX
+    , ("_MODESTO",     11) -- Novell Modesto
+    , ("_OPENBSD",     12) -- Open BSD
+    , ("_OPENVMS",     13) -- Open VMS
+    , ("_NSK",         14) -- Hewlett-Packard Non-Stop Kernel
+    , ("_AROS",        15) -- Amiga Research OS
+    , ("_ARM",         97) -- ARM
     , ("_STANDALONE", 255) -- Standalone (embedded) application
     ])
 
@@ -134,4 +134,19 @@ $(mkDeclarations BaseWord16 "ElfMachine" "EM" "EM_EXT"
     , ("_SEP",        108) -- Sharp embedded microprocessor
     , ("_ARCA",       109) -- Arca RISC Microprocessor
     , ("_UNICORE",    110) -- Microprocessor series from PKU-Unity Ltd. and MPRC of Peking University
+    ])
+
+$(mkDeclarations BaseWord32 "ElfSectionType" "SHT" "SHT_EXT"
+    [ ("_NULL",     0) -- Identifies an empty section header.
+    , ("_PROGBITS", 1) -- Contains information defined by the program
+    , ("_SYMTAB",   2) -- Contains a linker symbol table
+    , ("_STRTAB",   3) -- Contains a string table
+    , ("_RELA",     4) -- Contains "Rela" type relocation entries
+    , ("_HASH",     5) -- Contains a symbol hash table
+    , ("_DYNAMIC",  6) -- Contains dynamic linking tables
+    , ("_NOTE",     7) -- Contains note information
+    , ("_NOBITS",   8) -- Contains uninitialized space; does not occupy any space in the file
+    , ("_REL",      9) -- Contains "Rel" type relocation entries
+    , ("_SHLIB",   10) -- Reserved
+    , ("_DYNSYM",  11) -- Contains a dynamic loader symbol table
     ])

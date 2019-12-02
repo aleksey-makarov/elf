@@ -10,7 +10,6 @@ module Data.Elf ( parseElf
                 , elfVersion
 
                 , ElfSection(..)
-                , ElfSectionType(..)
                 , ElfSectionFlags(..)
                 , ElfSegment(..)
                 , ElfSegmentType(..)
@@ -86,38 +85,6 @@ verifyElfVersion = do
         then fail "Invalid version number for ELF"
         else return ()
 
-data ElfSectionType
-    = SHT_NULL          -- ^ Identifies an empty section header.
-    | SHT_PROGBITS      -- ^ Contains information defined by the program
-    | SHT_SYMTAB        -- ^ Contains a linker symbol table
-    | SHT_STRTAB        -- ^ Contains a string table
-    | SHT_RELA          -- ^ Contains "Rela" type relocation entries
-    | SHT_HASH          -- ^ Contains a symbol hash table
-    | SHT_DYNAMIC       -- ^ Contains dynamic linking tables
-    | SHT_NOTE          -- ^ Contains note information
-    | SHT_NOBITS        -- ^ Contains uninitialized space; does not occupy any space in the file
-    | SHT_REL           -- ^ Contains "Rel" type relocation entries
-    | SHT_SHLIB         -- ^ Reserved
-    | SHT_DYNSYM        -- ^ Contains a dynamic loader symbol table
-    | SHT_EXT Word32    -- ^ Processor- or environment-specific type
-    deriving (Eq, Show)
-
-getElfSectionType :: ElfReader -> Get ElfSectionType
-getElfSectionType er = liftM getElfSectionType_ $ getWord32 er
-    where getElfSectionType_ 0  = SHT_NULL
-          getElfSectionType_ 1  = SHT_PROGBITS
-          getElfSectionType_ 2  = SHT_SYMTAB
-          getElfSectionType_ 3  = SHT_STRTAB
-          getElfSectionType_ 4  = SHT_RELA
-          getElfSectionType_ 5  = SHT_HASH
-          getElfSectionType_ 6  = SHT_DYNAMIC
-          getElfSectionType_ 7  = SHT_NOTE
-          getElfSectionType_ 8  = SHT_NOBITS
-          getElfSectionType_ 9  = SHT_REL
-          getElfSectionType_ 10 = SHT_SHLIB
-          getElfSectionType_ 11 = SHT_DYNSYM
-          getElfSectionType_ n  = SHT_EXT n
-
 data ElfSectionFlags
     = SHF_WRITE     -- ^ Section contains writable data
     | SHF_ALLOC     -- ^ Section is allocated in memory image of program
@@ -180,12 +147,12 @@ getElf_Shdr_OffsetSize ei_class er =
             sh_size   <- getWord64 er
             return (sh_offset, sh_size)
 
-getElf_Shdr :: ElfClass -> ElfReader -> B.ByteString -> B.ByteString -> Get ElfSection
-getElf_Shdr ei_class er elf_file string_section =
+getElf_Shdr :: ElfData -> ElfClass -> ElfReader -> B.ByteString -> B.ByteString -> Get ElfSection
+getElf_Shdr ei_data ei_class er elf_file string_section =
     case ei_class of
         ELFCLASS32 -> do
             sh_name      <- getWord32 er
-            sh_type      <- getElfSectionType er
+            sh_type      <- getWithEndianness ei_data
             sh_flags     <- getElfSectionFlags32 er
             sh_addr      <- getWord32 er
             sh_offset    <- getWord32 er
@@ -208,7 +175,7 @@ getElf_Shdr ei_class er elf_file string_section =
                 }
         ELFCLASS64 -> do
             sh_name      <- getWord32 er
-            sh_type      <- getElfSectionType er
+            sh_type      <- getWithEndianness ei_data
             sh_flags     <- getElfSectionFlags64 er
             sh_addr      <- getWord64 er
             sh_offset    <- getWord64 er
@@ -320,7 +287,7 @@ parseElf b =
         (shstroff, shstrsize)                          = parseEntry getElf_Shdr_OffsetSize $ head $ drop (fromIntegral e_shstrndx) sh
         sh_str                                         = B.take (fromIntegral shstrsize) $ B.drop (fromIntegral shstroff) b
         segments                                       = map (parseEntry (\c r -> parseElfSegmentEntry c r b)) ph
-        sections                                       = map (parseEntry (\c r -> getElf_Shdr c r b sh_str)) sh
+        sections                                       = map (parseEntry (\c r -> getElf_Shdr (elfData e) c r b sh_str)) sh
     in e { elfSections = sections, elfSegments = segments }
 
   where table i                         = divide (B.drop (tableOffset i) b) (entrySize i) (entryNum i)

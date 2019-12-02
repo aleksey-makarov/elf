@@ -6,7 +6,7 @@ module Data.Elf.TH (mkDeclarations, BaseWord(..)) where
 import Control.Monad
 import Language.Haskell.TH
 
-data BaseWord = BaseWord8 | BaseWord16
+data BaseWord = BaseWord8 | BaseWord16 | BaseWord32
 
 newNamePE :: String -> Q (Q Pat, Q Exp)
 newNamePE s = do
@@ -24,6 +24,7 @@ mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameStr
             case baseType of
                 BaseWord8  -> conT $ mkName "Word8"
                 BaseWord16 -> conT $ mkName "Word16"
+                BaseWord32 -> conT $ mkName "Word32"
 
     let
         newTypeDef =
@@ -49,7 +50,7 @@ mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameStr
         defaultShowClause =
             clause
                 [ conP typeName [nP] ]
-                (normalB [| typeNameString ++ " " ++ show $(nE) |])
+                (normalB [| defaultPatternNameString ++ " " ++ show $(nE) |])
                 []
 
     let showInstanceFunctions = funD (mkName "show") (showClauses ++ [ defaultShowClause ])
@@ -81,6 +82,23 @@ mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameStr
                             []
                         ]
 
+    let
+        binaryInstancesXe putLe getLe putBe getBe =
+            [ do
+                (n3P, n3E) <- newNamePE "n"
+                mkBinaryInstance
+                    (appT (conT $ mkName "Le") (conT typeName))
+                    (conP (mkName "Le") [conP typeName [n3P]])
+                    [| $putLe $n3E |]
+                    [| $(conE $ mkName "Le") <$> ($(conE typeName) <$> $getLe) |]
+            , do
+                (n3P, n3E) <- newNamePE "n"
+                mkBinaryInstance
+                    (appT (conT $ mkName "Be") (conT typeName))
+                    (conP (mkName "Be") [conP typeName [n3P]])
+                    [| $putBe $n3E |]
+                    [| $(conE $ mkName "Be") <$> ($(conE typeName) <$> $getBe) |]
+            ]
 
     let
         binaryInstances =
@@ -94,22 +112,8 @@ mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameStr
                             [| putWord8 $n3E |]
                             [| $(conE typeName) <$> getWord8 |]
                     ]
-                BaseWord16 ->
-                    [ do
-                        (n3P, n3E) <- newNamePE "n"
-                        mkBinaryInstance
-                            (appT (conT $ mkName "Be") (conT typeName))
-                            (conP (mkName "Be") [conP typeName [n3P]])
-                            [| putWord16be $n3E |]
-                            [| $(conE $ mkName "Be") <$> ($(conE typeName) <$> getWord16be) |]
-                    , do
-                        (n3P, n3E) <- newNamePE "n"
-                        mkBinaryInstance
-                            (appT (conT $ mkName "Le") (conT typeName))
-                            (conP (mkName "Le") [conP typeName [n3P]])
-                            [| putWord16le $n3E |]
-                            [| $(conE $ mkName "Le") <$> ($(conE typeName) <$> getWord16le) |]
-                    ]
+                BaseWord16 -> binaryInstancesXe [| putWord16le |] [| getWord16le |] [| putWord16be |] [| getWord16be |]
+                BaseWord32 -> binaryInstancesXe [| putWord32le |] [| getWord32le |] [| putWord32be |] [| getWord32be |]
 
     let
         mkPatterns (s, n) =
