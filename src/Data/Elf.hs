@@ -88,8 +88,8 @@ verifyElfVersion = do
 splitBits :: (Num w, FiniteBits w) => w -> [w]
 splitBits w = map (shiftL 1) $ filter (testBit w) $ map (subtract 1) [ 1 .. (finiteBitSize w) ]
 
-elfSectionFlags :: ElfSection -> [ElfSectionFlags]
-elfSectionFlags = map (ElfSectionFlags) . splitBits . elfSectionFlagsW
+elfSectionFlags :: ElfSection -> [ElfSectionFlag]
+elfSectionFlags = map (ElfSectionFlag) . splitBits . elfSectionFlagsW
 
 elfSegmentFlags :: ElfSegment -> [ElfSegmentFlag]
 elfSegmentFlags = map (ElfSegmentFlag) . splitBits . elfSegmentFlagsW

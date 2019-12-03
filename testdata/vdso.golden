@@ -719,7 +719,7 @@ Segments:  - Type:      PT_LOAD
                         03 00 00 00 47 4e 55 00 51 07 15 35 22 98 2b 1f # ....GNU.Q..5".+.
                         74 78 1a 66 3b 95 c6 9b e4 82 95 89             # tx.f;.......
              MemSize:   60
-           - Type:      PT_Other 1685382480
+           - Type:      PT_EXT 1685382480
              Flags:     - PF_R
              VirtAddr:  0x7e4
              PhysAddr:  0x7e4

@@ -872,7 +872,7 @@ Segments:  - Type:      PT_PHDR
                         58 e3 4f e8 bc 03 f9 db 4b 07 fa e5 03 1e fd d0 # X.O.....K.......
                         88 97 6f 88                                     # ..o.
              MemSize:   68
-           - Type:      PT_Other 1685382480
+           - Type:      PT_EXT 1685382480
              Flags:     - PF_R
              VirtAddr:  0x8048804
              PhysAddr:  0x8048804
@@ -882,7 +882,7 @@ Segments:  - Type:      PT_PHDR
                         b0 00 00 00 0c ff ff ff 94 00 00 00 6c ff ff ff # ............l...
                         cc 00 00 00 cc ff ff ff 18 01 00 00             # ............
              MemSize:   60
-           - Type:      PT_Other 1685382481
+           - Type:      PT_EXT 1685382481
              Flags:     - PF_W
                         - PF_R
              VirtAddr:  0x0
@@ -890,7 +890,7 @@ Segments:  - Type:      PT_PHDR
              Align:     16
              Data:      
              MemSize:   0
-           - Type:      PT_Other 1685382482
+           - Type:      PT_EXT 1685382482
              Flags:     - PF_R
              VirtAddr:  0x8049eec
              PhysAddr:  0x8049eec

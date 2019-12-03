@@ -176,7 +176,7 @@ $(mkDeclarations BaseWord32 "ElfSectionType" "SHT" "SHT_EXT" True
     , ("_DYNSYM",  11) -- Contains a dynamic loader symbol table
     ])
 
-$(mkDeclarations BaseWord32 "ElfSegmentType" "PT" "PT_Other" True
+$(mkDeclarations BaseWord32 "ElfSegmentType" "PT" "PT_EXT" True
     [ ("_NULL",    0) -- Unused entry
     , ("_LOAD",    1) -- Loadable segment
     , ("_DYNAMIC", 2) -- Dynamic linking tables
@@ -186,13 +186,13 @@ $(mkDeclarations BaseWord32 "ElfSegmentType" "PT" "PT_Other" True
     , ("_PHDR",    6) -- Program header table
     ])
 
-$(mkDeclarations BaseWord64 "ElfSectionFlags" "SHF" "SHF_EXT" False
+$(mkDeclarations BaseWord64 "ElfSectionFlag" "SHF" "SHF_EXT" False
     [ ("_WRITE",     (1 `shiftL` 0)) -- Section contains writable data
     , ("_ALLOC",     (1 `shiftL` 1)) -- Section is allocated in memory image of program
     , ("_EXECINSTR", (1 `shiftL` 2)) -- Section contains executable instructions
     ])
 
-$(mkDeclarations BaseWord32 "ElfSegmentFlag" "PF" "PF_Ext" False
+$(mkDeclarations BaseWord32 "ElfSegmentFlag" "PF" "PF_EXT" False
     [ ("_X", (1 `shiftL` 0)) -- Execute permission
     , ("_W", (1 `shiftL` 1)) -- Write permission
     , ("_R", (1 `shiftL` 2)) -- Read permission
