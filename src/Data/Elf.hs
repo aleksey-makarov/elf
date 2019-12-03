@@ -337,13 +337,6 @@ parseElfSegmentEntry ei_data elf_class er elf_file = case elf_class of
        , elfSegmentMemSize  = p_memsz
        }
 
--- parseElfSegmentFlags :: Word32 -> [ElfSegmentFlag]
--- parseElfSegmentFlags word = [ cvt bit_ | bit_ <- [ 0 .. 31 ], testBit word bit_ ]
---   where cvt 0 = PF_X
---         cvt 1 = PF_W
---         cvt 2 = PF_R
---         cvt n = PF_Ext n
-
 -- | The symbol table entries consist of index information to be read from other
 -- parts of the ELF file. Some of this information is automatically retrieved
 -- for your convenience (including symbol name, description of the enclosing
