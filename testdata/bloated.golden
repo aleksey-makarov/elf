@@ -157,8 +157,8 @@ Sections:  - Name:      ""
              Data:      fc 9f 04 08 06 02 00 00 40 a0 04 08 05 0d 00 00 # ........@.......
            - Name:      ".rel.plt"
              Type:      SHT_REL
-             Flags:     - SHF_EXT 6
-                        - SHF_ALLOC
+             Flags:     - SHF_ALLOC
+                        - SHF_EXT 64
              Addr:      0x80484d4
              Size:      56
              Link:      5
@@ -171,8 +171,8 @@ Sections:  - Name:      ""
                         24 a0 04 08 07 0b 00 00                         # $.......
            - Name:      ".init"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_EXECINSTR
-                        - SHF_ALLOC
+             Flags:     - SHF_ALLOC
+                        - SHF_EXECINSTR
              Addr:      0x804850c
              Size:      35
              Link:      0
@@ -184,8 +184,8 @@ Sections:  - Name:      ""
                         08 5b c3                                        # .[.
            - Name:      ".plt"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_EXECINSTR
-                        - SHF_ALLOC
+             Flags:     - SHF_ALLOC
+                        - SHF_EXECINSTR
              Addr:      0x8048530
              Size:      128
              Link:      0
@@ -202,8 +202,8 @@ Sections:  - Name:      ""
                         ff 25 24 a0 04 08 68 30 00 00 00 e9 80 ff ff ff # .%$...h0........
            - Name:      ".plt.got"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_EXECINSTR
-                        - SHF_ALLOC
+             Flags:     - SHF_ALLOC
+                        - SHF_EXECINSTR
              Addr:      0x80485b0
              Size:      8
              Link:      0
@@ -213,8 +213,8 @@ Sections:  - Name:      ""
              Data:      ff 25 fc 9f 04 08 66 90                         # .%....f.
            - Name:      ".text"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_EXECINSTR
-                        - SHF_ALLOC
+             Flags:     - SHF_ALLOC
+                        - SHF_EXECINSTR
              Addr:      0x80485c0
              Size:      530
              Link:      0
@@ -257,8 +257,8 @@ Sections:  - Name:      ""
                         f3 c3                                           # ..
            - Name:      ".fini"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_EXECINSTR
-                        - SHF_ALLOC
+             Flags:     - SHF_ALLOC
+                        - SHF_EXECINSTR
              Addr:      0x80487d4
              Size:      20
              Link:      0
@@ -318,8 +318,8 @@ Sections:  - Name:      ""
                         00 00 00 00                                     # ....
            - Name:      ".init_array"
              Type:      SHT_EXT 14
-             Flags:     - SHF_ALLOC
-                        - SHF_WRITE
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
              Addr:      0x8049eec
              Size:      8
              Link:      0
@@ -329,8 +329,8 @@ Sections:  - Name:      ""
              Data:      e0 86 04 08 00 86 04 08                         # ........
            - Name:      ".fini_array"
              Type:      SHT_EXT 15
-             Flags:     - SHF_ALLOC
-                        - SHF_WRITE
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
              Addr:      0x8049ef4
              Size:      4
              Link:      0
@@ -340,8 +340,8 @@ Sections:  - Name:      ""
              Data:      c0 86 04 08                                     # ....
            - Name:      ".jcr"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_ALLOC
-                        - SHF_WRITE
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
              Addr:      0x8049ef8
              Size:      4
              Link:      0
@@ -351,8 +351,8 @@ Sections:  - Name:      ""
              Data:      00 00 00 00                                     # ....
            - Name:      ".dynamic"
              Type:      SHT_DYNAMIC
-             Flags:     - SHF_ALLOC
-                        - SHF_WRITE
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
              Addr:      0x8049efc
              Size:      256
              Link:      6
@@ -377,8 +377,8 @@ Sections:  - Name:      ""
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
            - Name:      ".got"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_ALLOC
-                        - SHF_WRITE
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
              Addr:      0x8049ffc
              Size:      4
              Link:      0
@@ -388,8 +388,8 @@ Sections:  - Name:      ""
              Data:      00 00 00 00                                     # ....
            - Name:      ".got.plt"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_ALLOC
-                        - SHF_WRITE
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
              Addr:      0x804a000
              Size:      40
              Link:      0
@@ -401,8 +401,8 @@ Sections:  - Name:      ""
                         96 85 04 08 a6 85 04 08                         # ........
            - Name:      ".data"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_ALLOC
-                        - SHF_WRITE
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
              Addr:      0x804a028
              Size:      4
              Link:      0
@@ -412,8 +412,8 @@ Sections:  - Name:      ""
              Data:      00 00 00 00                                     # ....
            - Name:      ".bss"
              Type:      SHT_NOBITS
-             Flags:     - SHF_ALLOC
-                        - SHF_WRITE
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
              Addr:      0x804a040
              Size:      144
              Link:      0
@@ -431,8 +431,8 @@ Sections:  - Name:      ""
                         68 81 04 08 00 00 00 00 03 00 02 00 00 00 00 00 # h...............
            - Name:      ".comment"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_EXT 5
-                        - SHF_EXT 4
+             Flags:     - SHF_EXT 16
+                        - SHF_EXT 32
              Addr:      0x0
              Size:      89
              Link:      0

@@ -10,9 +10,11 @@ module Data.Elf ( parseElf
                 , elfVersion
 
                 , ElfSection(..)
-                , ElfSectionFlags(..)
+                , elfSectionFlags
+
                 , ElfSegment(..)
-                , ElfSegmentFlag(..)
+                , elfSegmentFlags
+
                 , ElfClass(..)
                 , ElfData(..)
 
@@ -53,7 +55,7 @@ elfVersion _ = elfSupportedVersion
 data ElfSection = ElfSection
     { elfSectionName      :: String            -- ^ Identifies the name of the section.
     , elfSectionType      :: ElfSectionType    -- ^ Identifies the type of the section.
-    , elfSectionFlags     :: [ElfSectionFlags] -- ^ Identifies the attributes of the section.
+    , elfSectionFlagsW    :: Word64            -- ^ Identifies the attributes of the section.
     , elfSectionAddr      :: Word64            -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
     , elfSectionSize      :: Word64            -- ^ The size of the section. Except for SHT_NOBITS sections, this is the size of elfSectionData.
     , elfSectionLink      :: Word32            -- ^ Contains a section index of an associated section, depending on section type.
@@ -83,25 +85,14 @@ verifyElfVersion = do
         then fail "Invalid version number for ELF"
         else return ()
 
-data ElfSectionFlags
-    = SHF_WRITE     -- ^ Section contains writable data
-    | SHF_ALLOC     -- ^ Section is allocated in memory image of program
-    | SHF_EXECINSTR -- ^ Section contains executable instructions
-    | SHF_EXT Int   -- ^ Processor- or environment-specific flag
-    deriving (Eq, Show)
+splitBits :: (Num w, FiniteBits w) => w -> [w]
+splitBits w = map (shiftL 1) $ filter (testBit w) $ map (subtract 1) [ 1 .. (finiteBitSize w) ]
 
-getElfSectionFlags :: Bits a => Int -> a -> [ElfSectionFlags]
-getElfSectionFlags 0 _ = []
-getElfSectionFlags 1 word | testBit word 0     = SHF_WRITE     : getElfSectionFlags 0 word
-getElfSectionFlags 2 word | testBit word 1     = SHF_ALLOC     : getElfSectionFlags 1 word
-getElfSectionFlags 3 word | testBit word 2     = SHF_EXECINSTR : getElfSectionFlags 2 word
-getElfSectionFlags n word | testBit word (n-1) = SHF_EXT (n-1) : getElfSectionFlags (n-1) word
-getElfSectionFlags n word = getElfSectionFlags (n-1) word
+elfSectionFlags :: ElfSection -> [ElfSectionFlags]
+elfSectionFlags = map (ElfSectionFlags) . splitBits . elfSectionFlagsW
 
-getElfSectionFlags32 :: ElfReader -> Get [ElfSectionFlags]
-getElfSectionFlags64 :: ElfReader -> Get [ElfSectionFlags]
-getElfSectionFlags32 = liftM (getElfSectionFlags 32) . getWord32
-getElfSectionFlags64 = liftM (getElfSectionFlags 64) . getWord64
+elfSegmentFlags :: ElfSegment -> [ElfSegmentFlag]
+elfSegmentFlags = map (ElfSegmentFlag) . splitBits . elfSegmentFlagsW
 
 data ElfClass
     = ELFCLASS32 -- ^ 32-bit ELF format
@@ -145,13 +136,16 @@ getElf_Shdr_OffsetSize ei_class er =
             sh_size   <- getWord64 er
             return (sh_offset, sh_size)
 
+id32to64 :: Word32 -> Word64
+id32to64 = fromIntegral
+
 getElf_Shdr :: ElfData -> ElfClass -> ElfReader -> B.ByteString -> B.ByteString -> Get ElfSection
 getElf_Shdr ei_data ei_class er elf_file string_section =
     case ei_class of
         ELFCLASS32 -> do
             sh_name      <- getWord32 er
             sh_type      <- getWithEndianness ei_data
-            sh_flags     <- getElfSectionFlags32 er
+            sh_flags     <- id32to64 <$> getWithEndianness ei_data
             sh_addr      <- getWord32 er
             sh_offset    <- getWord32 er
             sh_size      <- getWord32 er
@@ -162,7 +156,7 @@ getElf_Shdr ei_data ei_class er elf_file string_section =
             return ElfSection
                 { elfSectionName      = map B.w2c $ B.unpack $ B.takeWhile (/= 0) $ B.drop (fromIntegral sh_name) string_section
                 , elfSectionType      = sh_type
-                , elfSectionFlags     = sh_flags
+                , elfSectionFlagsW    = sh_flags
                 , elfSectionAddr      = fromIntegral sh_addr
                 , elfSectionSize      = fromIntegral sh_size
                 , elfSectionLink      = sh_link
@@ -174,7 +168,7 @@ getElf_Shdr ei_data ei_class er elf_file string_section =
         ELFCLASS64 -> do
             sh_name      <- getWord32 er
             sh_type      <- getWithEndianness ei_data
-            sh_flags     <- getElfSectionFlags64 er
+            sh_flags     <- getWithEndianness ei_data
             sh_addr      <- getWord64 er
             sh_offset    <- getWord64 er
             sh_size      <- getWord64 er
@@ -185,7 +179,7 @@ getElf_Shdr ei_data ei_class er elf_file string_section =
             return ElfSection
                 { elfSectionName      = map B.w2c $ B.unpack $ B.takeWhile (/= 0) $ B.drop (fromIntegral sh_name) string_section
                 , elfSectionType      = sh_type
-                , elfSectionFlags     = sh_flags
+                , elfSectionFlagsW    = sh_flags
                 , elfSectionAddr      = sh_addr
                 , elfSectionSize      = sh_size
                 , elfSectionLink      = sh_link
@@ -295,7 +289,7 @@ parseElf b =
 
 data ElfSegment = ElfSegment
   { elfSegmentType      :: ElfSegmentType   -- ^ Segment type
-  , elfSegmentFlags     :: [ElfSegmentFlag] -- ^ Segment flags
+  , elfSegmentFlagsW    :: Word32           -- ^ Segment flags
   , elfSegmentVirtAddr  :: Word64           -- ^ Virtual address for the segment
   , elfSegmentPhysAddr  :: Word64           -- ^ Physical address for the segment
   , elfSegmentAlign     :: Word64           -- ^ Segment alignment
@@ -307,7 +301,7 @@ parseElfSegmentEntry :: ElfData -> ElfClass -> ElfReader -> B.ByteString -> Get 
 parseElfSegmentEntry ei_data elf_class er elf_file = case elf_class of
   ELFCLASS64 -> do
      p_type   <- getWithEndianness ei_data
-     p_flags  <- parseElfSegmentFlags `fmap` getWord32 er
+     p_flags  <- getWithEndianness ei_data
      p_offset <- getWord64 er
      p_vaddr  <- getWord64 er
      p_paddr  <- getWord64 er
@@ -316,7 +310,7 @@ parseElfSegmentEntry ei_data elf_class er elf_file = case elf_class of
      p_align  <- getWord64 er
      return ElfSegment
        { elfSegmentType     = p_type
-       , elfSegmentFlags    = p_flags
+       , elfSegmentFlagsW   = p_flags
        , elfSegmentVirtAddr = p_vaddr
        , elfSegmentPhysAddr = p_paddr
        , elfSegmentAlign    = p_align
@@ -331,11 +325,11 @@ parseElfSegmentEntry ei_data elf_class er elf_file = case elf_class of
      p_paddr  <- fromIntegral `fmap` getWord32 er
      p_filesz <- fromIntegral `fmap` getWord32 er
      p_memsz  <- fromIntegral `fmap` getWord32 er
-     p_flags  <- parseElfSegmentFlags `fmap` getWord32 er
+     p_flags  <- getWithEndianness ei_data
      p_align  <- fromIntegral `fmap` getWord32 er
      return ElfSegment
        { elfSegmentType     = p_type
-       , elfSegmentFlags    = p_flags
+       , elfSegmentFlagsW   = p_flags
        , elfSegmentVirtAddr = p_vaddr
        , elfSegmentPhysAddr = p_paddr
        , elfSegmentAlign    = p_align
@@ -343,19 +337,12 @@ parseElfSegmentEntry ei_data elf_class er elf_file = case elf_class of
        , elfSegmentMemSize  = p_memsz
        }
 
-data ElfSegmentFlag
-  = PF_X        -- ^ Execute permission
-  | PF_W        -- ^ Write permission
-  | PF_R        -- ^ Read permission
-  | PF_Ext Int  -- ^ Some other flag, the Int is the bit number for the flag.
-    deriving (Eq,Show)
-
-parseElfSegmentFlags :: Word32 -> [ElfSegmentFlag]
-parseElfSegmentFlags word = [ cvt bit_ | bit_ <- [ 0 .. 31 ], testBit word bit_ ]
-  where cvt 0 = PF_X
-        cvt 1 = PF_W
-        cvt 2 = PF_R
-        cvt n = PF_Ext n
+-- parseElfSegmentFlags :: Word32 -> [ElfSegmentFlag]
+-- parseElfSegmentFlags word = [ cvt bit_ | bit_ <- [ 0 .. 31 ], testBit word bit_ ]
+--   where cvt 0 = PF_X
+--         cvt 1 = PF_W
+--         cvt 2 = PF_R
+--         cvt n = PF_Ext n
 
 -- | The symbol table entries consist of index information to be read from other
 -- parts of the ELF file. Some of this information is automatically retrieved

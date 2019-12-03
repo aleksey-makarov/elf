@@ -108,8 +108,8 @@ Sections:  - Name:      ""
                         54 00 00 00 00 00 00 00                         # T.......
            - Name:      ".dynamic"
              Type:      SHT_DYNAMIC
-             Flags:     - SHF_ALLOC
-                        - SHF_WRITE
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
              Addr:      0x348
              Size:      288
              Link:      4
@@ -136,8 +136,8 @@ Sections:  - Name:      ""
                         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
            - Name:      ".rodata"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_ALLOC
-                        - SHF_WRITE
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
              Addr:      0x468
              Size:      832
              Link:      0
@@ -254,8 +254,8 @@ Sections:  - Name:      ""
                         06 60 c6 0c 07 08 00 00                         # .`......
            - Name:      ".text"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_EXECINSTR
-                        - SHF_ALLOC
+             Flags:     - SHF_ALLOC
+                        - SHF_EXECINSTR
              Addr:      0x970
              Size:      1514
              Link:      0
@@ -377,8 +377,8 @@ Sections:  - Name:      ""
                         03 03 5d ff ff ff 27 00 00 00 16 02 04 04 01    # ..]...'........
            - Name:      ".altinstr_replacement"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_EXECINSTR
-                        - SHF_ALLOC
+             Flags:     - SHF_ALLOC
+                        - SHF_EXECINSTR
              Addr:      0xfe9
              Size:      34
              Link:      0
@@ -390,8 +390,8 @@ Sections:  - Name:      ""
                         c7 f8                                           # ..
            - Name:      ".comment"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_EXT 5
-                        - SHF_EXT 4
+             Flags:     - SHF_EXT 16
+                        - SHF_EXT 32
              Addr:      0x0
              Size:      36
              Link:      0

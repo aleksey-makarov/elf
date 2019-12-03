@@ -7,6 +7,7 @@ module Data.Elf.Generated where
 import Data.Binary
 import Data.Binary.Put
 import Data.Binary.Get
+import Data.Bits
 
 import Data.Elf.TH
 
@@ -37,7 +38,7 @@ instance Binary (Le Word64) where
     put = putWord64le . fromLe
     get = Le <$> getWord64le
 
-$(mkDeclarations BaseWord8 "ElfOSABI" "ELFOSABI" "ELFOSABI_EXT"
+$(mkDeclarations BaseWord8 "ElfOSABI" "ELFOSABI" "ELFOSABI_EXT" True
     [ ("_SYSV",         0) -- No extensions or unspecified
     , ("_HPUX",         1) -- Hewlett-Packard HP-UX
     , ("_NETBSD",       2) -- NetBSD
@@ -56,7 +57,7 @@ $(mkDeclarations BaseWord8 "ElfOSABI" "ELFOSABI" "ELFOSABI_EXT"
     , ("_STANDALONE", 255) -- Standalone (embedded) application
     ])
 
-$(mkDeclarations BaseWord16 "ElfType" "ET" "ET_EXT"
+$(mkDeclarations BaseWord16 "ElfType" "ET" "ET_EXT" True
     [ ("_NONE", 0) -- Unspecified type
     , ("_REL",  1) -- Relocatable object file
     , ("_EXEC", 2) -- Executable object file
@@ -64,7 +65,7 @@ $(mkDeclarations BaseWord16 "ElfType" "ET" "ET_EXT"
     , ("_CORE", 4) -- Core dump object file
     ])
 
-$(mkDeclarations BaseWord16 "ElfMachine" "EM" "EM_EXT"
+$(mkDeclarations BaseWord16 "ElfMachine" "EM" "EM_EXT" True
     [ ("_NONE",         0) -- No machine
     , ("_M32",          1) -- AT&T WE 32100
     , ("_SPARC",        2) -- SPARC
@@ -160,7 +161,7 @@ $(mkDeclarations BaseWord16 "ElfMachine" "EM" "EM_EXT"
     , ("_UNICORE",    110) -- Microprocessor series from PKU-Unity Ltd. and MPRC of Peking University
     ])
 
-$(mkDeclarations BaseWord32 "ElfSectionType" "SHT" "SHT_EXT"
+$(mkDeclarations BaseWord32 "ElfSectionType" "SHT" "SHT_EXT" True
     [ ("_NULL",     0) -- Identifies an empty section header.
     , ("_PROGBITS", 1) -- Contains information defined by the program
     , ("_SYMTAB",   2) -- Contains a linker symbol table
@@ -175,7 +176,7 @@ $(mkDeclarations BaseWord32 "ElfSectionType" "SHT" "SHT_EXT"
     , ("_DYNSYM",  11) -- Contains a dynamic loader symbol table
     ])
 
-$(mkDeclarations BaseWord32 "ElfSegmentType" "PT" "PT_Other"
+$(mkDeclarations BaseWord32 "ElfSegmentType" "PT" "PT_Other" True
     [ ("_NULL",    0) -- Unused entry
     , ("_LOAD",    1) -- Loadable segment
     , ("_DYNAMIC", 2) -- Dynamic linking tables
@@ -183,4 +184,16 @@ $(mkDeclarations BaseWord32 "ElfSegmentType" "PT" "PT_Other"
     , ("_NOTE",    4) -- Note section
     , ("_SHLIB",   5) -- Reserved
     , ("_PHDR",    6) -- Program header table
+    ])
+
+$(mkDeclarations BaseWord64 "ElfSectionFlags" "SHF" "SHF_EXT" False
+    [ ("_WRITE",     (1 `shiftL` 0)) -- Section contains writable data
+    , ("_ALLOC",     (1 `shiftL` 1)) -- Section is allocated in memory image of program
+    , ("_EXECINSTR", (1 `shiftL` 2)) -- Section contains executable instructions
+    ])
+
+$(mkDeclarations BaseWord32 "ElfSegmentFlag" "PF" "PF_Ext" False
+    [ ("_X", (1 `shiftL` 0)) -- Execute permission
+    , ("_W", (1 `shiftL` 1)) -- Write permission
+    , ("_R", (1 `shiftL` 2)) -- Read permission
     ])

@@ -18,8 +18,8 @@ Sections:  - Name:      ""
              Data:      
            - Name:      ".text"
              Type:      SHT_PROGBITS
-             Flags:     - SHF_EXECINSTR
-                        - SHF_ALLOC
+             Flags:     - SHF_ALLOC
+                        - SHF_EXECINSTR
              Addr:      0x4000e0
              Size:      12
              Link:      0

@@ -6,15 +6,15 @@ module Data.Elf.TH (mkDeclarations, BaseWord(..)) where
 import Control.Monad
 import Language.Haskell.TH
 
-data BaseWord = BaseWord8 | BaseWord16 | BaseWord32
+data BaseWord = BaseWord8 | BaseWord16 | BaseWord32 | BaseWord64
 
 newNamePE :: String -> Q (Q Pat, Q Exp)
 newNamePE s = do
     n <- newName s
     return (varP n, varE n)
 
-mkDeclarations :: BaseWord -> String -> String -> String -> [(String, Integer)] -> Q [Dec]
-mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameString enums = do
+mkDeclarations :: BaseWord -> String -> String -> String -> Bool -> [(String, Integer)] -> Q [Dec]
+mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameString binaryInstanceIsRequired enums = do
 
     let typeName = mkName typeNameString
     let patternName s = mkName (patternPrefixString ++ s)
@@ -25,6 +25,7 @@ mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameStr
                 BaseWord8  -> conT $ mkName "Word8"
                 BaseWord16 -> conT $ mkName "Word16"
                 BaseWord32 -> conT $ mkName "Word32"
+                BaseWord64 -> conT $ mkName "Word64"
 
     let
         newTypeDef =
@@ -114,6 +115,7 @@ mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameStr
                     ]
                 BaseWord16 -> binaryInstancesXe [| putWord16le |] [| getWord16le |] [| putWord16be |] [| getWord16be |]
                 BaseWord32 -> binaryInstancesXe [| putWord32le |] [| getWord32le |] [| putWord32be |] [| getWord32be |]
+                BaseWord64 -> binaryInstancesXe [| putWord64le |] [| getWord64le |] [| putWord64be |] [| getWord64be |]
 
     let
         mkPatterns (s, n) =
@@ -145,4 +147,4 @@ mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameStr
 
     let patterns = (join $ map mkPatterns enums) ++ [ defaultPatternSig, defaultPatternDef ]
 
-    sequence $ newTypeDef : showInstance : (patterns ++ binaryInstances)
+    sequence $ newTypeDef : showInstance : (patterns ++ if binaryInstanceIsRequired then binaryInstances else [])
