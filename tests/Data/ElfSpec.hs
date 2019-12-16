@@ -74,7 +74,7 @@ spec = do
                 segmentTypes `shouldBe` [PT_LOAD, PT_NOTE]
 
             it "parses segment flags" $ do
-                let segmentFlags = map elfSegmentFlags tinySegments
+                let segmentFlags = map (splitBits . elfSegmentFlags) tinySegments
                 segmentFlags !! 0 `shouldMatchList` [PF_R, PF_X]
                 segmentFlags !! 1 `shouldMatchList` [PF_R]
 

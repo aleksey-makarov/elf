@@ -56,7 +56,7 @@ formatSection :: ElfSection -> Doc ()
 formatSection s =
     formatPairs [ ("Name",      viaShow $ elfSectionName s)
                 , ("Type",      viaShow $ elfSectionType s)
-                , ("Flags",     formatList $ fmap viaShow $ elfSectionFlags s)
+                , ("Flags",     formatList $ fmap viaShow $ splitBits $ elfSectionFlags s)
                 , ("Addr",      showHexDoc $ elfSectionAddr s)
                 , ("Size",      viaShow $ elfSectionSize s)
                 , ("Link",      viaShow $ elfSectionLink s)
@@ -72,7 +72,7 @@ formatSections s = formatList  $ formatSection <$> s
 formatSegment :: ElfSegment -> Doc ()
 formatSegment s =
     formatPairs [ ("Type",     viaShow $ elfSegmentType s)
-                , ("Flags",    formatList $ fmap viaShow $ elfSegmentFlags s)
+                , ("Flags",    formatList $ fmap viaShow $ splitBits $ elfSegmentFlags s)
                 , ("VirtAddr", showHexDoc $ elfSegmentVirtAddr s)
                 , ("PhysAddr", showHexDoc $ elfSegmentPhysAddr s)
                 , ("Align",    viaShow $ elfSegmentAlign s)

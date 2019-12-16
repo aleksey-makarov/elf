@@ -1,98 +1,81 @@
+{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE GADTSyntax #-}
 
 -- | Data.Elf is a module for parsing a ByteString of an ELF file into an Elf record.
-module Data.Elf ( parseElf
-                , parseSymbolTables
-                , findSymbolDefinition
-                , findSectionByName
-
-                , Elf(..)
-                , elfVersion
-
-                , ElfSection(..)
-                , elfSectionFlags
-
-                , ElfSegment(..)
-                , elfSegmentFlags
-
-                , ElfClass(..)
+module Data.Elf ( ElfClass(..)
                 , ElfData(..)
+
+                , Elf
+                , elfClass
+                , elfData
+                , elfVersion
+                , elfOSABI
+                , elfABIVersion
+                , elfType
+                , elfMachine
+                , elfEntry
+                , elfSections
+                , elfSegments
+
+                , ElfSection
+                , elfSectionName
+                , elfSectionType
+                , elfSectionFlags
+                , elfSectionAddr
+                , elfSectionSize
+                , elfSectionLink
+                , elfSectionInfo
+                , elfSectionAddrAlign
+                , elfSectionEntSize
+                , elfSectionData
+
+                , ElfSegment
+                , elfSegmentType
+                , elfSegmentFlags
+                , elfSegmentVirtAddr
+                , elfSegmentPhysAddr
+                , elfSegmentAlign
+                , elfSegmentData
+                , elfSegmentMemSize
+
+                , parseElf
+                , splitBits
 
                 , ElfSymbolTableEntry(..)
                 , ElfSymbolType(..)
                 , ElfSymbolBinding(..)
                 , ElfSectionIndex(..)
+                , parseSymbolTables
+
+{-
+                , findSymbolDefinition
+                , findSectionByName
+-}
                 , module Data.Elf.Generated) where
+
 
 import Data.Binary
 import Data.Binary.Get as G
 import Data.Bits
-import Data.Maybe
 import Control.Monad
 import qualified Data.ByteString               as B
-import qualified Data.ByteString.Internal      as B
 import qualified Data.ByteString.Lazy          as L
 import qualified Data.ByteString.Lazy.Internal as L
+import qualified Data.ByteString.Char8         as C
+import Data.Proxy
 
 -- https://stackoverflow.com/questions/10672981/export-template-haskell-generated-definitions
 import Data.Elf.Generated
-
-data Elf = Elf
-    { elfClass      :: ElfClass      -- ^ Identifies the class of the object file (32/64 bit).
-    , elfData       :: ElfData       -- ^ Identifies the data encoding of the object file (endianness).
-    , elfOSABI      :: ElfOSABI      -- ^ Identifies the operating system and ABI for which the object is prepared.
-    , elfABIVersion :: Word8         -- ^ Identifies the ABI version for which the object is prepared.
-    , elfType       :: ElfType       -- ^ Identifies the object file type.
-    , elfMachine    :: ElfMachine    -- ^ Identifies the target architecture.
-    , elfEntry      :: Word64        -- ^ Virtual address of the program entry point. 0 for non-executable Elfs.
-    , elfSections   :: [ElfSection]  -- ^ List of sections in the file.
-    , elfSegments   :: [ElfSegment]  -- ^ List of segments in the file.
-    } deriving (Eq, Show)
-
-elfVersion :: Elf -> Int
-elfVersion _ = elfSupportedVersion
-
-data ElfSection = ElfSection
-    { elfSectionName      :: String            -- ^ Identifies the name of the section.
-    , elfSectionType      :: ElfSectionType    -- ^ Identifies the type of the section.
-    , elfSectionFlagsW    :: Word64            -- ^ Identifies the attributes of the section.
-    , elfSectionAddr      :: Word64            -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
-    , elfSectionSize      :: Word64            -- ^ The size of the section. Except for SHT_NOBITS sections, this is the size of elfSectionData.
-    , elfSectionLink      :: Word32            -- ^ Contains a section index of an associated section, depending on section type.
-    , elfSectionInfo      :: Word32            -- ^ Contains extra information for the index, depending on type.
-    , elfSectionAddrAlign :: Word64            -- ^ Contains the required alignment of the section. Must be a power of two.
-    , elfSectionEntSize   :: Word64            -- ^ Size of entries if section has a table.
-    , elfSectionData      :: B.ByteString      -- ^ The raw data for the section.
-    } deriving (Eq, Show)
-
-elfMagic :: [Word8]
-elfMagic = [0x7f, 0x45, 0x4c, 0x46] -- "\DELELF"
-
-elfSupportedVersion :: Int
-elfSupportedVersion = 1
-
-verifyElfMagic :: Get ()
-verifyElfMagic = do
-    ei_magic <- replicateM 4 getWord8
-    if ei_magic /= elfMagic
-        then fail "Invalid magic number for ELF"
-        else return ()
-
-verifyElfVersion :: Get ()
-verifyElfVersion = do
-    ei_version <- getWord8
-    if ei_version /= 1
-        then fail "Invalid version number for ELF"
-        else return ()
-
-splitBits :: (Num w, FiniteBits w) => w -> [w]
-splitBits w = map (shiftL 1) $ filter (testBit w) $ map (subtract 1) [ 1 .. (finiteBitSize w) ]
-
-elfSectionFlags :: ElfSection -> [ElfSectionFlag]
-elfSectionFlags = map (ElfSectionFlag) . splitBits . elfSectionFlagsW
-
-elfSegmentFlags :: ElfSegment -> [ElfSegmentFlag]
-elfSegmentFlags = map (ElfSegmentFlag) . splitBits . elfSegmentFlagsW
 
 data ElfClass
     = ELFCLASS32 -- ^ 32-bit ELF format
@@ -122,139 +105,384 @@ instance Binary ElfData where
     put ELFDATA2LSB = putWord8 1
     put ELFDATA2MSB = putWord8 2
 
-getElf_Shdr_OffsetSize :: ElfClass -> ElfReader -> Get (Word64, Word64)
-getElf_Shdr_OffsetSize ei_class er =
-    case ei_class of
-        ELFCLASS32 -> do
-            skip 16
-            sh_offset <- liftM fromIntegral $ getWord32 er
-            sh_size   <- liftM fromIntegral $ getWord32 er
-            return (sh_offset, sh_size)
-        ELFCLASS64 -> do
-            skip 24
-            sh_offset <- getWord64 er
-            sh_size   <- getWord64 er
-            return (sh_offset, sh_size)
+data ElfSectionXX (c :: ElfClass) where
+    ElfSection64 ::
+        { s64Name      :: Word32
+        , s64Type      :: ElfSectionType    -- ^ Identifies the type of the section.
+        , s64Flags     :: Word64            -- ^ Identifies the attributes of the section.
+        , s64Addr      :: Word64            -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
+        , s64Offset    :: Word64
+        , s64Size      :: Word64            -- ^ The size of the section. Except for SHT_NOBITS sections, this is the size of elfSectionData.
+        , s64Link      :: Word32            -- ^ Contains a section index of an associated section, depending on section type.
+        , s64Info      :: Word32            -- ^ Contains extra information for the index, depending on type.
+        , s64AddrAlign :: Word64            -- ^ Contains the required alignment of the section. Must be a power of two.
+        , s64EntSize   :: Word64            -- ^ Size of entries if section has a table.
+        } -> ElfSectionXX 'ELFCLASS64
+    ElfSection32 ::
+        { s32Name      :: Word32
+        , s32Type      :: ElfSectionType    -- ^ Identifies the type of the section.
+        , s32Flags     :: Word32            -- ^ Identifies the attributes of the section.
+        , s32Addr      :: Word32            -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
+        , s32Offset    :: Word32
+        , s32Size      :: Word32            -- ^ The size of the section. Except for SHT_NOBITS sections, this is the size of elfSectionData.
+        , s32Link      :: Word32            -- ^ Contains a section index of an associated section, depending on section type.
+        , s32Info      :: Word32            -- ^ Contains extra information for the index, depending on type.
+        , s32AddrAlign :: Word32            -- ^ Contains the required alignment of the section. Must be a power of two.
+        , s32EntSize   :: Word32            -- ^ Size of entries if section has a table.
+        } -> ElfSectionXX 'ELFCLASS32
 
-id32to64 :: Word32 -> Word64
-id32to64 = fromIntegral
+instance Binary (Be (ElfSectionXX 'ELFCLASS64)) where
+    put = undefined
+    get = Be <$> getElfSection64 (getEndian ELFDATA2MSB)
 
-getElf_Shdr :: ElfData -> ElfClass -> ElfReader -> B.ByteString -> B.ByteString -> Get ElfSection
-getElf_Shdr ei_data ei_class er elf_file string_section =
-    case ei_class of
-        ELFCLASS32 -> do
-            sh_name      <- getWord32 er
-            sh_type      <- getWithEndianness ei_data
-            sh_flags     <- id32to64 <$> getWithEndianness ei_data
-            sh_addr      <- getWord32 er
-            sh_offset    <- getWord32 er
-            sh_size      <- getWord32 er
-            sh_link      <- getWord32 er
-            sh_info      <- getWord32 er
-            sh_addralign <- getWord32 er
-            sh_entsize   <- getWord32 er
-            return ElfSection
-                { elfSectionName      = map B.w2c $ B.unpack $ B.takeWhile (/= 0) $ B.drop (fromIntegral sh_name) string_section
-                , elfSectionType      = sh_type
-                , elfSectionFlagsW    = sh_flags
-                , elfSectionAddr      = fromIntegral sh_addr
-                , elfSectionSize      = fromIntegral sh_size
-                , elfSectionLink      = sh_link
-                , elfSectionInfo      = sh_info
-                , elfSectionAddrAlign = fromIntegral sh_addralign
-                , elfSectionEntSize   = fromIntegral sh_entsize
-                , elfSectionData      = B.take (fromIntegral sh_size) $ B.drop (fromIntegral sh_offset) elf_file
-                }
-        ELFCLASS64 -> do
-            sh_name      <- getWord32 er
-            sh_type      <- getWithEndianness ei_data
-            sh_flags     <- getWithEndianness ei_data
-            sh_addr      <- getWord64 er
-            sh_offset    <- getWord64 er
-            sh_size      <- getWord64 er
-            sh_link      <- getWord32 er
-            sh_info      <- getWord32 er
-            sh_addralign <- getWord64 er
-            sh_entsize   <- getWord64 er
-            return ElfSection
-                { elfSectionName      = map B.w2c $ B.unpack $ B.takeWhile (/= 0) $ B.drop (fromIntegral sh_name) string_section
-                , elfSectionType      = sh_type
-                , elfSectionFlagsW    = sh_flags
-                , elfSectionAddr      = sh_addr
-                , elfSectionSize      = sh_size
-                , elfSectionLink      = sh_link
-                , elfSectionInfo      = sh_info
-                , elfSectionAddrAlign = sh_addralign
-                , elfSectionEntSize   = sh_entsize
-                , elfSectionData      = B.take (fromIntegral sh_size) $ B.drop (fromIntegral sh_offset) elf_file
-                }
+instance Binary (Le (ElfSectionXX 'ELFCLASS64)) where
+    put = undefined
+    get = Le <$> getElfSection64 (getEndian ELFDATA2LSB)
 
-data TableInfo = TableInfo { tableOffset :: Int, entrySize :: Int, entryNum :: Int }
+instance Binary (Be (ElfSectionXX 'ELFCLASS32)) where
+    put = undefined
+    get = Be <$> getElfSection32 (getEndian ELFDATA2MSB)
 
-getWithEndianness :: (Binary (Le a), Binary (Be a)) => ElfData -> Get a
-getWithEndianness ELFDATA2LSB = fromLe <$> get
-getWithEndianness ELFDATA2MSB = fromBe <$> get
+instance Binary (Le (ElfSectionXX 'ELFCLASS32)) where
+    put = undefined
+    get = Le <$> getElfSection32 (getEndian ELFDATA2LSB)
 
-getElf_Ehdr :: Get (Elf, TableInfo, TableInfo, Word16)
-getElf_Ehdr = do
-    verifyElfMagic
-    ei_class    <- get
-    ei_data     <- get
-    verifyElfVersion
-    ei_osabi    <- get
-    ei_abiver   <- get
+data ElfSection = forall a . ElfSection Elf (ElfSectionXX a)
+
+data ElfSegmentXX (c :: ElfClass) where
+    ElfSegment64 ::
+        { p64Type     :: ElfSegmentType   -- ^ Segment type
+        , p64Flags    :: Word32           -- ^ Segment flags
+        , p64Offset   :: Word64
+        , p64VirtAddr :: Word64           -- ^ Virtual address for the segment
+        , p64PhysAddr :: Word64           -- ^ Physical address for the segment
+        , p64PileSize :: Word64
+        , p64MemSize  :: Word64           -- ^ Size in memory  (may be larger then the segment's data)
+        , p64Align    :: Word64           -- ^ Segment alignment
+        } -> ElfSegmentXX 'ELFCLASS64
+    ElfSegment32 ::
+        { p32Type     :: ElfSegmentType   -- ^ Segment type
+        , p32Offset   :: Word32
+        , p32VirtAddr :: Word32           -- ^ Virtual address for the segment
+        , p32PhysAddr :: Word32           -- ^ Physical address for the segment
+        , p32FileSize :: Word32
+        , p32MemSize  :: Word32           -- ^ Size in memory  (may be larger then the segment's data)
+        , p32Flags    :: Word32           -- ^ Segment flags
+        , p32Align    :: Word32           -- ^ Segment alignment
+        } -> ElfSegmentXX 'ELFCLASS32
+
+instance Binary (Be (ElfSegmentXX 'ELFCLASS64)) where
+    put = undefined
+    get = Be <$> getElfSegment64 (getEndian ELFDATA2MSB)
+
+instance Binary (Le (ElfSegmentXX 'ELFCLASS64)) where
+    put = undefined
+    get = Le <$> getElfSegment64 (getEndian ELFDATA2LSB)
+
+instance Binary (Be (ElfSegmentXX 'ELFCLASS32)) where
+    put = undefined
+    get = Be <$> getElfSegment32 (getEndian ELFDATA2MSB)
+
+instance Binary (Le (ElfSegmentXX 'ELFCLASS32)) where
+    put = undefined
+    get = Le <$> getElfSegment32 (getEndian ELFDATA2LSB)
+
+data ElfSegment = forall a . ElfSegment Elf (ElfSegmentXX a)
+
+data ElfXX (c :: ElfClass) where
+    Elf64 ::
+        { e64Entry    :: Word64
+        , e64Segments :: [ElfSegmentXX c]
+        , e64Sections :: [ElfSectionXX c]
+        } -> ElfXX 'ELFCLASS64
+    Elf32 ::
+        { e32Entry    :: Word32
+        , e32Segments :: [ElfSegmentXX c]
+        , e32Sections :: [ElfSectionXX c]
+        } -> ElfXX 'ELFCLASS32
+
+-- FIXME: fix this crap
+class ElfXXTools (c :: ElfClass) w | c -> w where
+    mkElfXX :: Proxy c -> w -> [ElfSegmentXX c] -> [ElfSectionXX c] -> ElfXX c
+
+instance ElfXXTools 'ELFCLASS32 Word32 where
+    mkElfXX _ = Elf32
+
+instance ElfXXTools 'ELFCLASS64 Word64 where
+    mkElfXX _ = Elf64
+
+data Elf =
+    forall (c :: ElfClass) . Elf
+        { elfData       :: ElfData       -- ^ Identifies the data encoding of the object file (endianness).
+        , elfOSABI      :: ElfOSABI      -- ^ Identifies the operating system and ABI for which the object is prepared.
+        , elfABIVersion :: Word8         -- ^ Identifies the ABI version for which the object is prepared.
+        , elfType       :: ElfType       -- ^ Identifies the object file type.
+        , elfMachine    :: ElfMachine    -- ^ Identifies the target architecture.
+        , elfFlags      :: Word32
+        , elfShstrndx   :: Word16
+        , elfXX         :: ElfXX c
+        , elfContent    :: B.ByteString
+        }
+
+instance Binary Elf where
+    put = undefined
+    get = getElf
+
+elfSupportedVersion :: Word8
+elfSupportedVersion = 1
+
+elfVersion :: Elf -> Word8
+elfVersion _ = elfSupportedVersion
+
+elfClass :: Elf -> ElfClass
+elfClass (Elf { elfXX = Elf64 {} }) = ELFCLASS64
+elfClass (Elf { elfXX = Elf32 {} }) = ELFCLASS32
+
+elfEntry :: Elf -> Word64
+elfEntry (Elf { elfXX = Elf64 {..} }) = e64Entry
+elfEntry (Elf { elfXX = Elf32 {..} }) = fromIntegral e32Entry
+
+elfSections :: Elf -> [ElfSection]
+elfSections e@(Elf { elfXX = Elf64 {..} }) = fmap (ElfSection e) e64Sections
+elfSections e@(Elf { elfXX = Elf32 {..} }) = fmap (ElfSection e) e32Sections
+
+elfSegments :: Elf -> [ElfSegment]
+elfSegments e@(Elf { elfXX = Elf64 {..} }) = fmap (ElfSegment e) e64Segments
+elfSegments e@(Elf { elfXX = Elf32 {..} }) = fmap (ElfSegment e) e32Segments
+
+at :: (Integral i) => [a] -> i -> Maybe a
+at (x : _)  0             = Just x
+at (_ : xs) n | n > 0     = xs `at` (n - 1)
+              | otherwise = Nothing
+at _        _             = Nothing
+
+getStringSection :: Elf -> Maybe B.ByteString
+getStringSection elf@(Elf {..}) = elfSectionData <$> elfSections elf `at` elfShstrndx
+
+getString :: Elf -> Word32 -> Maybe String
+getString elf offset = C.unpack <$> B.takeWhile (/= 0) <$> B.drop (fromIntegral offset) <$> getStringSection elf
+
+elfSectionName :: ElfSection -> String -- ^ Identifies the name of the section.
+elfSectionName (ElfSection elf (ElfSection64 {..} )) = maybe "" id $ getString elf s64Name
+elfSectionName (ElfSection elf (ElfSection32 {..} )) = maybe "" id $ getString elf s32Name
+
+elfSectionType :: ElfSection -> ElfSectionType -- ^ Identifies the name of the section.
+elfSectionType (ElfSection _ (ElfSection64 {..} )) = s64Type
+elfSectionType (ElfSection _ (ElfSection32 {..} )) = s32Type
+
+elfSectionFlags :: ElfSection -> ElfSectionFlag -- ^ Identifies the attributes of the section.
+elfSectionFlags (ElfSection _ (ElfSection64 {..} )) = ElfSectionFlag s64Flags
+elfSectionFlags (ElfSection _ (ElfSection32 {..} )) = ElfSectionFlag $ fromIntegral s32Flags
+
+elfSectionAddr :: ElfSection -> Word64 -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
+elfSectionAddr (ElfSection _ (ElfSection64 {..} )) = s64Addr
+elfSectionAddr (ElfSection _ (ElfSection32 {..} )) = fromIntegral s32Addr
+
+elfSectionSize :: ElfSection -> Word64 -- ^ The size of the section. Except for SHT_NOBITS sections, this is the size of elfSectionData.
+elfSectionSize (ElfSection _ (ElfSection64 {..} )) = s64Size
+elfSectionSize (ElfSection _ (ElfSection32 {..} )) = fromIntegral s32Size
+
+elfSectionLink :: ElfSection -> Word32 -- ^ Contains a section index of an associated section, depending on section type.
+elfSectionLink (ElfSection _ (ElfSection64 {..} )) = s64Link
+elfSectionLink (ElfSection _ (ElfSection32 {..} )) = s32Link
+
+elfSectionInfo :: ElfSection -> Word32 -- ^ Contains extra information for the index, depending on type.
+elfSectionInfo (ElfSection _ (ElfSection64 {..} )) = s64Info
+elfSectionInfo (ElfSection _ (ElfSection32 {..} )) = s32Info
+
+elfSectionAddrAlign :: ElfSection -> Word64 -- ^ Contains the required alignment of the section. Must be a power of two.
+elfSectionAddrAlign (ElfSection _ (ElfSection64 {..} )) = s64AddrAlign
+elfSectionAddrAlign (ElfSection _ (ElfSection32 {..} )) = fromIntegral s32AddrAlign
+
+elfSectionEntSize :: ElfSection -> Word64 -- ^ Size of entries if section has a table.
+elfSectionEntSize (ElfSection _ (ElfSection64 {..} )) = s64EntSize
+elfSectionEntSize (ElfSection _ (ElfSection32 {..} )) = fromIntegral s32EntSize
+
+-- FIXME: this can fail on 32 bit machine working with 64 bit elfs
+getData :: Elf -> Int -> Int -> B.ByteString
+getData (Elf {..}) o s = B.take s $ B.drop o elfContent
+
+elfSectionData :: ElfSection -> B.ByteString -- ^ The raw data for the section.
+elfSectionData (ElfSection elf (ElfSection64 {..})) = getData elf (fromIntegral s64Offset) (fromIntegral s64Size)
+elfSectionData (ElfSection elf (ElfSection32 {..})) = getData elf (fromIntegral s32Offset) (fromIntegral s32Size)
+
+elfSegmentType :: ElfSegment -> ElfSegmentType -- ^ Segment type
+elfSegmentType (ElfSegment _ (ElfSegment64 {..} )) = p64Type
+elfSegmentType (ElfSegment _ (ElfSegment32 {..} )) = p32Type
+
+elfSegmentFlags :: ElfSegment -> ElfSegmentFlag -- ^ Segment flags
+elfSegmentFlags (ElfSegment _ (ElfSegment64 {..} )) = ElfSegmentFlag p64Flags
+elfSegmentFlags (ElfSegment _ (ElfSegment32 {..} )) = ElfSegmentFlag p32Flags
+
+elfSegmentVirtAddr :: ElfSegment -> Word64 -- ^ Virtual address for the segment
+elfSegmentVirtAddr (ElfSegment _ (ElfSegment64 {..} )) = p64VirtAddr
+elfSegmentVirtAddr (ElfSegment _ (ElfSegment32 {..} )) = fromIntegral p32VirtAddr
+
+elfSegmentPhysAddr :: ElfSegment -> Word64 -- ^ Physical address for the segment
+elfSegmentPhysAddr (ElfSegment _ (ElfSegment64 {..} )) = p64PhysAddr
+elfSegmentPhysAddr (ElfSegment _ (ElfSegment32 {..} )) = fromIntegral p32PhysAddr
+
+elfSegmentAlign :: ElfSegment -> Word64 -- ^ Segment alignment
+elfSegmentAlign (ElfSegment _ (ElfSegment64 {..} )) = p64Align
+elfSegmentAlign (ElfSegment _ (ElfSegment32 {..} )) = fromIntegral p32Align
+
+elfSegmentData :: ElfSegment -> B.ByteString -- ^ Data for the segment
+elfSegmentData (ElfSegment elf (ElfSegment64 {..})) = getData elf (fromIntegral p64Offset) (fromIntegral p64PileSize)
+elfSegmentData (ElfSegment elf (ElfSegment32 {..})) = getData elf (fromIntegral p32Offset) (fromIntegral p32FileSize)
+
+elfSegmentMemSize :: ElfSegment -> Word64 -- ^ Size in memory  (may be larger then the segment's data)
+elfSegmentMemSize (ElfSegment _ (ElfSegment64 {..} )) = p64MemSize
+elfSegmentMemSize (ElfSegment _ (ElfSegment32 {..} )) = fromIntegral p32MemSize
+
+elfMagic :: Word32
+elfMagic = 0x7f454c46 -- "\DELELF"
+
+verify :: (Binary a, Eq a) => String -> a -> Get ()
+verify msg orig = do
+    a <- get
+    when (orig /= a) $ error ("verification failed: " ++ msg)
+
+getTable :: (Binary (Le a), Binary (Be a)) => ElfData -> Word64 -> Word16 -> Word16 -> Get [a]
+getTable endianness offset entrySize entryNumber = lookAhead $ do
+    skip $ fromIntegral offset
+    getTable' entryNumber
+    where
+        getTable' 0 = return []
+        getTable' n = do
+            a <- isolate (fromIntegral entrySize) $ getEndian endianness
+            (a :) <$> getTable' (n - 1)
+
+getEndian :: (Binary (Le a), Binary (Be a)) => ElfData -> Get a
+getEndian ELFDATA2LSB = fromLe <$> get
+getEndian ELFDATA2MSB = fromBe <$> get
+
+getXX :: forall proxy b w . (Integral w,
+                             Num b,
+                             Binary (Le w), Binary (Be w))
+         => proxy w
+         -> ElfData
+         -> Get b
+getXX _ e_data = (fromIntegral :: w -> b) <$> getEndian e_data
+
+getElf' :: forall c w . (ElfXXTools c w,
+                         Integral w,
+                         Binary (Le w), Binary (Be w),
+                         Binary (Le (ElfSegmentXX c)), Binary (Be (ElfSegmentXX c)),
+                         Binary (Le (ElfSectionXX c)), Binary (Be (ElfSectionXX c)))
+        => Proxy (c :: ElfClass)
+        -> B.ByteString
+        -> ElfData
+        -> Get Elf
+getElf' p e_content e_data = do
+
+    let
+        getE :: (Binary (Le a), Binary (Be a)) => Get a
+        getE = getEndian e_data
+
+    verify "version1" elfSupportedVersion
+    e_osabi     <- get
+    e_abiver    <- get
     skip 7
-    er          <- return $ elfReader ei_data
-    e_type      <- getWithEndianness ei_data
-    e_machine   <- getWithEndianness ei_data
-    _           <- getWord32 er
-    case ei_class of
-        ELFCLASS32 -> do
-            e_entry     <- liftM fromIntegral $ getWord32 er
-            e_phoff     <- getWord32 er
-            e_shoff     <- getWord32 er
-            _           <- getWord32 er
-            _           <- getWord16 er
-            e_phentsize <- getWord16 er
-            e_phnum     <- getWord16 er
-            e_shentsize <- getWord16 er
-            e_shnum     <- getWord16 er
-            e_shstrndx  <- getWord16 er
-            return (Elf { elfClass      = ei_class
-                        , elfData       = ei_data
-                        , elfOSABI      = ei_osabi
-                        , elfABIVersion = ei_abiver
-                        , elfType       = e_type
-                        , elfMachine    = e_machine
-                        , elfEntry      = e_entry
-                        , elfSections   = []
-                        , elfSegments   = [] }
-                   , TableInfo { tableOffset = fromIntegral e_phoff, entrySize = fromIntegral e_phentsize, entryNum = fromIntegral e_phnum }
-                   , TableInfo { tableOffset = fromIntegral e_shoff, entrySize = fromIntegral e_shentsize, entryNum = fromIntegral e_shnum }
-                   , e_shstrndx)
-        ELFCLASS64 -> do
-            e_entry     <- getWord64 er
-            e_phoff     <- getWord64 er
-            e_shoff     <- getWord64 er
-            _           <- getWord32 er
-            _           <- getWord16 er
-            e_phentsize <- getWord16 er
-            e_phnum     <- getWord16 er
-            e_shentsize <- getWord16 er
-            e_shnum     <- getWord16 er
-            e_shstrndx  <- getWord16 er
-            return (Elf { elfClass      = ei_class
-                        , elfData       = ei_data
-                        , elfOSABI      = ei_osabi
-                        , elfABIVersion = ei_abiver
-                        , elfType       = e_type
-                        , elfMachine    = e_machine
-                        , elfEntry      = e_entry
-                        , elfSections   = []
-                        , elfSegments   = [] }
-                   , TableInfo { tableOffset = fromIntegral e_phoff, entrySize = fromIntegral e_phentsize, entryNum = fromIntegral e_phnum }
-                   , TableInfo { tableOffset = fromIntegral e_shoff, entrySize = fromIntegral e_shentsize, entryNum = fromIntegral e_shnum }
-                   , e_shstrndx)
+    e_type      <- getE
+    e_machine   <- getE
+
+    e_version2  <- getE
+    when (e_version2 /= (1 :: Word32)) $ error "verification failed: version2"
+
+    e_entry     <- getE
+
+    e_phoff     <- getXX (Proxy :: Proxy w) e_data
+    e_shoff     <- getXX (Proxy :: Proxy w) e_data
+
+    e_flags     <- getE
+
+    (e_ehsize :: Word16) <- getE
+
+    e_phentsize <- getE
+    e_phnum     <- getE
+    e_shentsize <- getE
+    e_shnum     <- getE
+
+    e_shstrndx  <- getE
+
+    hSize <- bytesRead
+    when (hSize /= fromIntegral e_ehsize) $ error "incorrect size of elf header"
+
+    e_xx <- mkElfXX p e_entry <$> getTable e_data (e_phoff - fromIntegral e_ehsize) e_phentsize e_phnum
+                              <*> getTable e_data (e_shoff - fromIntegral e_ehsize) e_shentsize e_shnum
+
+    return $ Elf
+        { elfData = e_data
+        , elfOSABI = e_osabi
+        , elfABIVersion = e_abiver
+        , elfType = e_type
+        , elfMachine = e_machine
+        , elfFlags = e_flags
+        , elfShstrndx = e_shstrndx
+        , elfXX = e_xx
+        , elfContent = e_content
+        }
+
+getElf :: Get Elf
+getElf = do
+
+    -- FIXME: fix this later
+    e_content <- L.toStrict <$> lookAhead getRemainingLazyByteString
+
+    verify "magic" elfMagic
+    e_class    <- get
+    e_data     <- get
+
+    (case e_class of
+        ELFCLASS32 -> getElf' (Proxy :: Proxy 'ELFCLASS32)
+        ELFCLASS64 -> getElf' (Proxy :: Proxy 'ELFCLASS64)) e_content e_data
+
+getElfSection64 :: (forall a . (Binary (Le a), Binary (Be a)) => Get a) -> Get (ElfSectionXX 'ELFCLASS64)
+getElfSection64 getE = ElfSection64 <$> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+
+getElfSection32 :: (forall a . (Binary (Le a), Binary (Be a)) => Get a) -> Get (ElfSectionXX 'ELFCLASS32)
+getElfSection32 getE = ElfSection32 <$> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+
+getElfSegment64 :: (forall a . (Binary (Le a), Binary (Be a)) => Get a) -> Get (ElfSegmentXX 'ELFCLASS64)
+getElfSegment64 getE = ElfSegment64 <$> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+
+getElfSegment32 :: (forall a . (Binary (Le a), Binary (Be a)) => Get a) -> Get (ElfSegmentXX 'ELFCLASS32)
+getElfSegment32 getE = ElfSegment32 <$> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+                                    <*> getE
+
+splitBits :: (Num w, FiniteBits w) => w -> [w]
+splitBits w = map (shiftL 1) $ filter (testBit w) $ map (subtract 1) [ 1 .. (finiteBitSize w) ]
 
 data ElfReader = ElfReader
     { getWord16 :: Get Word16
@@ -266,76 +494,11 @@ elfReader :: ElfData -> ElfReader
 elfReader ELFDATA2LSB = ElfReader { getWord16 = getWord16le, getWord32 = getWord32le, getWord64 = getWord64le }
 elfReader ELFDATA2MSB = ElfReader { getWord16 = getWord16be, getWord32 = getWord32be, getWord64 = getWord64be }
 
-divide :: B.ByteString -> Int -> Int -> [B.ByteString]
-divide  _ _ 0 = []
-divide bs s n = let (x,y) = B.splitAt s bs in x : divide y s (n-1)
-
 -- | Parses a ByteString into an Elf record. Parse failures call error. 32-bit ELF objects have their
 -- fields promoted to 64-bit so that the 32- and 64-bit ELF records can be the same.
+{- FIXME: # DEPRECATED parseElf "Use decodeFile from Data.Binary instead" #-}
 parseElf :: B.ByteString -> Elf
-parseElf b =
-    let ph                                             = table segTab
-        sh                                             = table secTab
-        (shstroff, shstrsize)                          = parseEntry getElf_Shdr_OffsetSize $ head $ drop (fromIntegral e_shstrndx) sh
-        sh_str                                         = B.take (fromIntegral shstrsize) $ B.drop (fromIntegral shstroff) b
-        segments                                       = map (parseEntry (\c r -> parseElfSegmentEntry (elfData e) c r b)) ph
-        sections                                       = map (parseEntry (\c r -> getElf_Shdr (elfData e) c r b sh_str)) sh
-    in e { elfSections = sections, elfSegments = segments }
-
-  where table i                         = divide (B.drop (tableOffset i) b) (entrySize i) (entryNum i)
-        parseEntry p x                  = runGet (p (elfClass e) (elfReader (elfData e))) (L.fromChunks [x])
-        (e, segTab, secTab, e_shstrndx) = runGet getElf_Ehdr $ L.fromChunks [b]
-
-
-data ElfSegment = ElfSegment
-  { elfSegmentType      :: ElfSegmentType   -- ^ Segment type
-  , elfSegmentFlagsW    :: Word32           -- ^ Segment flags
-  , elfSegmentVirtAddr  :: Word64           -- ^ Virtual address for the segment
-  , elfSegmentPhysAddr  :: Word64           -- ^ Physical address for the segment
-  , elfSegmentAlign     :: Word64           -- ^ Segment alignment
-  , elfSegmentData      :: B.ByteString     -- ^ Data for the segment
-  , elfSegmentMemSize   :: Word64           -- ^ Size in memory  (may be larger then the segment's data)
-  } deriving (Eq,Show)
-
-parseElfSegmentEntry :: ElfData -> ElfClass -> ElfReader -> B.ByteString -> Get ElfSegment
-parseElfSegmentEntry ei_data elf_class er elf_file = case elf_class of
-  ELFCLASS64 -> do
-     p_type   <- getWithEndianness ei_data
-     p_flags  <- getWithEndianness ei_data
-     p_offset <- getWord64 er
-     p_vaddr  <- getWord64 er
-     p_paddr  <- getWord64 er
-     p_filesz <- getWord64 er
-     p_memsz  <- getWord64 er
-     p_align  <- getWord64 er
-     return ElfSegment
-       { elfSegmentType     = p_type
-       , elfSegmentFlagsW   = p_flags
-       , elfSegmentVirtAddr = p_vaddr
-       , elfSegmentPhysAddr = p_paddr
-       , elfSegmentAlign    = p_align
-       , elfSegmentData     = B.take (fromIntegral p_filesz) $ B.drop (fromIntegral p_offset) elf_file
-       , elfSegmentMemSize  = p_memsz
-       }
-
-  ELFCLASS32 -> do
-     p_type   <- getWithEndianness ei_data
-     p_offset <- fromIntegral `fmap` getWord32 er
-     p_vaddr  <- fromIntegral `fmap` getWord32 er
-     p_paddr  <- fromIntegral `fmap` getWord32 er
-     p_filesz <- fromIntegral `fmap` getWord32 er
-     p_memsz  <- fromIntegral `fmap` getWord32 er
-     p_flags  <- getWithEndianness ei_data
-     p_align  <- fromIntegral `fmap` getWord32 er
-     return ElfSegment
-       { elfSegmentType     = p_type
-       , elfSegmentFlagsW   = p_flags
-       , elfSegmentVirtAddr = p_vaddr
-       , elfSegmentPhysAddr = p_paddr
-       , elfSegmentAlign    = p_align
-       , elfSegmentData     = B.take p_filesz $ B.drop p_offset elf_file
-       , elfSegmentMemSize  = p_memsz
-       }
+parseElf b = decode $ L.fromChunks [b]
 
 -- | The symbol table entries consist of index information to be read from other
 -- parts of the ELF file. Some of this information is automatically retrieved
@@ -343,7 +506,7 @@ parseElfSegmentEntry ei_data elf_class er elf_file = case elf_class of
 -- section, and definition).
 data ElfSymbolTableEntry = EST
     { steName             :: (Word32,Maybe B.ByteString)
-    , steEnclosingSection :: Maybe ElfSection -- ^ Section from steIndex
+--    , steEnclosingSection :: Maybe ElfSection -- ^ Section from steIndex
     , steType             :: ElfSymbolType
     , steBind             :: ElfSymbolBinding
     , steOther            :: Word8
@@ -390,18 +553,17 @@ dropHeadChunk lbs =
     (L.Chunk _ lbs') -> lbs'
     _ -> L.Empty
 
-
 -- | Use the symbol offset and size to extract its definition
 -- (in the form of a ByteString).
 -- If the size is zero, or the offset larger than the 'elfSectionData',
 -- then 'Nothing' is returned.
-findSymbolDefinition :: ElfSymbolTableEntry -> Maybe B.ByteString
-findSymbolDefinition e = steEnclosingSection e >>= \enclosingSection ->
-    let enclosingData = elfSectionData enclosingSection
-        start = (fromIntegral (steValue e)) - (fromIntegral (elfSectionAddr enclosingSection))
-        len = fromIntegral (steSize e)
-        def = (B.take len . B.drop start) enclosingData
-    in if B.null def then Nothing else Just def
+-- findSymbolDefinition :: ElfSymbolTableEntry -> Maybe B.ByteString
+-- findSymbolDefinition e = steEnclosingSection e >>= \enclosingSection ->
+--     let enclosingData = elfSectionData enclosingSection
+--         start = (fromIntegral (steValue e)) - (fromIntegral (elfSectionAddr enclosingSection))
+--         len = fromIntegral (steSize e)
+--         def = (B.take len . B.drop start) enclosingData
+--     in if B.null def then Nothing else Just def
 
 symbolTableSections :: Elf -> [ElfSection]
 symbolTableSections e = filter ((`elem` [SHT_SYMTAB, SHT_DYNSYM]) . elfSectionType) (elfSections e)
@@ -422,8 +584,8 @@ getSymbolTableEntry e strtlb =
     sTlbIdx <- liftM (toEnum . fromIntegral) (getWord16 er)
     let name = stringByIndex nameIdx strs
         (typ,bind) = infoToTypeAndBind info
-        sec = sectionByIndex e sTlbIdx
-    return $ EST (nameIdx,name) sec typ bind other sTlbIdx value size
+        -- sec = sectionByIndex e sTlbIdx
+    return $ EST (nameIdx,name) typ bind other sTlbIdx value size
   getSymbolTableEntry64 = do
     nameIdx <- liftM fromIntegral (getWord32 er)
     info <- getWord8
@@ -433,12 +595,8 @@ getSymbolTableEntry e strtlb =
     size <- getWord64 er
     let name = stringByIndex nameIdx strs
         (typ,bind) = infoToTypeAndBind info
-        sec = sectionByIndex e sTlbIdx
-    return $ EST (nameIdx,name) sec typ bind other sTlbIdx symVal size
-
-sectionByIndex :: Elf -> ElfSectionIndex -> Maybe ElfSection
-sectionByIndex e (SHNIndex i) = lookup i . zip [0..] $ elfSections e
-sectionByIndex _ _ = Nothing
+        -- sec = sectionByIndex e sTlbIdx
+    return $ EST (nameIdx,name) typ bind other sTlbIdx symVal size
 
 infoToTypeAndBind :: Word8 -> (ElfSymbolType,ElfSymbolBinding)
 infoToTypeAndBind i =
@@ -549,9 +707,9 @@ instance Enum ElfSectionIndex where
         | x < fromEnum SHNLoProc || x > 0xFFFF = SHNIndex (fromIntegral x)
         | otherwise = error "Section index number is in a reserved range but we don't recognize the value from any standard."
 
--- | Given a section name, extract the ElfSection.
-findSectionByName :: String -> Elf -> Maybe ElfSection
-findSectionByName name = listToMaybe . filter ((==) name . elfSectionName) . elfSections
+-- -- | Given a section name, extract the ElfSection.
+-- findSectionByName :: String -> Elf -> Maybe ElfSection
+-- findSectionByName name = listToMaybe . filter ((==) name . elfSectionName) . elfSections
 
 -- Get a string from a strtab ByteString.
 stringByIndex :: Integral n => n -> B.ByteString -> Maybe B.ByteString

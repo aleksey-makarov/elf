@@ -37,7 +37,12 @@ mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameStr
                 []
                 Nothing
                 (normalC typeName [ bangType (bang noSourceUnpackedness noSourceStrictness) baseTypeT ])
-                [ derivClause Nothing [ conT (mkName "Eq") ] ]
+                [ derivClause Nothing [ conT (mkName "Eq")
+                                      , conT (mkName "Num")
+                                      , conT (mkName "Bits")
+                                      , conT (mkName "FiniteBits")
+                                      ]
+                ]
 
     let
         mkShowClause (s, n) =
