@@ -221,14 +221,18 @@ data ElfSegment = forall a . ElfSegment (ElfSegmentXX a)
 data ElfXX (c :: ElfClass) where
     Elf64 ::
         { elf64Entry    :: Word64
-        , elf64Segments :: [ElfSegmentXX c]
-        , elf64Sections :: [ElfSectionXX c]
+        -- , elf64Segments :: [ElfSegmentXX c]
+        -- , elf64Sections :: [ElfSectionXX c]
+        , elf64Segments :: [ElfSegmentXX 'ELFCLASS64]
+        , elf64Sections :: [ElfSectionXX 'ELFCLASS64]
         } -> ElfXX 'ELFCLASS64
     Elf32 ::
         { elf32Entry    :: Word32
-        , elf32Segments :: [ElfSegmentXX c]
-        , elf32Sections :: [ElfSectionXX c]
-        } -> ElfXX 'ELFCLASS64
+        -- , elf32Segments :: [ElfSegmentXX c]
+        -- , elf32Sections :: [ElfSectionXX c]
+        , elf32Segments :: [ElfSegmentXX 'ELFCLASS32]
+        , elf32Sections :: [ElfSectionXX 'ELFCLASS32]
+        } -> ElfXX 'ELFCLASS32
 
 data Elf =
     forall (c :: ElfClass) . Elf
@@ -355,26 +359,39 @@ getEndian :: (Binary (Le a), Binary (Be a)) => ElfData -> Get a
 getEndian ELFDATA2LSB = fromLe <$> get
 getEndian ELFDATA2MSB = fromBe <$> get
 
-getElf :: Get Elf
-getElf = do
-    verify "magic" elfMagic
-    ei_class    <- get
-    ei_data     <- get
+class ElfXXTools (c :: ElfClass) where
+    type WordXX c :: *
+    mkElfXX :: Proxy c -> WordXX c -> [ElfSegmentXX c] -> [ElfSectionXX c] -> ElfXX c
+
+instance ElfXXTools ELFCLASS32 where
+    type WordXX ELFCLASS32 = Word32
+    mkElfXX _ = Elf32
+
+instance ElfXXTools ELFCLASS64 where
+    type WordXX ELFCLASS64 = Word64
+    mkElfXX _ = Elf64
+
+getElf' :: forall c . (ElfXXTools c,
+                       Binary (Le (WordXX c)), Binary (Be (WordXX c)),
+                       Binary (Le (ElfSegmentXX c)), Binary (Be (ElfSegmentXX c)),
+                       Binary (Le (ElfSectionXX c)), Binary (Be (ElfSectionXX c))) =>
+    Proxy (c :: ElfClass) -> ElfClass -> ElfData -> Get Elf
+getElf' p e_class e_data = do
 
     let
         getE :: (Binary (Le a), Binary (Be a)) => Get a
-        getE = getEndian ei_data
+        getE = getEndian e_data
 
         fromW32 :: Num b => Word32 -> b
         fromW32 = fromIntegral
 
-        get64_32 = case ei_class of
+        get64_32 = case e_class of
             ELFCLASS32 -> fromW32 <$> getE
             ELFCLASS64 ->             getE
 
     verify "version1" elfSupportedVersion
-    ei_osabi    <- get
-    ei_abiver   <- get
+    e_osabi     <- get
+    e_abiver    <- get
     skip 7
     e_type      <- getE
     e_machine   <- getE
@@ -382,7 +399,7 @@ getElf = do
     e_version2  <- getE
     when (e_version2 /= (1 :: Word32)) $ error "verification failed: version2"
 
-    e_xx_pctor  <- case ei_class of { ELFCLASS64 -> Elf64 ; ELFCLASS32 -> Elf32 } <$> getE
+    e_entry     <- getE
 
     e_phoff     <- get64_32
     e_shoff     <- get64_32
@@ -401,15 +418,16 @@ getElf = do
     hSize <- bytesRead
     when (hSize /= fromIntegral (e_ehsize :: Word16)) $ error "incorrect size of elf header"
 
-    e_xx <- e_xx_pctor <*> getTable ei_data (e_phoff - fromIntegral e_ehsize) e_phentsize e_phnum
-                       <*> getTable ei_data (e_shoff - fromIntegral e_ehsize) e_shentsize e_shnum
+    -- e_xx :: ElfXX c
+    e_xx <- mkElfXX p e_entry <$> getTable e_data (e_phoff - fromIntegral e_ehsize) e_phentsize e_phnum
+                              <*> getTable e_data (e_shoff - fromIntegral e_ehsize) e_shentsize e_shnum
 
     e_content <- L.toStrict <$> getRemainingLazyByteString
 
     return $ Elf
-        { elfData = ei_data
-        , elfOSABI = ei_osabi
-        , elfABIVersion = ei_abiver
+        { elfData = e_data
+        , elfOSABI = e_osabi
+        , elfABIVersion = e_abiver
         , elfType = e_type
         , elfMachine = e_machine
         , elfFlags = e_flags
@@ -417,6 +435,15 @@ getElf = do
         , elfXX = e_xx
         , elfContent = e_content
         }
+
+getElf :: Get Elf
+getElf = do
+
+    verify "magic" elfMagic
+    e_class    <- get
+    e_data     <- get
+
+    (case e_class of { ELFCLASS32 -> getElf' (Proxy :: Proxy 'ELFCLASS32) ; ELFCLASS64 -> getElf' (Proxy :: Proxy 'ELFCLASS64) }) e_class e_data
 
 getElfSection64 :: (forall a . (Binary (Le a), Binary (Be a)) => Get a) -> Get (ElfSectionXX 'ELFCLASS64)
 getElfSection64 getE = ElfSection64 <$> getE
