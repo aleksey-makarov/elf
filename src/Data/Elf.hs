@@ -443,7 +443,9 @@ getElf = do
     e_class    <- get
     e_data     <- get
 
-    (case e_class of { ELFCLASS32 -> getElf' (Proxy :: Proxy 'ELFCLASS32) ; ELFCLASS64 -> getElf' (Proxy :: Proxy 'ELFCLASS64) }) e_class e_data
+    (case e_class of
+        ELFCLASS32 -> getElf' (Proxy :: Proxy 'ELFCLASS32)
+        ELFCLASS64 -> getElf' (Proxy :: Proxy 'ELFCLASS64)) e_class e_data
 
 getElfSection64 :: (forall a . (Binary (Le a), Binary (Be a)) => Get a) -> Get (ElfSectionXX 'ELFCLASS64)
 getElfSection64 getE = ElfSection64 <$> getE
