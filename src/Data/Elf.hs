@@ -1,8 +1,10 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -359,35 +361,36 @@ getEndian :: (Binary (Le a), Binary (Be a)) => ElfData -> Get a
 getEndian ELFDATA2LSB = fromLe <$> get
 getEndian ELFDATA2MSB = fromBe <$> get
 
-class ElfXXTools (c :: ElfClass) where
-    type WordXX c :: *
-    mkElfXX :: Proxy c -> WordXX c -> [ElfSegmentXX c] -> [ElfSectionXX c] -> ElfXX c
+class ElfXXTools (c :: ElfClass) w | c -> w where
+    mkElfXX :: Proxy c -> w -> [ElfSegmentXX c] -> [ElfSectionXX c] -> ElfXX c
 
-instance ElfXXTools ELFCLASS32 where
-    type WordXX ELFCLASS32 = Word32
+instance ElfXXTools ELFCLASS32 Word32 where
     mkElfXX _ = Elf32
 
-instance ElfXXTools ELFCLASS64 where
-    type WordXX ELFCLASS64 = Word64
+instance ElfXXTools ELFCLASS64 Word64 where
     mkElfXX _ = Elf64
 
-getElf' :: forall c . (ElfXXTools c,
-                       Binary (Le (WordXX c)), Binary (Be (WordXX c)),
-                       Binary (Le (ElfSegmentXX c)), Binary (Be (ElfSegmentXX c)),
-                       Binary (Le (ElfSectionXX c)), Binary (Be (ElfSectionXX c))) =>
-    Proxy (c :: ElfClass) -> ElfClass -> ElfData -> Get Elf
-getElf' p e_class e_data = do
+getXX :: forall proxy b w . (Integral w,
+                             Num b,
+                             Binary (Le w), Binary (Be w))
+         => proxy w
+         -> ElfData
+         -> Get b
+getXX p e_data = fromIntegral . (id :: w -> w) <$> getEndian e_data
+
+getElf' :: forall c w . (ElfXXTools c w,
+                         Integral w,
+                         Binary (Le w), Binary (Be w),
+                         Binary (Le (ElfSegmentXX c)), Binary (Be (ElfSegmentXX c)),
+                         Binary (Le (ElfSectionXX c)), Binary (Be (ElfSectionXX c)))
+        => Proxy (c :: ElfClass)
+        -> ElfData
+        -> Get Elf
+getElf' p e_data = do
 
     let
         getE :: (Binary (Le a), Binary (Be a)) => Get a
         getE = getEndian e_data
-
-        fromW32 :: Num b => Word32 -> b
-        fromW32 = fromIntegral
-
-        get64_32 = case e_class of
-            ELFCLASS32 -> fromW32 <$> getE
-            ELFCLASS64 ->             getE
 
     verify "version1" elfSupportedVersion
     e_osabi     <- get
@@ -401,8 +404,8 @@ getElf' p e_class e_data = do
 
     e_entry     <- getE
 
-    e_phoff     <- get64_32
-    e_shoff     <- get64_32
+    e_phoff     <- getXX (Proxy :: Proxy w) e_data
+    e_shoff     <- getXX (Proxy :: Proxy w) e_data
 
     e_flags     <- getE
 
@@ -445,7 +448,7 @@ getElf = do
 
     (case e_class of
         ELFCLASS32 -> getElf' (Proxy :: Proxy 'ELFCLASS32)
-        ELFCLASS64 -> getElf' (Proxy :: Proxy 'ELFCLASS64)) e_class e_data
+        ELFCLASS64 -> getElf' (Proxy :: Proxy 'ELFCLASS64)) e_data
 
 getElfSection64 :: (forall a . (Binary (Le a), Binary (Be a)) => Get a) -> Get (ElfSectionXX 'ELFCLASS64)
 getElfSection64 getE = ElfSection64 <$> getE
