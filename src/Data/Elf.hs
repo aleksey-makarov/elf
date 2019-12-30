@@ -376,7 +376,7 @@ getXX :: forall proxy b w . (Integral w,
          => proxy w
          -> ElfData
          -> Get b
-getXX p e_data = fromIntegral . (id :: w -> w) <$> getEndian e_data
+getXX _ e_data = (fromIntegral :: w -> b) <$> getEndian e_data
 
 getElf' :: forall c w . (ElfXXTools c w,
                          Integral w,
