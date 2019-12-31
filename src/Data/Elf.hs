@@ -223,18 +223,23 @@ data ElfSegment = forall a . ElfSegment (ElfSegmentXX a)
 data ElfXX (c :: ElfClass) where
     Elf64 ::
         { elf64Entry    :: Word64
-        -- , elf64Segments :: [ElfSegmentXX c]
-        -- , elf64Sections :: [ElfSectionXX c]
-        , elf64Segments :: [ElfSegmentXX 'ELFCLASS64]
-        , elf64Sections :: [ElfSectionXX 'ELFCLASS64]
+        , elf64Segments :: [ElfSegmentXX c]
+        , elf64Sections :: [ElfSectionXX c]
         } -> ElfXX 'ELFCLASS64
     Elf32 ::
         { elf32Entry    :: Word32
-        -- , elf32Segments :: [ElfSegmentXX c]
-        -- , elf32Sections :: [ElfSectionXX c]
-        , elf32Segments :: [ElfSegmentXX 'ELFCLASS32]
-        , elf32Sections :: [ElfSectionXX 'ELFCLASS32]
+        , elf32Segments :: [ElfSegmentXX c]
+        , elf32Sections :: [ElfSectionXX c]
         } -> ElfXX 'ELFCLASS32
+
+class ElfXXTools (c :: ElfClass) w | c -> w where
+    mkElfXX :: Proxy c -> w -> [ElfSegmentXX c] -> [ElfSectionXX c] -> ElfXX c
+
+instance ElfXXTools ELFCLASS32 Word32 where
+    mkElfXX _ = Elf32
+
+instance ElfXXTools ELFCLASS64 Word64 where
+    mkElfXX _ = Elf64
 
 data Elf =
     forall (c :: ElfClass) . Elf
@@ -360,15 +365,6 @@ getTable endianness offset entrySize entryNumber = lookAhead $ do
 getEndian :: (Binary (Le a), Binary (Be a)) => ElfData -> Get a
 getEndian ELFDATA2LSB = fromLe <$> get
 getEndian ELFDATA2MSB = fromBe <$> get
-
-class ElfXXTools (c :: ElfClass) w | c -> w where
-    mkElfXX :: Proxy c -> w -> [ElfSegmentXX c] -> [ElfSectionXX c] -> ElfXX c
-
-instance ElfXXTools ELFCLASS32 Word32 where
-    mkElfXX _ = Elf32
-
-instance ElfXXTools ELFCLASS64 Word64 where
-    mkElfXX _ = Elf64
 
 getXX :: forall proxy b w . (Integral w,
                              Num b,
