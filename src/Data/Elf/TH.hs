@@ -1,7 +1,9 @@
 {-# OPTIONS_GHC -Wall -fwarn-tabs #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module Data.Elf.TH (mkDeclarations, BaseWord(..)) where
+module Data.Elf.TH ( mkDeclarations
+                   , BaseWord(..)
+                   ) where
 
 import Control.Monad
 import Language.Haskell.TH
@@ -13,8 +15,8 @@ newNamePE s = do
     n <- newName s
     return (varP n, varE n)
 
-mkDeclarations :: BaseWord -> String -> String -> String -> Bool -> [(String, Integer)] -> Q [Dec]
-mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameString binaryInstanceIsRequired enums = do
+mkDeclarations :: BaseWord -> String -> String -> String -> [(String, Integer)] -> Q [Dec]
+mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameString enums = do
 
     let typeName = mkName typeNameString
     let patternName s = mkName (patternPrefixString ++ s)
@@ -147,4 +149,4 @@ mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameStr
 
     let patterns = (join $ map mkPatterns enums) ++ [ defaultPatternSig, defaultPatternDef ]
 
-    sequence $ newTypeDef : showInstance : (patterns ++ if binaryInstanceIsRequired then binaryInstances else [])
+    sequence $ newTypeDef : showInstance : patterns ++ binaryInstances
