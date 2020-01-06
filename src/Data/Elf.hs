@@ -47,6 +47,7 @@ module Data.Elf ( ElfClass(..)
                 , elfSegmentData
                 , elfSegmentMemSize
 
+                , parseElf
 {-
                   parseSymbolTables
                 , findSymbolDefinition
@@ -232,6 +233,7 @@ data ElfXX (c :: ElfClass) where
         , elf32Sections :: [ElfSectionXX c]
         } -> ElfXX 'ELFCLASS32
 
+-- FIXME: fix this crap
 class ElfXXTools (c :: ElfClass) w | c -> w where
     mkElfXX :: Proxy c -> w -> [ElfSegmentXX c] -> [ElfSectionXX c] -> ElfXX c
 
@@ -490,9 +492,8 @@ getElfSegment32 getE = ElfSegment32 <$> getE
                                     <*> getE
                                     <*> getE
 
-{-
-splitBits :: (Num w, FiniteBits w) => w -> [w]
-splitBits w = map (shiftL 1) $ filter (testBit w) $ map (subtract 1) [ 1 .. (finiteBitSize w) ]
+-- splitBits :: (Num w, FiniteBits w) => w -> [w]
+-- splitBits w = map (shiftL 1) $ filter (testBit w) $ map (subtract 1) [ 1 .. (finiteBitSize w) ]
 
 -- getElf_Shdr_OffsetSize :: ElfClass -> ElfReader -> Get (Word64, Word64)
 -- getElf_Shdr_OffsetSize ei_class er =
@@ -621,24 +622,24 @@ splitBits w = map (shiftL 1) $ filter (testBit w) $ map (subtract 1) [ 1 .. (fin
 --                    , TableInfo { tableOffset = fromIntegral e_shoff, entrySize = fromIntegral e_shentsize, entryNum = fromIntegral e_shnum }
 --                    , e_shstrndx)
 
-data ElfReader = ElfReader
-    { getWord16 :: Get Word16
-    , getWord32 :: Get Word32
-    , getWord64 :: Get Word64
-    }
+-- data ElfReader = ElfReader
+--     { getWord16 :: Get Word16
+--     , getWord32 :: Get Word32
+--     , getWord64 :: Get Word64
+--     }
 
-elfReader :: ElfData -> ElfReader
-elfReader ELFDATA2LSB = ElfReader { getWord16 = getWord16le, getWord32 = getWord32le, getWord64 = getWord64le }
-elfReader ELFDATA2MSB = ElfReader { getWord16 = getWord16be, getWord32 = getWord32be, getWord64 = getWord64be }
+-- elfReader :: ElfData -> ElfReader
+-- elfReader ELFDATA2LSB = ElfReader { getWord16 = getWord16le, getWord32 = getWord32le, getWord64 = getWord64le }
+-- elfReader ELFDATA2MSB = ElfReader { getWord16 = getWord16be, getWord32 = getWord32be, getWord64 = getWord64be }
 
 -- divide :: B.ByteString -> Int -> Int -> [B.ByteString]
 -- divide  _ _ 0 = []
 -- divide bs s n = let (x,y) = B.splitAt s bs in x : divide y s (n-1)
 
--- -- | Parses a ByteString into an Elf record. Parse failures call error. 32-bit ELF objects have their
--- -- fields promoted to 64-bit so that the 32- and 64-bit ELF records can be the same.
--- parseElf :: B.ByteString -> Elf
--- parseElf b =
+-- | Parses a ByteString into an Elf record. Parse failures call error. 32-bit ELF objects have their
+-- fields promoted to 64-bit so that the 32- and 64-bit ELF records can be the same.
+parseElf :: B.ByteString -> Elf
+parseElf b = decode $ L.fromChunks [b]
 --     let ph                                             = table segTab
 --         sh                                             = table secTab
 --         (shstroff, shstrsize)                          = parseEntry getElf_Shdr_OffsetSize $ head $ drop (fromIntegral e_shstrndx) sh
@@ -650,10 +651,6 @@ elfReader ELFDATA2MSB = ElfReader { getWord16 = getWord16be, getWord32 = getWord
 --   where table i                         = divide (B.drop (tableOffset i) b) (entrySize i) (entryNum i)
 --         parseEntry p x                  = runGet (p (elfClass e) (elfReader (elfData e))) (L.fromChunks [x])
 --         (e, segTab, secTab, e_shstrndx) = runGet getElf_Ehdr $ L.fromChunks [b]
-
-
-
-
 
 -- parseElfSegmentEntry :: ElfData -> ElfClass -> ElfReader -> B.ByteString -> Get ElfSegment
 -- parseElfSegmentEntry ei_data elf_class er elf_file = case elf_class of
@@ -675,7 +672,7 @@ elfReader ELFDATA2MSB = ElfReader { getWord16 = getWord16be, getWord32 = getWord
 --        , elfSegmentData     = B.take (fromIntegral p_filesz) $ B.drop (fromIntegral p_offset) elf_file
 --        , elfSegmentMemSize  = p_memsz
 --        }
--- 
+
 --   ELFCLASS32 -> do
 --      p_type   <- getE ei_data
 --      p_offset <- fromIntegral `fmap` getWord32 er
@@ -695,6 +692,7 @@ elfReader ELFDATA2MSB = ElfReader { getWord16 = getWord16be, getWord32 = getWord
 --        , elfSegmentMemSize  = p_memsz
 --        }
 
+{-
 -- | The symbol table entries consist of index information to be read from other
 -- parts of the ELF file. Some of this information is automatically retrieved
 -- for your convenience (including symbol name, description of the enclosing
