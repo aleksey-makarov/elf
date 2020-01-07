@@ -48,6 +48,7 @@ module Data.Elf ( ElfClass(..)
                 , elfSegmentMemSize
 
                 , parseElf
+                , splitBits
 {-
                   parseSymbolTables
                 , findSymbolDefinition
@@ -289,9 +290,9 @@ elfSectionType :: ElfSection -> ElfSectionType -- ^ Identifies the name of the s
 elfSectionType (ElfSection (ElfSection64 { elf64SectionType = t } )) = t
 elfSectionType (ElfSection (ElfSection32 { elf32SectionType = t } )) = t
 
-elfSectionFlags :: ElfSection -> Word64 -- ^ Identifies the attributes of the section.
-elfSectionFlags (ElfSection (ElfSection64 { elf64SectionFlags = f } )) = f
-elfSectionFlags (ElfSection (ElfSection32 { elf32SectionFlags = f } )) = fromIntegral f
+elfSectionFlags :: ElfSection -> ElfSectionFlag -- ^ Identifies the attributes of the section.
+elfSectionFlags (ElfSection (ElfSection64 { elf64SectionFlags = f } )) = ElfSectionFlag f
+elfSectionFlags (ElfSection (ElfSection32 { elf32SectionFlags = f } )) = ElfSectionFlag $ fromIntegral f
 
 elfSectionAddr :: ElfSection -> Word64 -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
 elfSectionAddr (ElfSection (ElfSection64 { elf64SectionAddr = a } )) = a
@@ -324,9 +325,9 @@ elfSegmentType :: ElfSegment -> ElfSegmentType -- ^ Segment type
 elfSegmentType (ElfSegment (ElfSegment64 { elf64SegmentType = a } )) = a
 elfSegmentType (ElfSegment (ElfSegment32 { elf32SegmentType = a } )) = a
 
-elfSegmentFlags :: ElfSegment -> Word32 -- ^ Segment flags
-elfSegmentFlags (ElfSegment (ElfSegment64 { elf64SegmentFlags = a } )) = a
-elfSegmentFlags (ElfSegment (ElfSegment32 { elf32SegmentFlags = a } )) = a
+elfSegmentFlags :: ElfSegment -> ElfSegmentFlag -- ^ Segment flags
+elfSegmentFlags (ElfSegment (ElfSegment64 { elf64SegmentFlags = a } )) = ElfSegmentFlag a
+elfSegmentFlags (ElfSegment (ElfSegment32 { elf32SegmentFlags = a } )) = ElfSegmentFlag a
 
 elfSegmentVirtAddr :: ElfSegment -> Word64 -- ^ Virtual address for the segment
 elfSegmentVirtAddr (ElfSegment (ElfSegment64 { elf64SegmentVirtAddr = a } )) = a
@@ -492,8 +493,8 @@ getElfSegment32 getE = ElfSegment32 <$> getE
                                     <*> getE
                                     <*> getE
 
--- splitBits :: (Num w, FiniteBits w) => w -> [w]
--- splitBits w = map (shiftL 1) $ filter (testBit w) $ map (subtract 1) [ 1 .. (finiteBitSize w) ]
+splitBits :: (Num w, FiniteBits w) => w -> [w]
+splitBits w = map (shiftL 1) $ filter (testBit w) $ map (subtract 1) [ 1 .. (finiteBitSize w) ]
 
 -- getElf_Shdr_OffsetSize :: ElfClass -> ElfReader -> Get (Word64, Word64)
 -- getElf_Shdr_OffsetSize ei_class er =
