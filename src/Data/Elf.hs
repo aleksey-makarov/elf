@@ -702,14 +702,14 @@ parseElf b = decode $ L.fromChunks [b]
 -- section, and definition).
 data ElfSymbolTableEntry = EST
     { steName             :: (Word32,Maybe B.ByteString)
-    , steEnclosingSection :: Maybe ElfSection -- ^ Section from steIndex
+--    , steEnclosingSection :: Maybe ElfSection -- ^ Section from steIndex
     , steType             :: ElfSymbolType
     , steBind             :: ElfSymbolBinding
     , steOther            :: Word8
     , steIndex            :: ElfSectionIndex  -- ^ Section in which the def is held
     , steValue            :: Word64
     , steSize             :: Word64
-    } -- deriving (Eq, Show)
+    } deriving (Eq, Show)
 
 -- | Parse the symbol table section into a list of symbol table entries. If
 -- no symbol table is found then an empty list is returned.
@@ -753,13 +753,13 @@ dropHeadChunk lbs =
 -- (in the form of a ByteString).
 -- If the size is zero, or the offset larger than the 'elfSectionData',
 -- then 'Nothing' is returned.
-findSymbolDefinition :: ElfSymbolTableEntry -> Maybe B.ByteString
-findSymbolDefinition e = steEnclosingSection e >>= \enclosingSection ->
-    let enclosingData = elfSectionData enclosingSection
-        start = (fromIntegral (steValue e)) - (fromIntegral (elfSectionAddr enclosingSection))
-        len = fromIntegral (steSize e)
-        def = (B.take len . B.drop start) enclosingData
-    in if B.null def then Nothing else Just def
+-- findSymbolDefinition :: ElfSymbolTableEntry -> Maybe B.ByteString
+-- findSymbolDefinition e = steEnclosingSection e >>= \enclosingSection ->
+--     let enclosingData = elfSectionData enclosingSection
+--         start = (fromIntegral (steValue e)) - (fromIntegral (elfSectionAddr enclosingSection))
+--         len = fromIntegral (steSize e)
+--         def = (B.take len . B.drop start) enclosingData
+--     in if B.null def then Nothing else Just def
 
 symbolTableSections :: Elf -> [ElfSection]
 symbolTableSections e = filter ((`elem` [SHT_SYMTAB, SHT_DYNSYM]) . elfSectionType) (elfSections e)
@@ -780,8 +780,8 @@ getSymbolTableEntry e strtlb =
     sTlbIdx <- liftM (toEnum . fromIntegral) (getWord16 er)
     let name = stringByIndex nameIdx strs
         (typ,bind) = infoToTypeAndBind info
-        sec = sectionByIndex e sTlbIdx
-    return $ EST (nameIdx,name) sec typ bind other sTlbIdx value size
+        -- sec = sectionByIndex e sTlbIdx
+    return $ EST (nameIdx,name) typ bind other sTlbIdx value size
   getSymbolTableEntry64 = do
     nameIdx <- liftM fromIntegral (getWord32 er)
     info <- getWord8
@@ -791,8 +791,8 @@ getSymbolTableEntry e strtlb =
     size <- getWord64 er
     let name = stringByIndex nameIdx strs
         (typ,bind) = infoToTypeAndBind info
-        sec = sectionByIndex e sTlbIdx
-    return $ EST (nameIdx,name) sec typ bind other sTlbIdx symVal size
+        -- sec = sectionByIndex e sTlbIdx
+    return $ EST (nameIdx,name) typ bind other sTlbIdx symVal size
 
 sectionByIndex :: Elf -> ElfSectionIndex -> Maybe ElfSection
 sectionByIndex e (SHNIndex i) = lookup i . zip [0..] $ elfSections e
