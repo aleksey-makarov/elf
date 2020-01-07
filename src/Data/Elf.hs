@@ -49,15 +49,18 @@ module Data.Elf ( ElfClass(..)
 
                 , parseElf
                 , splitBits
-{-
-                  parseSymbolTables
-                , findSymbolDefinition
-                , findSectionByName
+
 
                 , ElfSymbolTableEntry(..)
                 , ElfSymbolType(..)
                 , ElfSymbolBinding(..)
                 , ElfSectionIndex(..)
+                , parseSymbolTables
+{-
+                  parseSymbolTables
+                , findSymbolDefinition
+                , findSectionByName
+
 -}
                 , module Data.Elf.Generated) where
 
@@ -623,15 +626,15 @@ splitBits w = map (shiftL 1) $ filter (testBit w) $ map (subtract 1) [ 1 .. (fin
 --                    , TableInfo { tableOffset = fromIntegral e_shoff, entrySize = fromIntegral e_shentsize, entryNum = fromIntegral e_shnum }
 --                    , e_shstrndx)
 
--- data ElfReader = ElfReader
---     { getWord16 :: Get Word16
---     , getWord32 :: Get Word32
---     , getWord64 :: Get Word64
---     }
+data ElfReader = ElfReader
+    { getWord16 :: Get Word16
+    , getWord32 :: Get Word32
+    , getWord64 :: Get Word64
+    }
 
--- elfReader :: ElfData -> ElfReader
--- elfReader ELFDATA2LSB = ElfReader { getWord16 = getWord16le, getWord32 = getWord32le, getWord64 = getWord64le }
--- elfReader ELFDATA2MSB = ElfReader { getWord16 = getWord16be, getWord32 = getWord32be, getWord64 = getWord64be }
+elfReader :: ElfData -> ElfReader
+elfReader ELFDATA2LSB = ElfReader { getWord16 = getWord16le, getWord32 = getWord32le, getWord64 = getWord64le }
+elfReader ELFDATA2MSB = ElfReader { getWord16 = getWord16be, getWord32 = getWord32be, getWord64 = getWord64be }
 
 -- divide :: B.ByteString -> Int -> Int -> [B.ByteString]
 -- divide  _ _ 0 = []
@@ -693,14 +696,13 @@ parseElf b = decode $ L.fromChunks [b]
 --        , elfSegmentMemSize  = p_memsz
 --        }
 
-{-
 -- | The symbol table entries consist of index information to be read from other
 -- parts of the ELF file. Some of this information is automatically retrieved
 -- for your convenience (including symbol name, description of the enclosing
 -- section, and definition).
 data ElfSymbolTableEntry = EST
     { steName             :: (Word32,Maybe B.ByteString)
---    , steEnclosingSection :: Maybe ElfSection -- ^ Section from steIndex
+    , steEnclosingSection :: Maybe ElfSection -- ^ Section from steIndex
     , steType             :: ElfSymbolType
     , steBind             :: ElfSymbolBinding
     , steOther            :: Word8
@@ -746,7 +748,6 @@ dropHeadChunk lbs =
   case lbs of
     (L.Chunk _ lbs') -> lbs'
     _ -> L.Empty
-
 
 -- | Use the symbol offset and size to extract its definition
 -- (in the form of a ByteString).
@@ -915,4 +916,3 @@ stringByIndex :: Integral n => n -> B.ByteString -> Maybe B.ByteString
 stringByIndex n strtab =
     let str = (B.takeWhile (/=0) . B.drop (fromIntegral n)) strtab
     in if B.length str == 0 then Nothing else Just str
--}
