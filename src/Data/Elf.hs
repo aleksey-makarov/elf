@@ -360,13 +360,13 @@ verify msg orig = do
     when (orig /= a) $ error ("verification failed: " ++ msg)
 
 getTable :: (Binary (Le a), Binary (Be a)) => ElfData -> Word64 -> Word16 -> Word16 -> Get [a]
-getTable endianness offset entrySize entryNumber = lookAhead $ do
-    skip $ fromIntegral offset
-    take (fromIntegral entryNumber) <$> getTable'
-    where
-        getTable' = do
-            a <- isolate (fromIntegral entrySize) $ getEndian endianness
-            (a : ) <$> getTable'
+getTable endianness offset entrySize entryNumber = return [] -- lookAhead $ do
+--    skip $ fromIntegral offset
+--    take (fromIntegral entryNumber) <$> getTable'
+--    where
+--        getTable' = do
+--            a <- isolate (fromIntegral entrySize) $ getEndian endianness
+--            (a : ) <$> getTable'
 
 getEndian :: (Binary (Le a), Binary (Be a)) => ElfData -> Get a
 getEndian ELFDATA2LSB = fromLe <$> get
@@ -404,28 +404,28 @@ getElf' p e_data = do
     e_version2  <- getE
     when (e_version2 /= (1 :: Word32)) $ error "verification failed: version2"
 
---    e_entry     <- getE
---
---    e_phoff     <- getXX (Proxy :: Proxy w) e_data
---    e_shoff     <- getXX (Proxy :: Proxy w) e_data
+    e_entry     <- getE
+
+    e_phoff     <- getXX (Proxy :: Proxy w) e_data
+    e_shoff     <- getXX (Proxy :: Proxy w) e_data
 
     e_flags     <- getE
 
---    e_ehsize    <- getE
---
---    e_phentsize <- getE
---    e_phnum     <- getE
---    e_shentsize <- getE
---    e_shnum     <- getE
---
+    e_ehsize    <- getE
+
+    e_phentsize <- getE
+    e_phnum     <- getE
+    e_shentsize <- getE
+    e_shnum     <- getE
+
     e_shstrndx  <- getE
---
---    hSize <- bytesRead
---    when (hSize /= fromIntegral (e_ehsize :: Word16)) $ error "incorrect size of elf header"
+
+    hSize <- bytesRead
+    when (hSize /= fromIntegral (e_ehsize :: Word16)) $ error "incorrect size of elf header"
 
     -- e_xx :: ElfXX c
-    -- e_xx <- mkElfXX p e_entry <$> getTable e_data (e_phoff - fromIntegral e_ehsize) e_phentsize e_phnum
-    --                           <*> getTable e_data (e_shoff - fromIntegral e_ehsize) e_shentsize e_shnum
+    e_xx <- mkElfXX p e_entry <$> getTable e_data (e_phoff - fromIntegral e_ehsize) e_phentsize e_phnum
+                              <*> getTable e_data (e_shoff - fromIntegral e_ehsize) e_shentsize e_shnum
 
     -- e_content <- L.toStrict <$> getRemainingLazyByteString
 
@@ -437,7 +437,7 @@ getElf' p e_data = do
         , elfMachine = e_machine
         , elfFlags = e_flags
         , elfShstrndx = e_shstrndx
-        , elfXX = undefined -- e_xx
+        , elfXX = e_xx
         , elfContent = undefined -- e_content
         }
 
