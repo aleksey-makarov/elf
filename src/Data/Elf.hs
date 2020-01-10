@@ -351,8 +351,8 @@ elfSegmentMemSize :: ElfSegment -> Word64 -- ^ Size in memory  (may be larger th
 elfSegmentMemSize (ElfSegment (ElfSegment64 { elf64SegmentMemSize = a } )) = a
 elfSegmentMemSize (ElfSegment (ElfSegment32 { elf32SegmentMemSize = a } )) = fromIntegral a
 
-elfMagic :: B.ByteString
-elfMagic = B.pack [0x7f, 0x45, 0x4c, 0x46] -- "\DELELF"
+elfMagic :: Word32
+elfMagic = 0x7f454c46 -- "\DELELF"
 
 verify :: (Binary a, Eq a) => String -> a -> Get ()
 verify msg orig = do
@@ -404,30 +404,30 @@ getElf' p e_data = do
     e_version2  <- getE
     when (e_version2 /= (1 :: Word32)) $ error "verification failed: version2"
 
-    e_entry     <- getE
-
-    e_phoff     <- getXX (Proxy :: Proxy w) e_data
-    e_shoff     <- getXX (Proxy :: Proxy w) e_data
+--    e_entry     <- getE
+--
+--    e_phoff     <- getXX (Proxy :: Proxy w) e_data
+--    e_shoff     <- getXX (Proxy :: Proxy w) e_data
 
     e_flags     <- getE
 
-    e_ehsize    <- getE
-
-    e_phentsize <- getE
-    e_phnum     <- getE
-    e_shentsize <- getE
-    e_shnum     <- getE
-
+--    e_ehsize    <- getE
+--
+--    e_phentsize <- getE
+--    e_phnum     <- getE
+--    e_shentsize <- getE
+--    e_shnum     <- getE
+--
     e_shstrndx  <- getE
-
-    hSize <- bytesRead
-    when (hSize /= fromIntegral (e_ehsize :: Word16)) $ error "incorrect size of elf header"
+--
+--    hSize <- bytesRead
+--    when (hSize /= fromIntegral (e_ehsize :: Word16)) $ error "incorrect size of elf header"
 
     -- e_xx :: ElfXX c
-    e_xx <- mkElfXX p e_entry <$> getTable e_data (e_phoff - fromIntegral e_ehsize) e_phentsize e_phnum
-                              <*> getTable e_data (e_shoff - fromIntegral e_ehsize) e_shentsize e_shnum
+    -- e_xx <- mkElfXX p e_entry <$> getTable e_data (e_phoff - fromIntegral e_ehsize) e_phentsize e_phnum
+    --                           <*> getTable e_data (e_shoff - fromIntegral e_ehsize) e_shentsize e_shnum
 
-    e_content <- L.toStrict <$> getRemainingLazyByteString
+    -- e_content <- L.toStrict <$> getRemainingLazyByteString
 
     return $ Elf
         { elfData = e_data
@@ -437,8 +437,8 @@ getElf' p e_data = do
         , elfMachine = e_machine
         , elfFlags = e_flags
         , elfShstrndx = e_shstrndx
-        , elfXX = e_xx
-        , elfContent = e_content
+        , elfXX = undefined -- e_xx
+        , elfContent = undefined -- e_content
         }
 
 getElf :: Get Elf
