@@ -287,7 +287,7 @@ elfSegments (Elf { elfXX = Elf64 { elf64Segments = s } }) = fmap ElfSegment s
 elfSegments (Elf { elfXX = Elf32 { elf32Segments = s } }) = fmap ElfSegment s
 
 elfSectionName :: ElfSection -> String -- ^ Identifies the name of the section.
-elfSectionName = undefined
+elfSectionName _ = "lalala"
 
 elfSectionType :: ElfSection -> ElfSectionType -- ^ Identifies the name of the section.
 elfSectionType (ElfSection (ElfSection64 { elf64SectionType = t } )) = t
@@ -322,7 +322,7 @@ elfSectionEntSize (ElfSection (ElfSection64 { elf64SectionEntSize = a } )) = a
 elfSectionEntSize (ElfSection (ElfSection32 { elf32SectionEntSize = a } )) = fromIntegral a
 
 elfSectionData :: ElfSection -> B.ByteString -- ^ The raw data for the section.
-elfSectionData = undefined
+elfSectionData _ = B.empty
 
 elfSegmentType :: ElfSegment -> ElfSegmentType -- ^ Segment type
 elfSegmentType (ElfSegment (ElfSegment64 { elf64SegmentType = a } )) = a
@@ -345,7 +345,7 @@ elfSegmentAlign (ElfSegment (ElfSegment64 { elf64SegmentAlign = a } )) = a
 elfSegmentAlign (ElfSegment (ElfSegment32 { elf32SegmentAlign = a } )) = fromIntegral a
 
 elfSegmentData :: ElfSegment -> B.ByteString -- ^ Data for the segment
-elfSegmentData = undefined
+elfSegmentData _ = B.empty
 
 elfSegmentMemSize :: ElfSegment -> Word64 -- ^ Size in memory  (may be larger then the segment's data)
 elfSegmentMemSize (ElfSegment (ElfSegment64 { elf64SegmentMemSize = a } )) = a
@@ -360,8 +360,11 @@ verify msg orig = do
     when (orig /= a) $ error ("verification failed: " ++ msg)
 
 getTable :: (Binary (Le a), Binary (Be a)) => ElfData -> Word64 -> Word16 -> Word16 -> Get [a]
-getTable endianness offset entrySize entryNumber = return [] -- lookAhead $ do
---    skip $ fromIntegral offset
+getTable endianness offset entrySize entryNumber = lookAhead $ do
+    skip $ fromIntegral offset
+    a <- isolate (fromIntegral entrySize) $ getEndian endianness
+    return [a]
+
 --    take (fromIntegral entryNumber) <$> getTable'
 --    where
 --        getTable' = do
@@ -427,7 +430,7 @@ getElf' p e_data = do
     e_xx <- mkElfXX p e_entry <$> getTable e_data (e_phoff - fromIntegral e_ehsize) e_phentsize e_phnum
                               <*> getTable e_data (e_shoff - fromIntegral e_ehsize) e_shentsize e_shnum
 
-    -- e_content <- L.toStrict <$> getRemainingLazyByteString
+    e_content <- L.toStrict <$> getRemainingLazyByteString
 
     return $ Elf
         { elfData = e_data
@@ -438,7 +441,7 @@ getElf' p e_data = do
         , elfFlags = e_flags
         , elfShstrndx = e_shstrndx
         , elfXX = e_xx
-        , elfContent = undefined -- e_content
+        , elfContent = e_content
         }
 
 getElf :: Get Elf
