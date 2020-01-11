@@ -71,7 +71,7 @@ import Control.Monad
 import qualified Data.ByteString               as B
 import qualified Data.ByteString.Lazy          as L
 import qualified Data.ByteString.Lazy.Internal as L
-
+import qualified Data.ByteString.Char8         as C
 import Data.Proxy
 
 -- https://stackoverflow.com/questions/10672981/export-template-haskell-generated-definitions
@@ -285,8 +285,23 @@ elfSegments :: Elf -> [ElfSegment]
 elfSegments e@(Elf { elfXX = Elf64 { elf64Segments = s } }) = fmap (ElfSegment e) s
 elfSegments e@(Elf { elfXX = Elf32 { elf32Segments = s } }) = fmap (ElfSegment e) s
 
+at :: (Integral i) => [a] -> i -> Maybe a
+at (x : _)  0             = Just x
+at (_ : xs) n | n > 0     = xs `at` (n - 1)
+              | otherwise = Nothing
+at _        _             = Nothing
+
+getStringSection :: Elf -> Maybe B.ByteString
+getStringSection elf@(Elf {elfShstrndx = stridx}) = elfSectionData <$> elfSections elf `at` stridx
+
+getString :: Elf -> Word32 -> Maybe String
+getString elf offset = do
+    s <- getStringSection elf
+    return $ C.unpack $ B.takeWhile (/= 0) $ B.drop (fromIntegral offset) s
+
 elfSectionName :: ElfSection -> String -- ^ Identifies the name of the section.
-elfSectionName _ = "lalala"
+elfSectionName (ElfSection elf (ElfSection64 { elf64SectionName = n } )) = maybe "" id $ getString elf n
+elfSectionName (ElfSection elf (ElfSection32 { elf32SectionName = n } )) = maybe "" id $ getString elf n
 
 elfSectionType :: ElfSection -> ElfSectionType -- ^ Identifies the name of the section.
 elfSectionType (ElfSection _ (ElfSection64 { elf64SectionType = t } )) = t
