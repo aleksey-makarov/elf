@@ -426,6 +426,7 @@ getElf' p e_content e_data = do
 getElf :: Get Elf
 getElf = do
 
+    -- FIXME: fix this later
     e_content <- L.toStrict <$> lookAhead getRemainingLazyByteString
 
     verify "magic" elfMagic
