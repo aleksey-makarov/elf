@@ -191,14 +191,14 @@ data ElfSegment = forall a . ElfSegment Elf (ElfSegmentXX a)
 
 data ElfXX (c :: ElfClass) where
     Elf64 ::
-        { elf64Entry    :: Word64
-        , elf64Segments :: [ElfSegmentXX c]
-        , elf64Sections :: [ElfSectionXX c]
+        { e64Entry    :: Word64
+        , e64Segments :: [ElfSegmentXX c]
+        , e64Sections :: [ElfSectionXX c]
         } -> ElfXX 'ELFCLASS64
     Elf32 ::
-        { elf32Entry    :: Word32
-        , elf32Segments :: [ElfSegmentXX c]
-        , elf32Sections :: [ElfSectionXX c]
+        { e32Entry    :: Word32
+        , e32Segments :: [ElfSegmentXX c]
+        , e32Sections :: [ElfSectionXX c]
         } -> ElfXX 'ELFCLASS32
 
 -- FIXME: fix this crap
@@ -239,16 +239,16 @@ elfClass (Elf { elfXX = Elf64 {} }) = ELFCLASS64
 elfClass (Elf { elfXX = Elf32 {} }) = ELFCLASS32
 
 elfEntry :: Elf -> Word64
-elfEntry (Elf { elfXX = Elf64 {..} }) = elf64Entry
-elfEntry (Elf { elfXX = Elf32 {..} }) = fromIntegral elf32Entry
+elfEntry (Elf { elfXX = Elf64 {..} }) = e64Entry
+elfEntry (Elf { elfXX = Elf32 {..} }) = fromIntegral e32Entry
 
 elfSections :: Elf -> [ElfSection]
-elfSections e@(Elf { elfXX = Elf64 {..} }) = fmap (ElfSection e) elf64Sections
-elfSections e@(Elf { elfXX = Elf32 {..} }) = fmap (ElfSection e) elf32Sections
+elfSections e@(Elf { elfXX = Elf64 {..} }) = fmap (ElfSection e) e64Sections
+elfSections e@(Elf { elfXX = Elf32 {..} }) = fmap (ElfSection e) e32Sections
 
 elfSegments :: Elf -> [ElfSegment]
-elfSegments e@(Elf { elfXX = Elf64 {..} }) = fmap (ElfSegment e) elf64Segments
-elfSegments e@(Elf { elfXX = Elf32 {..} }) = fmap (ElfSegment e) elf32Segments
+elfSegments e@(Elf { elfXX = Elf64 {..} }) = fmap (ElfSegment e) e64Segments
+elfSegments e@(Elf { elfXX = Elf32 {..} }) = fmap (ElfSegment e) e32Segments
 
 at :: (Integral i) => [a] -> i -> Maybe a
 at (x : _)  0             = Just x
