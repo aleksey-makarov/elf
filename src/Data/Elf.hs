@@ -6,6 +6,7 @@
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE GADTSyntax #-}
@@ -292,7 +293,7 @@ at (_ : xs) n | n > 0     = xs `at` (n - 1)
 at _        _             = Nothing
 
 getStringSection :: Elf -> Maybe B.ByteString
-getStringSection elf@(Elf {elfShstrndx = stridx}) = elfSectionData <$> elfSections elf `at` stridx
+getStringSection elf@(Elf {..}) = elfSectionData <$> elfSections elf `at` elfShstrndx
 
 getString :: Elf -> Word32 -> Maybe String
 getString elf offset = C.unpack <$> B.takeWhile (/= 0) <$> B.drop (fromIntegral offset) <$> getStringSection elf
