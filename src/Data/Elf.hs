@@ -362,14 +362,12 @@ verify msg orig = do
 getTable :: (Binary (Le a), Binary (Be a)) => ElfData -> Word64 -> Word16 -> Word16 -> Get [a]
 getTable endianness offset entrySize entryNumber = lookAhead $ do
     skip $ fromIntegral offset
-    a <- isolate (fromIntegral entrySize) $ getEndian endianness
-    return [a]
-
---    take (fromIntegral entryNumber) <$> getTable'
---    where
---        getTable' = do
---            a <- isolate (fromIntegral entrySize) $ getEndian endianness
---            (a : ) <$> getTable'
+    getTable' entryNumber
+    where
+        getTable' 0 = return []
+        getTable' n = do
+            a <- isolate (fromIntegral entrySize) $ getEndian endianness
+            (a :) <$> getTable' (n - 1)
 
 getEndian :: (Binary (Le a), Binary (Be a)) => ElfData -> Get a
 getEndian ELFDATA2LSB = fromLe <$> get
@@ -426,7 +424,6 @@ getElf' p e_data = do
     hSize <- bytesRead
     when (hSize /= fromIntegral (e_ehsize :: Word16)) $ error "incorrect size of elf header"
 
-    -- e_xx :: ElfXX c
     e_xx <- mkElfXX p e_entry <$> getTable e_data (e_phoff - fromIntegral e_ehsize) e_phentsize e_phnum
                               <*> getTable e_data (e_shoff - fromIntegral e_ehsize) e_shentsize e_shnum
 
