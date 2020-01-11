@@ -295,9 +295,7 @@ getStringSection :: Elf -> Maybe B.ByteString
 getStringSection elf@(Elf {elfShstrndx = stridx}) = elfSectionData <$> elfSections elf `at` stridx
 
 getString :: Elf -> Word32 -> Maybe String
-getString elf offset = do
-    s <- getStringSection elf
-    return $ C.unpack $ B.takeWhile (/= 0) $ B.drop (fromIntegral offset) s
+getString elf offset = C.unpack <$> B.takeWhile (/= 0) <$> B.drop (fromIntegral offset) <$> getStringSection elf
 
 elfSectionName :: ElfSection -> String -- ^ Identifies the name of the section.
 elfSectionName (ElfSection elf (ElfSection64 { elf64SectionName = n } )) = maybe "" id $ getString elf n
