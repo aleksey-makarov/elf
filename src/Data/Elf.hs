@@ -183,7 +183,7 @@ instance Binary (Le (ElfSectionXX 'ELFCLASS32)) where
     put = undefined
     get = Le <$> getElfSection32 (getEndian ELFDATA2LSB)
 
-data ElfSection = forall a . ElfSection (ElfSectionXX a)
+data ElfSection = forall a . ElfSection Elf (ElfSectionXX a)
 
 data ElfSegmentXX (c :: ElfClass) where
     ElfSegment64 ::
@@ -223,7 +223,7 @@ instance Binary (Le (ElfSegmentXX 'ELFCLASS32)) where
     put = undefined
     get = Le <$> getElfSegment32 (getEndian ELFDATA2LSB)
 
-data ElfSegment = forall a . ElfSegment (ElfSegmentXX a)
+data ElfSegment = forall a . ElfSegment Elf (ElfSegmentXX a)
 
 data ElfXX (c :: ElfClass) where
     Elf64 ::
@@ -279,77 +279,77 @@ elfEntry (Elf { elfXX = Elf64 { elf64Entry = e } }) = e
 elfEntry (Elf { elfXX = Elf32 { elf32Entry = e } }) = fromIntegral e
 
 elfSections :: Elf -> [ElfSection]
-elfSections (Elf { elfXX = Elf64 { elf64Sections = s } }) = fmap ElfSection s
-elfSections (Elf { elfXX = Elf32 { elf32Sections = s } }) = fmap ElfSection s
+elfSections e@(Elf { elfXX = Elf64 { elf64Sections = s } }) = fmap (ElfSection e) s
+elfSections e@(Elf { elfXX = Elf32 { elf32Sections = s } }) = fmap (ElfSection e) s
 
 elfSegments :: Elf -> [ElfSegment]
-elfSegments (Elf { elfXX = Elf64 { elf64Segments = s } }) = fmap ElfSegment s
-elfSegments (Elf { elfXX = Elf32 { elf32Segments = s } }) = fmap ElfSegment s
+elfSegments e@(Elf { elfXX = Elf64 { elf64Segments = s } }) = fmap (ElfSegment e) s
+elfSegments e@(Elf { elfXX = Elf32 { elf32Segments = s } }) = fmap (ElfSegment e) s
 
 elfSectionName :: ElfSection -> String -- ^ Identifies the name of the section.
 elfSectionName _ = "lalala"
 
 elfSectionType :: ElfSection -> ElfSectionType -- ^ Identifies the name of the section.
-elfSectionType (ElfSection (ElfSection64 { elf64SectionType = t } )) = t
-elfSectionType (ElfSection (ElfSection32 { elf32SectionType = t } )) = t
+elfSectionType (ElfSection _ (ElfSection64 { elf64SectionType = t } )) = t
+elfSectionType (ElfSection _ (ElfSection32 { elf32SectionType = t } )) = t
 
 elfSectionFlags :: ElfSection -> ElfSectionFlag -- ^ Identifies the attributes of the section.
-elfSectionFlags (ElfSection (ElfSection64 { elf64SectionFlags = f } )) = ElfSectionFlag f
-elfSectionFlags (ElfSection (ElfSection32 { elf32SectionFlags = f } )) = ElfSectionFlag $ fromIntegral f
+elfSectionFlags (ElfSection _ (ElfSection64 { elf64SectionFlags = f } )) = ElfSectionFlag f
+elfSectionFlags (ElfSection _ (ElfSection32 { elf32SectionFlags = f } )) = ElfSectionFlag $ fromIntegral f
 
 elfSectionAddr :: ElfSection -> Word64 -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
-elfSectionAddr (ElfSection (ElfSection64 { elf64SectionAddr = a } )) = a
-elfSectionAddr (ElfSection (ElfSection32 { elf32SectionAddr = a } )) = fromIntegral a
+elfSectionAddr (ElfSection _ (ElfSection64 { elf64SectionAddr = a } )) = a
+elfSectionAddr (ElfSection _ (ElfSection32 { elf32SectionAddr = a } )) = fromIntegral a
 
 elfSectionSize :: ElfSection -> Word64 -- ^ The size of the section. Except for SHT_NOBITS sections, this is the size of elfSectionData.
-elfSectionSize (ElfSection (ElfSection64 { elf64SectionSize = a } )) = a
-elfSectionSize (ElfSection (ElfSection32 { elf32SectionSize = a } )) = fromIntegral a
+elfSectionSize (ElfSection _ (ElfSection64 { elf64SectionSize = a } )) = a
+elfSectionSize (ElfSection _ (ElfSection32 { elf32SectionSize = a } )) = fromIntegral a
 
 elfSectionLink :: ElfSection -> Word32 -- ^ Contains a section index of an associated section, depending on section type.
-elfSectionLink (ElfSection (ElfSection64 { elf64SectionLink = a } )) = a
-elfSectionLink (ElfSection (ElfSection32 { elf32SectionLink = a } )) = a
+elfSectionLink (ElfSection _ (ElfSection64 { elf64SectionLink = a } )) = a
+elfSectionLink (ElfSection _ (ElfSection32 { elf32SectionLink = a } )) = a
 
 elfSectionInfo :: ElfSection -> Word32 -- ^ Contains extra information for the index, depending on type.
-elfSectionInfo (ElfSection (ElfSection64 { elf64SectionInfo = a } )) = a
-elfSectionInfo (ElfSection (ElfSection32 { elf32SectionInfo = a } )) = a
+elfSectionInfo (ElfSection _ (ElfSection64 { elf64SectionInfo = a } )) = a
+elfSectionInfo (ElfSection _ (ElfSection32 { elf32SectionInfo = a } )) = a
 
 elfSectionAddrAlign :: ElfSection -> Word64 -- ^ Contains the required alignment of the section. Must be a power of two.
-elfSectionAddrAlign (ElfSection (ElfSection64 { elf64SectionAddrAlign = a } )) = a
-elfSectionAddrAlign (ElfSection (ElfSection32 { elf32SectionAddrAlign = a } )) = fromIntegral a
+elfSectionAddrAlign (ElfSection _ (ElfSection64 { elf64SectionAddrAlign = a } )) = a
+elfSectionAddrAlign (ElfSection _ (ElfSection32 { elf32SectionAddrAlign = a } )) = fromIntegral a
 
 elfSectionEntSize :: ElfSection -> Word64 -- ^ Size of entries if section has a table.
-elfSectionEntSize (ElfSection (ElfSection64 { elf64SectionEntSize = a } )) = a
-elfSectionEntSize (ElfSection (ElfSection32 { elf32SectionEntSize = a } )) = fromIntegral a
+elfSectionEntSize (ElfSection _ (ElfSection64 { elf64SectionEntSize = a } )) = a
+elfSectionEntSize (ElfSection _ (ElfSection32 { elf32SectionEntSize = a } )) = fromIntegral a
 
 elfSectionData :: ElfSection -> B.ByteString -- ^ The raw data for the section.
 elfSectionData _ = B.empty
 
 elfSegmentType :: ElfSegment -> ElfSegmentType -- ^ Segment type
-elfSegmentType (ElfSegment (ElfSegment64 { elf64SegmentType = a } )) = a
-elfSegmentType (ElfSegment (ElfSegment32 { elf32SegmentType = a } )) = a
+elfSegmentType (ElfSegment _ (ElfSegment64 { elf64SegmentType = a } )) = a
+elfSegmentType (ElfSegment _ (ElfSegment32 { elf32SegmentType = a } )) = a
 
 elfSegmentFlags :: ElfSegment -> ElfSegmentFlag -- ^ Segment flags
-elfSegmentFlags (ElfSegment (ElfSegment64 { elf64SegmentFlags = a } )) = ElfSegmentFlag a
-elfSegmentFlags (ElfSegment (ElfSegment32 { elf32SegmentFlags = a } )) = ElfSegmentFlag a
+elfSegmentFlags (ElfSegment _ (ElfSegment64 { elf64SegmentFlags = a } )) = ElfSegmentFlag a
+elfSegmentFlags (ElfSegment _ (ElfSegment32 { elf32SegmentFlags = a } )) = ElfSegmentFlag a
 
 elfSegmentVirtAddr :: ElfSegment -> Word64 -- ^ Virtual address for the segment
-elfSegmentVirtAddr (ElfSegment (ElfSegment64 { elf64SegmentVirtAddr = a } )) = a
-elfSegmentVirtAddr (ElfSegment (ElfSegment32 { elf32SegmentVirtAddr = a } )) = fromIntegral a
+elfSegmentVirtAddr (ElfSegment _ (ElfSegment64 { elf64SegmentVirtAddr = a } )) = a
+elfSegmentVirtAddr (ElfSegment _ (ElfSegment32 { elf32SegmentVirtAddr = a } )) = fromIntegral a
 
 elfSegmentPhysAddr :: ElfSegment -> Word64 -- ^ Physical address for the segment
-elfSegmentPhysAddr (ElfSegment (ElfSegment64 { elf64SegmentPhysAddr = a } )) = a
-elfSegmentPhysAddr (ElfSegment (ElfSegment32 { elf32SegmentPhysAddr = a } )) = fromIntegral a
+elfSegmentPhysAddr (ElfSegment _ (ElfSegment64 { elf64SegmentPhysAddr = a } )) = a
+elfSegmentPhysAddr (ElfSegment _ (ElfSegment32 { elf32SegmentPhysAddr = a } )) = fromIntegral a
 
 elfSegmentAlign :: ElfSegment -> Word64 -- ^ Segment alignment
-elfSegmentAlign (ElfSegment (ElfSegment64 { elf64SegmentAlign = a } )) = a
-elfSegmentAlign (ElfSegment (ElfSegment32 { elf32SegmentAlign = a } )) = fromIntegral a
+elfSegmentAlign (ElfSegment _ (ElfSegment64 { elf64SegmentAlign = a } )) = a
+elfSegmentAlign (ElfSegment _ (ElfSegment32 { elf32SegmentAlign = a } )) = fromIntegral a
 
 elfSegmentData :: ElfSegment -> B.ByteString -- ^ Data for the segment
 elfSegmentData _ = B.empty
 
 elfSegmentMemSize :: ElfSegment -> Word64 -- ^ Size in memory  (may be larger then the segment's data)
-elfSegmentMemSize (ElfSegment (ElfSegment64 { elf64SegmentMemSize = a } )) = a
-elfSegmentMemSize (ElfSegment (ElfSegment32 { elf32SegmentMemSize = a } )) = fromIntegral a
+elfSegmentMemSize (ElfSegment _ (ElfSegment64 { elf64SegmentMemSize = a } )) = a
+elfSegmentMemSize (ElfSegment _ (ElfSegment32 { elf32SegmentMemSize = a } )) = fromIntegral a
 
 elfMagic :: Word32
 elfMagic = 0x7f454c46 -- "\DELELF"
