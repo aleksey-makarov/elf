@@ -254,7 +254,6 @@ data Elf =
         , elfType       :: ElfType       -- ^ Identifies the object file type.
         , elfMachine    :: ElfMachine    -- ^ Identifies the target architecture.
         , elfFlags      :: Word32
-        , elfHeaderSize :: Word16
         , elfShstrndx   :: Word16
         , elfXX         :: ElfXX c
         , elfContent    :: B.ByteString
@@ -323,7 +322,7 @@ elfSectionEntSize (ElfSection _ (ElfSection32 { elf32SectionEntSize = a } )) = f
 
 -- FIXME: this can fail on 32 bit machine working with 64 bit elfs
 getData :: Elf -> Int -> Int -> B.ByteString
-getData (Elf {elfContent = c, elfHeaderSize = h}) o s = B.take s $ B.drop (o - fromIntegral h) c
+getData (Elf {elfContent = c}) o s = B.take s $ B.drop o c
 
 elfSectionData :: ElfSection -> B.ByteString -- ^ The raw data for the section.
 elfSectionData (ElfSection elf (ElfSection64 { elf64SectionOffset = o, elf64SectionSize = s })) = getData elf (fromIntegral o) (fromIntegral s)
@@ -393,9 +392,10 @@ getElf' :: forall c w . (ElfXXTools c w,
                          Binary (Le (ElfSegmentXX c)), Binary (Be (ElfSegmentXX c)),
                          Binary (Le (ElfSectionXX c)), Binary (Be (ElfSectionXX c)))
         => Proxy (c :: ElfClass)
+        -> B.ByteString
         -> ElfData
         -> Get Elf
-getElf' p e_data = do
+getElf' p e_content e_data = do
 
     let
         getE :: (Binary (Le a), Binary (Be a)) => Get a
@@ -418,7 +418,7 @@ getElf' p e_data = do
 
     e_flags     <- getE
 
-    e_ehsize    <- getE
+    (e_ehsize :: Word16) <- getE
 
     e_phentsize <- getE
     e_phnum     <- getE
@@ -433,8 +433,6 @@ getElf' p e_data = do
     e_xx <- mkElfXX p e_entry <$> getTable e_data (e_phoff - fromIntegral e_ehsize) e_phentsize e_phnum
                               <*> getTable e_data (e_shoff - fromIntegral e_ehsize) e_shentsize e_shnum
 
-    e_content <- L.toStrict <$> getRemainingLazyByteString
-
     return $ Elf
         { elfData = e_data
         , elfOSABI = e_osabi
@@ -442,7 +440,6 @@ getElf' p e_data = do
         , elfType = e_type
         , elfMachine = e_machine
         , elfFlags = e_flags
-        , elfHeaderSize = e_ehsize
         , elfShstrndx = e_shstrndx
         , elfXX = e_xx
         , elfContent = e_content
@@ -451,13 +448,15 @@ getElf' p e_data = do
 getElf :: Get Elf
 getElf = do
 
+    e_content <- L.toStrict <$> lookAhead getRemainingLazyByteString
+
     verify "magic" elfMagic
     e_class    <- get
     e_data     <- get
 
     (case e_class of
         ELFCLASS32 -> getElf' (Proxy :: Proxy 'ELFCLASS32)
-        ELFCLASS64 -> getElf' (Proxy :: Proxy 'ELFCLASS64)) e_data
+        ELFCLASS64 -> getElf' (Proxy :: Proxy 'ELFCLASS64)) e_content e_data
 
 getElfSection64 :: (forall a . (Binary (Le a), Binary (Be a)) => Get a) -> Get (ElfSectionXX 'ELFCLASS64)
 getElfSection64 getE = ElfSection64 <$> getE
