@@ -50,7 +50,6 @@ module Data.Elf ( ElfClass(..)
                 , parseElf
                 , splitBits
 
-
                 , ElfSymbolTableEntry(..)
                 , ElfSymbolType(..)
                 , ElfSymbolBinding(..)
@@ -255,6 +254,7 @@ data Elf =
         , elfType       :: ElfType       -- ^ Identifies the object file type.
         , elfMachine    :: ElfMachine    -- ^ Identifies the target architecture.
         , elfFlags      :: Word32
+        , elfHeaderSize :: Word16
         , elfShstrndx   :: Word16
         , elfXX         :: ElfXX c
         , elfContent    :: B.ByteString
@@ -321,8 +321,13 @@ elfSectionEntSize :: ElfSection -> Word64 -- ^ Size of entries if section has a 
 elfSectionEntSize (ElfSection _ (ElfSection64 { elf64SectionEntSize = a } )) = a
 elfSectionEntSize (ElfSection _ (ElfSection32 { elf32SectionEntSize = a } )) = fromIntegral a
 
+-- FIXME: this can fail on 32 bit machine working with 64 bit elfs
+getData :: Elf -> Int -> Int -> B.ByteString
+getData (Elf {elfContent = c, elfHeaderSize = h}) o s = B.take s $ B.drop (o - fromIntegral h) c
+
 elfSectionData :: ElfSection -> B.ByteString -- ^ The raw data for the section.
-elfSectionData _ = B.empty
+elfSectionData (ElfSection elf (ElfSection64 { elf64SectionOffset = o, elf64SectionSize = s })) = getData elf (fromIntegral o) (fromIntegral s)
+elfSectionData (ElfSection elf (ElfSection32 { elf32SectionOffset = o, elf32SectionSize = s })) = getData elf (fromIntegral o) (fromIntegral s)
 
 elfSegmentType :: ElfSegment -> ElfSegmentType -- ^ Segment type
 elfSegmentType (ElfSegment _ (ElfSegment64 { elf64SegmentType = a } )) = a
@@ -345,7 +350,8 @@ elfSegmentAlign (ElfSegment _ (ElfSegment64 { elf64SegmentAlign = a } )) = a
 elfSegmentAlign (ElfSegment _ (ElfSegment32 { elf32SegmentAlign = a } )) = fromIntegral a
 
 elfSegmentData :: ElfSegment -> B.ByteString -- ^ Data for the segment
-elfSegmentData _ = B.empty
+elfSegmentData (ElfSegment elf (ElfSegment64 { elf64SegmentOffset = o, elf64SegmentFileSize = s })) = getData elf (fromIntegral o) (fromIntegral s)
+elfSegmentData (ElfSegment elf (ElfSegment32 { elf32SegmentOffset = o, elf32SegmentFileSize = s })) = getData elf (fromIntegral o) (fromIntegral s)
 
 elfSegmentMemSize :: ElfSegment -> Word64 -- ^ Size in memory  (may be larger then the segment's data)
 elfSegmentMemSize (ElfSegment _ (ElfSegment64 { elf64SegmentMemSize = a } )) = a
@@ -422,7 +428,7 @@ getElf' p e_data = do
     e_shstrndx  <- getE
 
     hSize <- bytesRead
-    when (hSize /= fromIntegral (e_ehsize :: Word16)) $ error "incorrect size of elf header"
+    when (hSize /= fromIntegral e_ehsize) $ error "incorrect size of elf header"
 
     e_xx <- mkElfXX p e_entry <$> getTable e_data (e_phoff - fromIntegral e_ehsize) e_phentsize e_phnum
                               <*> getTable e_data (e_shoff - fromIntegral e_ehsize) e_shentsize e_shnum
@@ -436,6 +442,7 @@ getElf' p e_data = do
         , elfType = e_type
         , elfMachine = e_machine
         , elfFlags = e_flags
+        , elfHeaderSize = e_ehsize
         , elfShstrndx = e_shstrndx
         , elfXX = e_xx
         , elfContent = e_content
