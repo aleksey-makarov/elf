@@ -55,7 +55,7 @@ module Data.Elf ( ElfClass(..)
                 , ElfSymbolType(..)
                 , ElfSymbolBinding(..)
                 , ElfSectionIndex(..)
-                , parseSymbolTables
+                , elfParseSymbolTable
 
 {-
                 , findSymbolDefinition
@@ -515,15 +515,6 @@ data ElfSymbolTableEntry = EST
     , steSize             :: Word64
     } deriving (Eq, Show)
 
--- | Parse the symbol table section into a list of symbol table entries. If
--- no symbol table is found then an empty list is returned.
--- This function does not consult flags to look for SHT_STRTAB (when naming symbols),
--- it just looks for particular sections of ".strtab" and ".shstrtab".
-parseSymbolTables :: Elf -> [[ElfSymbolTableEntry]]
-parseSymbolTables e =
-    let secs = symbolTableSections e
-    in map (getSymbolTableEntries e) secs
-
 -- | Assumes the given section is a symbol table, type SHT_SYMTAB, or SHT_DYNSYM
 -- (guaranteed by parseSymbolTables).
 getSymbolTableEntries :: Elf -> ElfSection -> [ElfSymbolTableEntry]
@@ -540,6 +531,12 @@ getSymbolTableEntries e s = go decoder (L.fromChunks [elfSectionData s])
     go (Fail _ _ msg) input = if L.null input
                               then []
                               else error msg
+
+elfParseSymbolTable :: ElfSection -> [ElfSymbolTableEntry]
+elfParseSymbolTable s@(ElfSection elf _) =
+    if elfSectionType s `elem` [SHT_SYMTAB, SHT_DYNSYM]
+        then getSymbolTableEntries elf s
+        else []
 
 takeHeadChunk :: L.ByteString -> Maybe B.ByteString
 takeHeadChunk lbs =
@@ -564,9 +561,6 @@ dropHeadChunk lbs =
 --         len = fromIntegral (steSize e)
 --         def = (B.take len . B.drop start) enclosingData
 --     in if B.null def then Nothing else Just def
-
-symbolTableSections :: Elf -> [ElfSection]
-symbolTableSections e = filter ((`elem` [SHT_SYMTAB, SHT_DYNSYM]) . elfSectionType) (elfSections e)
 
 -- | Gets a single entry from the symbol table, use with runGetMany.
 getSymbolTableEntry :: Elf -> Maybe ElfSection -> Get ElfSymbolTableEntry

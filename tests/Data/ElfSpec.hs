@@ -16,6 +16,8 @@ import Data.Elf
 getBinaryFileContents :: FilePath -> IO BS.ByteString
 getBinaryFileContents fname = withBinaryFile fname ReadMode BS.hGetContents
 
+parseSymbolTables :: Elf -> [[ElfSymbolTableEntry]]
+parseSymbolTables e = filter (/= []) $ fmap elfParseSymbolTable $ elfSections e
 
 spec :: Spec
 spec = do
