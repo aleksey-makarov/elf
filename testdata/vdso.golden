@@ -67,6 +67,86 @@ Sections:  - Name:      ""
                         36 00 00 00 12 00 0c 00 30 0f 00 00 00 00 00 00 # 6.......0.......
                         2a 00 00 00 00 00 00 00 3d 00 00 00 22 00 0c 00 # *.......=..."...
                         30 0f 00 00 00 00 00 00 2a 00 00 00 00 00 00 00 # 0.......*.......
+             Symbols:   - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTNoType
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x8
+                          Name:      "clock_gettime"
+                          Type:      STTFunc
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNIndex 12
+                          Value:     0xa30
+                          Size:      0x305
+                        - NameIndex: 0x16
+                          Name:      "__vdso_gettimeofday"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 12
+                          Value:     0xd40
+                          Size:      0x1c1
+                        - NameIndex: 0x1d
+                          Name:      "gettimeofday"
+                          Type:      STTFunc
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNIndex 12
+                          Value:     0xd40
+                          Size:      0x1c1
+                        - NameIndex: 0x2a
+                          Name:      "__vdso_time"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 12
+                          Value:     0xf10
+                          Size:      0x15
+                        - NameIndex: 0x31
+                          Name:      "time"
+                          Type:      STTFunc
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNIndex 12
+                          Value:     0xf10
+                          Size:      0x15
+                        - NameIndex: 0x1
+                          Name:      "__vdso_clock_gettime"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 12
+                          Value:     0xa30
+                          Size:      0x305
+                        - NameIndex: 0x54
+                          Name:      "LINUX_2.6"
+                          Type:      STTObject
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNAbs
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x36
+                          Name:      "__vdso_getcpu"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 12
+                          Value:     0xf30
+                          Size:      0x2a
+                        - NameIndex: 0x3d
+                          Name:      "getcpu"
+                          Type:      STTFunc
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNIndex 12
+                          Value:     0xf30
+                          Size:      0x2a
            - Name:      ".dynstr"
              Type:      SHT_STRTAB
              Flags:     - SHF_ALLOC

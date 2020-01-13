@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 import Data.ByteString as B
 import Data.ByteString.Char8 as BC8
@@ -52,19 +53,38 @@ formatList = align . vsep . fmap f
     where
         f x = pretty '-' <+> x
 
+formatSymbol :: ElfSymbolTableEntry -> Doc ()
+formatSymbol EST {..} =
+    formatPairs [ ("NameIndex",    showHexDoc nameIndex)
+                , ("Name",         dquotes nameDoc)
+                , ("Type",         viaShow $ steType)
+                , ("Binding",      viaShow $ steBind)
+                , ("Other",        showHexDoc $ steOther)
+                , ("SectionIndex", viaShow $ steIndex)
+                , ("Value",        showHexDoc $ steValue)
+                , ("Size" ,        showHexDoc $ steSize)
+                ]
+    where
+        (nameIndex, name) = steName
+        nameDoc = maybe "" formatBytestringChar name
+
 formatSection :: ElfSection -> Doc ()
 formatSection s =
-    formatPairs [ ("Name",      viaShow $ elfSectionName s)
-                , ("Type",      viaShow $ elfSectionType s)
-                , ("Flags",     formatList $ fmap viaShow $ splitBits $ elfSectionFlags s)
-                , ("Addr",      showHexDoc $ elfSectionAddr s)
-                , ("Size",      viaShow $ elfSectionSize s)
-                , ("Link",      viaShow $ elfSectionLink s)
-                , ("Info",      viaShow $ elfSectionInfo s)
-                , ("AddrAlign", viaShow $ elfSectionAddrAlign s)
-                , ("EntSize",   viaShow $ elfSectionEntSize s)
-                , ("Data",      formatBytestring $ elfSectionData s)
-                ]
+    formatPairs ( ("Name",      viaShow $ elfSectionName s)
+                : ("Type",      viaShow $ elfSectionType s)
+                : ("Flags",     formatList $ fmap viaShow $ splitBits $ elfSectionFlags s)
+                : ("Addr",      showHexDoc $ elfSectionAddr s)
+                : ("Size",      viaShow $ elfSectionSize s)
+                : ("Link",      viaShow $ elfSectionLink s)
+                : ("Info",      viaShow $ elfSectionInfo s)
+                : ("AddrAlign", viaShow $ elfSectionAddrAlign s)
+                : ("EntSize",   viaShow $ elfSectionEntSize s)
+                : ("Data",      formatBytestring $ elfSectionData s)
+                : case symbols of { [] -> []; _ -> [("Symbols", formatList symbolsDoc)] }
+                )
+    where
+        symbols = elfParseSymbolTable s
+        symbolsDoc = fmap formatSymbol symbols
 
 formatSections :: [ElfSection] -> Doc ()
 formatSections s = formatList  $ formatSection <$> s

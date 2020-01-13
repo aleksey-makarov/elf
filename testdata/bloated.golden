@@ -85,6 +85,118 @@ Sections:  - Name:      ""
                         bc 00 00 00 a0 85 04 08 00 00 00 00 12 00 00 00 # ................
                         f7 00 00 00 70 85 04 08 00 00 00 00 12 00 00 00 # ....p...........
                         a1 00 00 00 40 a0 04 08 8c 00 00 00 11 00 1a 00 # ....@...........
+             Symbols:   - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTNoType
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x158
+                          Name:      "__cxa_atexit"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x10
+                          Name:      "__gmon_start__"
+                          Type:      STTNoType
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x1f
+                          Name:      "_Jv_RegisterClasses"
+                          Type:      STTNoType
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x10f
+                          Name:      "_ZNSt8ios_base4InitC1Ev"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x165
+                          Name:      "__libc_start_main"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x33
+                          Name:      "_ITM_deregisterTMCloneTable"
+                          Type:      STTNoType
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x69
+                          Name:      "_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x4f
+                          Name:      "_ITM_registerTMCloneTable"
+                          Type:      STTNoType
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0xab
+                          Name:      "_ZNSolsEPFRSoS_E"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x149
+                          Name:      "_IO_stdin_used"
+                          Type:      STTObject
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 16
+                          Value:     0x80487ec
+                          Size:      0x4
+                        - NameIndex: 0xbc
+                          Name:      "_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x80485a0
+                          Size:      0x0
+                        - NameIndex: 0xf7
+                          Name:      "_ZNSt8ios_base4InitD1Ev"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x8048570
+                          Size:      0x0
+                        - NameIndex: 0xa1
+                          Name:      "_ZSt4cout"
+                          Type:      STTObject
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 26
+                          Value:     0x804a040
+                          Size:      0x8c
            - Name:      ".dynstr"
              Type:      SHT_STRTAB
              Flags:     - SHF_ALLOC
@@ -558,6 +670,630 @@ Sections:  - Name:      ""
                         6f 03 00 00 2c a0 04 08 00 00 00 00 10 00 19 00 # o...,...........
                         76 03 00 00 10 87 04 08 51 00 00 00 12 00 0e 00 # v.......Q.......
                         3b 00 00 00 0c 85 04 08 00 00 00 00 12 00 0b 00 # ;...............
+             Symbols:   - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTNoType
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 1
+                          Value:     0x8048154
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 2
+                          Value:     0x8048168
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 3
+                          Value:     0x8048188
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 4
+                          Value:     0x80481ac
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 5
+                          Value:     0x80481dc
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 6
+                          Value:     0x80482bc
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 7
+                          Value:     0x8048456
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 8
+                          Value:     0x8048474
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 9
+                          Value:     0x80484c4
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 10
+                          Value:     0x80484d4
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 11
+                          Value:     0x804850c
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 12
+                          Value:     0x8048530
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 13
+                          Value:     0x80485b0
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 14
+                          Value:     0x80485c0
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 15
+                          Value:     0x80487d4
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 16
+                          Value:     0x80487e8
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 17
+                          Value:     0x8048804
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 18
+                          Value:     0x8048840
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 19
+                          Value:     0x8049eec
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 20
+                          Value:     0x8049ef4
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 21
+                          Value:     0x8049ef8
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 22
+                          Value:     0x8049efc
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 23
+                          Value:     0x8049ffc
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 24
+                          Value:     0x804a000
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 25
+                          Value:     0x804a028
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 26
+                          Value:     0x804a040
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTSection
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 27
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x10
+                          Name:      "bloated.cpp"
+                          Type:      STTFile
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNAbs
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x1
+                          Name:      "_GLOBAL__sub_I_bloated.cpp"
+                          Type:      STTFunc
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 14
+                          Value:     0x8048600
+                          Size:      0x10
+                        - NameIndex: 0x1c
+                          Name:      "_ZStL8__ioinit"
+                          Type:      STTObject
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 26
+                          Value:     0x804a0cd
+                          Size:      0x1
+                        - NameIndex: 0x2b
+                          Name:      "__cxx_global_var_init"
+                          Type:      STTFunc
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 14
+                          Value:     0x80485c0
+                          Size:      0x3e
+                        - NameIndex: 0x41
+                          Name:      "crtstuff.c"
+                          Type:      STTFile
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNAbs
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x4c
+                          Name:      "__JCR_LIST__"
+                          Type:      STTObject
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 21
+                          Value:     0x8049ef8
+                          Size:      0x0
+                        - NameIndex: 0x59
+                          Name:      "deregister_tm_clones"
+                          Type:      STTFunc
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 14
+                          Value:     0x8048650
+                          Size:      0x0
+                        - NameIndex: 0x5b
+                          Name:      "register_tm_clones"
+                          Type:      STTFunc
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 14
+                          Value:     0x8048680
+                          Size:      0x0
+                        - NameIndex: 0x6e
+                          Name:      "__do_global_dtors_aux"
+                          Type:      STTFunc
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 14
+                          Value:     0x80486c0
+                          Size:      0x0
+                        - NameIndex: 0x84
+                          Name:      "completed.6554"
+                          Type:      STTObject
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 26
+                          Value:     0x804a0cc
+                          Size:      0x1
+                        - NameIndex: 0x93
+                          Name:      "__do_global_dtors_aux_fini_array_entry"
+                          Type:      STTObject
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 20
+                          Value:     0x8049ef4
+                          Size:      0x0
+                        - NameIndex: 0xba
+                          Name:      "frame_dummy"
+                          Type:      STTFunc
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 14
+                          Value:     0x80486e0
+                          Size:      0x0
+                        - NameIndex: 0xc6
+                          Name:      "__frame_dummy_init_array_entry"
+                          Type:      STTObject
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 19
+                          Value:     0x8049eec
+                          Size:      0x0
+                        - NameIndex: 0x41
+                          Name:      "crtstuff.c"
+                          Type:      STTFile
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNAbs
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0xe5
+                          Name:      "__FRAME_END__"
+                          Type:      STTObject
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 18
+                          Value:     0x8048930
+                          Size:      0x0
+                        - NameIndex: 0xf3
+                          Name:      "__JCR_END__"
+                          Type:      STTObject
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 21
+                          Value:     0x8049ef8
+                          Size:      0x0
+                        - NameIndex: 0x0
+                          Name:      ""
+                          Type:      STTFile
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNAbs
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0xff
+                          Name:      "__GNU_EH_FRAME_HDR"
+                          Type:      STTNoType
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 17
+                          Value:     0x8048804
+                          Size:      0x0
+                        - NameIndex: 0x112
+                          Name:      "_GLOBAL_OFFSET_TABLE_"
+                          Type:      STTObject
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 24
+                          Value:     0x804a000
+                          Size:      0x0
+                        - NameIndex: 0x128
+                          Name:      "__init_array_end"
+                          Type:      STTNoType
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 19
+                          Value:     0x8049ef4
+                          Size:      0x0
+                        - NameIndex: 0x139
+                          Name:      "__init_array_start"
+                          Type:      STTNoType
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 19
+                          Value:     0x8049eec
+                          Size:      0x0
+                        - NameIndex: 0x14c
+                          Name:      "_DYNAMIC"
+                          Type:      STTObject
+                          Binding:   STBLocal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 22
+                          Value:     0x8049efc
+                          Size:      0x0
+                        - NameIndex: 0x29c
+                          Name:      "data_start"
+                          Type:      STTNoType
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNIndex 25
+                          Value:     0x804a028
+                          Size:      0x0
+                        - NameIndex: 0x155
+                          Name:      "__cxa_atexit@@GLIBC_2.1.3"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x16f
+                          Name:      "__libc_csu_fini"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 14
+                          Value:     0x80487d0
+                          Size:      0x2
+                        - NameIndex: 0x2a0
+                          Name:      "_start"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 14
+                          Value:     0x8048610
+                          Size:      0x0
+                        - NameIndex: 0x17f
+                          Name:      "__gmon_start__"
+                          Type:      STTNoType
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x18e
+                          Name:      "_Jv_RegisterClasses"
+                          Type:      STTNoType
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x1a2
+                          Name:      "_fp_hw"
+                          Type:      STTObject
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 16
+                          Value:     0x80487e8
+                          Size:      0x4
+                        - NameIndex: 0x179
+                          Name:      "_fini"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 15
+                          Value:     0x80487d4
+                          Size:      0x0
+                        - NameIndex: 0x1a9
+                          Name:      "_ZNSt8ios_base4InitC1Ev@@GLIBCXX_3.4"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x1ce
+                          Name:      "__libc_start_main@@GLIBC_2.0"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x1eb
+                          Name:      "_ZNSt8ios_base4InitD1Ev@@GLIBCXX_3.4"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x8048570
+                          Size:      0x0
+                        - NameIndex: 0x210
+                          Name:      "_ITM_deregisterTMCloneTable"
+                          Type:      STTNoType
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x22c
+                          Name:      "_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@@GLIBCXX_3.4"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x271
+                          Name:      "_IO_stdin_used"
+                          Type:      STTObject
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 16
+                          Value:     0x80487ec
+                          Size:      0x4
+                        - NameIndex: 0x280
+                          Name:      "_ITM_registerTMCloneTable"
+                          Type:      STTNoType
+                          Binding:   STBWeak
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x29a
+                          Name:      "__data_start"
+                          Type:      STTNoType
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 25
+                          Value:     0x804a028
+                          Size:      0x0
+                        - NameIndex: 0x2a7
+                          Name:      "__x86.get_pc_thunk.bx"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x2
+                          SectionIndex: SHNIndex 14
+                          Value:     0x8048640
+                          Size:      0x4
+                        - NameIndex: 0x2bd
+                          Name:      "__TMC_END__"
+                          Type:      STTObject
+                          Binding:   STBGlobal
+                          Other:     0x2
+                          SectionIndex: SHNIndex 25
+                          Value:     0x804a02c
+                          Size:      0x0
+                        - NameIndex: 0x2c9
+                          Name:      "_ZSt4cout@@GLIBCXX_3.4"
+                          Type:      STTObject
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 26
+                          Value:     0x804a040
+                          Size:      0x8c
+                        - NameIndex: 0x2e0
+                          Name:      "__dso_handle"
+                          Type:      STTObject
+                          Binding:   STBGlobal
+                          Other:     0x2
+                          SectionIndex: SHNIndex 16
+                          Value:     0x80487f0
+                          Size:      0x0
+                        - NameIndex: 0x2ed
+                          Name:      "__libc_csu_init"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 14
+                          Value:     0x8048770
+                          Size:      0x5d
+                        - NameIndex: 0x2fd
+                          Name:      "__bss_start"
+                          Type:      STTNoType
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 26
+                          Value:     0x804a02c
+                          Size:      0x0
+                        - NameIndex: 0x134
+                          Name:      "_end"
+                          Type:      STTNoType
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 26
+                          Value:     0x804a0d0
+                          Size:      0x0
+                        - NameIndex: 0x309
+                          Name:      "_ZNSolsEPFRSoS_E@@GLIBCXX_3.4"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x0
+                          Size:      0x0
+                        - NameIndex: 0x327
+                          Name:      "_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_@@GLIBCXX_3.4"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNUndef
+                          Value:     0x80485a0
+                          Size:      0x0
+                        - NameIndex: 0x36f
+                          Name:      "_edata"
+                          Type:      STTNoType
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 25
+                          Value:     0x804a02c
+                          Size:      0x0
+                        - NameIndex: 0x376
+                          Name:      "main"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 14
+                          Value:     0x8048710
+                          Size:      0x51
+                        - NameIndex: 0x3b
+                          Name:      "_init"
+                          Type:      STTFunc
+                          Binding:   STBGlobal
+                          Other:     0x0
+                          SectionIndex: SHNIndex 11
+                          Value:     0x804850c
+                          Size:      0x0
            - Name:      ".strtab"
              Type:      SHT_STRTAB
              Flags:     
