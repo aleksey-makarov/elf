@@ -51,7 +51,6 @@ module Data.Elf ( ElfClass(..)
                 , splitBits
 
                 , ElfSymbolTableEntry(..)
-                , ElfSymbolBinding(..)
                 , ElfSectionIndex(..)
                 , elfParseSymbolTable
 
@@ -588,34 +587,7 @@ infoToTypeAndBind :: Word8 -> (ElfSymbolType,ElfSymbolBinding)
 infoToTypeAndBind i =
     let t = fromIntegral $ i .&. 0x0F
         b = fromIntegral $ (i .&. 0xF0) `shiftR` 4
-    in (ElfSymbolType t, toEnum b)
-
-data ElfSymbolBinding
-    = STBLocal
-    | STBGlobal
-    | STBWeak
-    | STBLoOS
-    | STBHiOS
-    | STBLoProc
-    | STBHiProc
-    deriving (Eq, Ord, Show, Read)
-
-instance Enum ElfSymbolBinding where
-    fromEnum STBLocal  = 0
-    fromEnum STBGlobal = 1
-    fromEnum STBWeak   = 2
-    fromEnum STBLoOS   = 10
-    fromEnum STBHiOS   = 12
-    fromEnum STBLoProc = 13
-    fromEnum STBHiProc = 15
-    toEnum  0 = STBLocal
-    toEnum  1 = STBGlobal
-    toEnum  2 = STBWeak
-    toEnum 10 = STBLoOS
-    toEnum 12 = STBHiOS
-    toEnum 13 = STBLoProc
-    toEnum 15 = STBHiProc
-    toEnum  _ = STBLocal -- FIXME
+    in (ElfSymbolType t, ElfSymbolBinding b)
 
 data ElfSectionIndex
     = SHNUndef

@@ -70,7 +70,7 @@ Sections:  - Name:      ""
              Symbols:   - NameIndex: 0x0
                           Name:      ""
                           Type:      STT_NoType
-                          Binding:   STBLocal
+                          Binding:   STB_Local
                           Other:     0x0
                           SectionIndex: SHNUndef
                           Value:     0x0
@@ -78,7 +78,7 @@ Sections:  - Name:      ""
                         - NameIndex: 0x8
                           Name:      "clock_gettime"
                           Type:      STT_Func
-                          Binding:   STBWeak
+                          Binding:   STB_Weak
                           Other:     0x0
                           SectionIndex: SHNIndex 12
                           Value:     0xa30
@@ -86,7 +86,7 @@ Sections:  - Name:      ""
                         - NameIndex: 0x16
                           Name:      "__vdso_gettimeofday"
                           Type:      STT_Func
-                          Binding:   STBGlobal
+                          Binding:   STB_Global
                           Other:     0x0
                           SectionIndex: SHNIndex 12
                           Value:     0xd40
@@ -94,7 +94,7 @@ Sections:  - Name:      ""
                         - NameIndex: 0x1d
                           Name:      "gettimeofday"
                           Type:      STT_Func
-                          Binding:   STBWeak
+                          Binding:   STB_Weak
                           Other:     0x0
                           SectionIndex: SHNIndex 12
                           Value:     0xd40
@@ -102,7 +102,7 @@ Sections:  - Name:      ""
                         - NameIndex: 0x2a
                           Name:      "__vdso_time"
                           Type:      STT_Func
-                          Binding:   STBGlobal
+                          Binding:   STB_Global
                           Other:     0x0
                           SectionIndex: SHNIndex 12
                           Value:     0xf10
@@ -110,7 +110,7 @@ Sections:  - Name:      ""
                         - NameIndex: 0x31
                           Name:      "time"
                           Type:      STT_Func
-                          Binding:   STBWeak
+                          Binding:   STB_Weak
                           Other:     0x0
                           SectionIndex: SHNIndex 12
                           Value:     0xf10
@@ -118,7 +118,7 @@ Sections:  - Name:      ""
                         - NameIndex: 0x1
                           Name:      "__vdso_clock_gettime"
                           Type:      STT_Func
-                          Binding:   STBGlobal
+                          Binding:   STB_Global
                           Other:     0x0
                           SectionIndex: SHNIndex 12
                           Value:     0xa30
@@ -126,7 +126,7 @@ Sections:  - Name:      ""
                         - NameIndex: 0x54
                           Name:      "LINUX_2.6"
                           Type:      STT_Object
-                          Binding:   STBGlobal
+                          Binding:   STB_Global
                           Other:     0x0
                           SectionIndex: SHNAbs
                           Value:     0x0
@@ -134,7 +134,7 @@ Sections:  - Name:      ""
                         - NameIndex: 0x36
                           Name:      "__vdso_getcpu"
                           Type:      STT_Func
-                          Binding:   STBGlobal
+                          Binding:   STB_Global
                           Other:     0x0
                           SectionIndex: SHNIndex 12
                           Value:     0xf30
@@ -142,7 +142,7 @@ Sections:  - Name:      ""
                         - NameIndex: 0x3d
                           Name:      "getcpu"
                           Type:      STT_Func
-                          Binding:   STBWeak
+                          Binding:   STB_Weak
                           Other:     0x0
                           SectionIndex: SHNIndex 12
                           Value:     0xf30

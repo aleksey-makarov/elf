@@ -212,3 +212,13 @@ $(mkDeclarations BaseWord8 "ElfSymbolType" "STT" "STT_EXT"
     , ("_LoProc", 13)
     , ("_HiProc", 15)
     ])
+
+$(mkDeclarations BaseWord8 "ElfSymbolBinding" "STB" "STB_EXT"
+    [ ("_Local",   0)
+    , ("_Global",  1)
+    , ("_Weak",    2)
+    , ("_LoOS",   10)
+    , ("_HiOS",   12)
+    , ("_LoProc", 13)
+    , ("_HiProc", 15)
+    ])
