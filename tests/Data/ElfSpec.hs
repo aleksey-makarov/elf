@@ -15,7 +15,7 @@ import Data.Binary
 import Data.Elf
 
 parseSymbolTables :: Elf -> [[ElfSymbolTableEntry]]
-parseSymbolTables e = filter (/= []) $ fmap elfParseSymbolTable $ elfSections e
+parseSymbolTables e = filter (not . null) $ fmap elfParseSymbolTable $ elfSections e
 
 spec :: Spec
 spec = do
@@ -79,7 +79,7 @@ spec = do
                 length bloatedSections `shouldBe` 31
 
             it "parses the section in the right order" $ do
-                map elfSectionName tinySections `shouldBe` [ "", ".text", ".shstrtab" ]
+                map (nameToString . elfSectionName) tinySections `shouldBe` [ "", ".text", ".shstrtab" ]
 
             it "parses the section types" $
                 let sectionTypes = map elfSectionType bloatedSections in
@@ -87,7 +87,7 @@ spec = do
                                                , SHT_NOTE, SHT_EXT 1879048182]
 
             it "parses the data" $
-                let comment  = find (\sec -> elfSectionName sec == ".comment") bloatedSections
+                let comment  = find (\sec -> (nameToString $ elfSectionName sec) == ".comment") bloatedSections
                     expected = C.pack . concat $ [ "GCC: (GNU) 6.3.1 20161221 (Red Hat 6.3.1-1)\NUL"
                                                  , "clang version 3.8.1 (tags/RELEASE_381/final)\NUL"
                                                  ]
@@ -100,10 +100,10 @@ spec = do
 
         it "parses stripped symbol" $
             -- This binary was stripped
-            concat tinySymbols `shouldSatisfy` all (isNothing . snd . steName)
+            concat tinySymbols `shouldSatisfy` all (isNothing . steName)
 
         let namedBloatedSymbols =
-                let go sym = fmap (\ name -> (name, sym)) $ snd (steName sym)
+                let go sym = fmap (\ name -> (name, sym)) $ steName sym
                 in Map.fromList $ catMaybes $ map go $ concat bloatedSymbols
 
             member k = Map.member (C.pack k)
@@ -125,10 +125,10 @@ spec = do
     describe "parse DynSym symbols" $ do
         let dynSymbols    = parseSymbolTables dynsymElf
         it "parses dyn symbol table" $ do
-          dynSymbols `shouldNotBe` []
+          dynSymbols `shouldNotSatisfy` null
         it "parse (x86_64) vdso dyn symbols" $ do
           let dynSyms = concat dynSymbols
-          filter (\e -> (snd . steName) e == (Just . C.pack) "__vdso_time") dynSyms `shouldNotBe` []
-          filter (\e -> (snd . steName) e == (Just . C.pack) "__vdso_getcpu") dynSyms `shouldNotBe` []
-          filter (\e -> (snd . steName) e == (Just . C.pack) "__vdso_clock_gettime") dynSyms `shouldNotBe` []
-          filter (\e -> (snd . steName) e == (Just . C.pack) "__vdso_gettimeofday") dynSyms `shouldNotBe` []
+          filter (\e -> (nameToString $ steName e) == "__vdso_time")          dynSyms `shouldNotSatisfy` null
+          filter (\e -> (nameToString $ steName e) == "__vdso_getcpu")        dynSyms `shouldNotSatisfy` null
+          filter (\e -> (nameToString $ steName e) == "__vdso_clock_gettime") dynSyms `shouldNotSatisfy` null
+          filter (\e -> (nameToString $ steName e) == "__vdso_gettimeofday")  dynSyms `shouldNotSatisfy` null

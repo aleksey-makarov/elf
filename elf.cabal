@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e52b4d89ec3bc2a5c29b2eacaeab1e13fdf0adfe8097eb69986a4280ed45f331
+-- hash: 8a719a60d9bc12340884cbff5356a958db317c517aee03f0b50274299777c209
 
 name:           elf
 version:        0.31
@@ -40,11 +40,12 @@ library
       Data.Elf.Generated
   hs-source-dirs:
       src
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -ddump-splices
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
       base >=2 && <5
     , binary
     , bytestring
+    , singletons
     , template-haskell
   default-language: Haskell2010
 

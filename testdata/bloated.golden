@@ -89,7 +89,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -97,7 +96,6 @@ Sections:  - Name:      ""
                           Name:      "__cxa_atexit"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -105,7 +103,6 @@ Sections:  - Name:      ""
                           Name:      "__gmon_start__"
                           Type:      STT_NoType
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -113,7 +110,6 @@ Sections:  - Name:      ""
                           Name:      "_Jv_RegisterClasses"
                           Type:      STT_NoType
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -121,7 +117,6 @@ Sections:  - Name:      ""
                           Name:      "_ZNSt8ios_base4InitC1Ev"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -129,7 +124,6 @@ Sections:  - Name:      ""
                           Name:      "__libc_start_main"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -137,7 +131,6 @@ Sections:  - Name:      ""
                           Name:      "_ITM_deregisterTMCloneTable"
                           Type:      STT_NoType
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -145,7 +138,6 @@ Sections:  - Name:      ""
                           Name:      "_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -153,7 +145,6 @@ Sections:  - Name:      ""
                           Name:      "_ITM_registerTMCloneTable"
                           Type:      STT_NoType
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -161,7 +152,6 @@ Sections:  - Name:      ""
                           Name:      "_ZNSolsEPFRSoS_E"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -169,7 +159,6 @@ Sections:  - Name:      ""
                           Name:      "_IO_stdin_used"
                           Type:      STT_Object
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 16
                           Value:     0x80487ec
                           Size:      0x4
@@ -177,7 +166,6 @@ Sections:  - Name:      ""
                           Name:      "_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x80485a0
                           Size:      0x0
@@ -185,7 +173,6 @@ Sections:  - Name:      ""
                           Name:      "_ZNSt8ios_base4InitD1Ev"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x8048570
                           Size:      0x0
@@ -193,7 +180,6 @@ Sections:  - Name:      ""
                           Name:      "_ZSt4cout"
                           Type:      STT_Object
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 26
                           Value:     0x804a040
                           Size:      0x8c
@@ -674,7 +660,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -682,7 +667,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 1
                           Value:     0x8048154
                           Size:      0x0
@@ -690,7 +674,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 2
                           Value:     0x8048168
                           Size:      0x0
@@ -698,7 +681,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 3
                           Value:     0x8048188
                           Size:      0x0
@@ -706,7 +688,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 4
                           Value:     0x80481ac
                           Size:      0x0
@@ -714,7 +695,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 5
                           Value:     0x80481dc
                           Size:      0x0
@@ -722,7 +702,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 6
                           Value:     0x80482bc
                           Size:      0x0
@@ -730,7 +709,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 7
                           Value:     0x8048456
                           Size:      0x0
@@ -738,7 +716,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 8
                           Value:     0x8048474
                           Size:      0x0
@@ -746,7 +723,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 9
                           Value:     0x80484c4
                           Size:      0x0
@@ -754,7 +730,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 10
                           Value:     0x80484d4
                           Size:      0x0
@@ -762,7 +737,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 11
                           Value:     0x804850c
                           Size:      0x0
@@ -770,7 +744,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0x8048530
                           Size:      0x0
@@ -778,7 +751,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 13
                           Value:     0x80485b0
                           Size:      0x0
@@ -786,7 +758,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 14
                           Value:     0x80485c0
                           Size:      0x0
@@ -794,7 +765,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 15
                           Value:     0x80487d4
                           Size:      0x0
@@ -802,7 +772,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 16
                           Value:     0x80487e8
                           Size:      0x0
@@ -810,7 +779,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 17
                           Value:     0x8048804
                           Size:      0x0
@@ -818,7 +786,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 18
                           Value:     0x8048840
                           Size:      0x0
@@ -826,7 +793,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 19
                           Value:     0x8049eec
                           Size:      0x0
@@ -834,7 +800,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 20
                           Value:     0x8049ef4
                           Size:      0x0
@@ -842,7 +807,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 21
                           Value:     0x8049ef8
                           Size:      0x0
@@ -850,7 +814,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 22
                           Value:     0x8049efc
                           Size:      0x0
@@ -858,7 +821,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 23
                           Value:     0x8049ffc
                           Size:      0x0
@@ -866,7 +828,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 24
                           Value:     0x804a000
                           Size:      0x0
@@ -874,7 +835,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 25
                           Value:     0x804a028
                           Size:      0x0
@@ -882,7 +842,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 26
                           Value:     0x804a040
                           Size:      0x0
@@ -890,7 +849,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 27
                           Value:     0x0
                           Size:      0x0
@@ -898,7 +856,6 @@ Sections:  - Name:      ""
                           Name:      "bloated.cpp"
                           Type:      STT_File
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_Abs
                           Value:     0x0
                           Size:      0x0
@@ -906,7 +863,6 @@ Sections:  - Name:      ""
                           Name:      "_GLOBAL__sub_I_bloated.cpp"
                           Type:      STT_Func
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 14
                           Value:     0x8048600
                           Size:      0x10
@@ -914,7 +870,6 @@ Sections:  - Name:      ""
                           Name:      "_ZStL8__ioinit"
                           Type:      STT_Object
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 26
                           Value:     0x804a0cd
                           Size:      0x1
@@ -922,7 +877,6 @@ Sections:  - Name:      ""
                           Name:      "__cxx_global_var_init"
                           Type:      STT_Func
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 14
                           Value:     0x80485c0
                           Size:      0x3e
@@ -930,7 +884,6 @@ Sections:  - Name:      ""
                           Name:      "crtstuff.c"
                           Type:      STT_File
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_Abs
                           Value:     0x0
                           Size:      0x0
@@ -938,7 +891,6 @@ Sections:  - Name:      ""
                           Name:      "__JCR_LIST__"
                           Type:      STT_Object
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 21
                           Value:     0x8049ef8
                           Size:      0x0
@@ -946,7 +898,6 @@ Sections:  - Name:      ""
                           Name:      "deregister_tm_clones"
                           Type:      STT_Func
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 14
                           Value:     0x8048650
                           Size:      0x0
@@ -954,7 +905,6 @@ Sections:  - Name:      ""
                           Name:      "register_tm_clones"
                           Type:      STT_Func
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 14
                           Value:     0x8048680
                           Size:      0x0
@@ -962,7 +912,6 @@ Sections:  - Name:      ""
                           Name:      "__do_global_dtors_aux"
                           Type:      STT_Func
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 14
                           Value:     0x80486c0
                           Size:      0x0
@@ -970,7 +919,6 @@ Sections:  - Name:      ""
                           Name:      "completed.6554"
                           Type:      STT_Object
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 26
                           Value:     0x804a0cc
                           Size:      0x1
@@ -978,7 +926,6 @@ Sections:  - Name:      ""
                           Name:      "__do_global_dtors_aux_fini_array_entry"
                           Type:      STT_Object
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 20
                           Value:     0x8049ef4
                           Size:      0x0
@@ -986,7 +933,6 @@ Sections:  - Name:      ""
                           Name:      "frame_dummy"
                           Type:      STT_Func
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 14
                           Value:     0x80486e0
                           Size:      0x0
@@ -994,7 +940,6 @@ Sections:  - Name:      ""
                           Name:      "__frame_dummy_init_array_entry"
                           Type:      STT_Object
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 19
                           Value:     0x8049eec
                           Size:      0x0
@@ -1002,7 +947,6 @@ Sections:  - Name:      ""
                           Name:      "crtstuff.c"
                           Type:      STT_File
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_Abs
                           Value:     0x0
                           Size:      0x0
@@ -1010,7 +954,6 @@ Sections:  - Name:      ""
                           Name:      "__FRAME_END__"
                           Type:      STT_Object
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 18
                           Value:     0x8048930
                           Size:      0x0
@@ -1018,7 +961,6 @@ Sections:  - Name:      ""
                           Name:      "__JCR_END__"
                           Type:      STT_Object
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 21
                           Value:     0x8049ef8
                           Size:      0x0
@@ -1026,7 +968,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_File
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_Abs
                           Value:     0x0
                           Size:      0x0
@@ -1034,7 +975,6 @@ Sections:  - Name:      ""
                           Name:      "__GNU_EH_FRAME_HDR"
                           Type:      STT_NoType
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 17
                           Value:     0x8048804
                           Size:      0x0
@@ -1042,7 +982,6 @@ Sections:  - Name:      ""
                           Name:      "_GLOBAL_OFFSET_TABLE_"
                           Type:      STT_Object
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 24
                           Value:     0x804a000
                           Size:      0x0
@@ -1050,7 +989,6 @@ Sections:  - Name:      ""
                           Name:      "__init_array_end"
                           Type:      STT_NoType
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 19
                           Value:     0x8049ef4
                           Size:      0x0
@@ -1058,7 +996,6 @@ Sections:  - Name:      ""
                           Name:      "__init_array_start"
                           Type:      STT_NoType
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 19
                           Value:     0x8049eec
                           Size:      0x0
@@ -1066,7 +1003,6 @@ Sections:  - Name:      ""
                           Name:      "_DYNAMIC"
                           Type:      STT_Object
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_EXT 22
                           Value:     0x8049efc
                           Size:      0x0
@@ -1074,7 +1010,6 @@ Sections:  - Name:      ""
                           Name:      "data_start"
                           Type:      STT_NoType
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_EXT 25
                           Value:     0x804a028
                           Size:      0x0
@@ -1082,7 +1017,6 @@ Sections:  - Name:      ""
                           Name:      "__cxa_atexit@@GLIBC_2.1.3"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -1090,7 +1024,6 @@ Sections:  - Name:      ""
                           Name:      "__libc_csu_fini"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 14
                           Value:     0x80487d0
                           Size:      0x2
@@ -1098,7 +1031,6 @@ Sections:  - Name:      ""
                           Name:      "_start"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 14
                           Value:     0x8048610
                           Size:      0x0
@@ -1106,7 +1038,6 @@ Sections:  - Name:      ""
                           Name:      "__gmon_start__"
                           Type:      STT_NoType
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -1114,7 +1045,6 @@ Sections:  - Name:      ""
                           Name:      "_Jv_RegisterClasses"
                           Type:      STT_NoType
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -1122,7 +1052,6 @@ Sections:  - Name:      ""
                           Name:      "_fp_hw"
                           Type:      STT_Object
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 16
                           Value:     0x80487e8
                           Size:      0x4
@@ -1130,7 +1059,6 @@ Sections:  - Name:      ""
                           Name:      "_fini"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 15
                           Value:     0x80487d4
                           Size:      0x0
@@ -1138,7 +1066,6 @@ Sections:  - Name:      ""
                           Name:      "_ZNSt8ios_base4InitC1Ev@@GLIBCXX_3.4"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -1146,7 +1073,6 @@ Sections:  - Name:      ""
                           Name:      "__libc_start_main@@GLIBC_2.0"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -1154,7 +1080,6 @@ Sections:  - Name:      ""
                           Name:      "_ZNSt8ios_base4InitD1Ev@@GLIBCXX_3.4"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x8048570
                           Size:      0x0
@@ -1162,7 +1087,6 @@ Sections:  - Name:      ""
                           Name:      "_ITM_deregisterTMCloneTable"
                           Type:      STT_NoType
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -1170,7 +1094,6 @@ Sections:  - Name:      ""
                           Name:      "_ZStlsISt11char_traitsIcEERSt13basic_ostreamIcT_ES5_PKc@@GLIBCXX_3.4"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -1178,7 +1101,6 @@ Sections:  - Name:      ""
                           Name:      "_IO_stdin_used"
                           Type:      STT_Object
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 16
                           Value:     0x80487ec
                           Size:      0x4
@@ -1186,7 +1108,6 @@ Sections:  - Name:      ""
                           Name:      "_ITM_registerTMCloneTable"
                           Type:      STT_NoType
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -1194,7 +1115,6 @@ Sections:  - Name:      ""
                           Name:      "__data_start"
                           Type:      STT_NoType
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 25
                           Value:     0x804a028
                           Size:      0x0
@@ -1202,7 +1122,6 @@ Sections:  - Name:      ""
                           Name:      "__x86.get_pc_thunk.bx"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x2
                           SectionIndex: SHN_EXT 14
                           Value:     0x8048640
                           Size:      0x4
@@ -1210,7 +1129,6 @@ Sections:  - Name:      ""
                           Name:      "__TMC_END__"
                           Type:      STT_Object
                           Binding:   STB_Global
-                          Other:     0x2
                           SectionIndex: SHN_EXT 25
                           Value:     0x804a02c
                           Size:      0x0
@@ -1218,7 +1136,6 @@ Sections:  - Name:      ""
                           Name:      "_ZSt4cout@@GLIBCXX_3.4"
                           Type:      STT_Object
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 26
                           Value:     0x804a040
                           Size:      0x8c
@@ -1226,7 +1143,6 @@ Sections:  - Name:      ""
                           Name:      "__dso_handle"
                           Type:      STT_Object
                           Binding:   STB_Global
-                          Other:     0x2
                           SectionIndex: SHN_EXT 16
                           Value:     0x80487f0
                           Size:      0x0
@@ -1234,7 +1150,6 @@ Sections:  - Name:      ""
                           Name:      "__libc_csu_init"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 14
                           Value:     0x8048770
                           Size:      0x5d
@@ -1242,7 +1157,6 @@ Sections:  - Name:      ""
                           Name:      "__bss_start"
                           Type:      STT_NoType
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 26
                           Value:     0x804a02c
                           Size:      0x0
@@ -1250,7 +1164,6 @@ Sections:  - Name:      ""
                           Name:      "_end"
                           Type:      STT_NoType
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 26
                           Value:     0x804a0d0
                           Size:      0x0
@@ -1258,7 +1171,6 @@ Sections:  - Name:      ""
                           Name:      "_ZNSolsEPFRSoS_E@@GLIBCXX_3.4"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -1266,7 +1178,6 @@ Sections:  - Name:      ""
                           Name:      "_ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_@@GLIBCXX_3.4"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x80485a0
                           Size:      0x0
@@ -1274,7 +1185,6 @@ Sections:  - Name:      ""
                           Name:      "_edata"
                           Type:      STT_NoType
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 25
                           Value:     0x804a02c
                           Size:      0x0
@@ -1282,7 +1192,6 @@ Sections:  - Name:      ""
                           Name:      "main"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 14
                           Value:     0x8048710
                           Size:      0x51
@@ -1290,7 +1199,6 @@ Sections:  - Name:      ""
                           Name:      "_init"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 11
                           Value:     0x804850c
                           Size:      0x0

@@ -28,13 +28,13 @@ library:
     - bytestring
     - binary
     - template-haskell
+    - singletons
   source-dirs: src
   other-modules:
     - Data.Elf.TH
     - Data.Elf.Generated
   exposed-modules:
     - Data.Elf
-  ghc-options: -ddump-splices
 
 tests:
   tests:

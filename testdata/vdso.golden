@@ -71,7 +71,6 @@ Sections:  - Name:      ""
                           Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Local
-                          Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
@@ -79,7 +78,6 @@ Sections:  - Name:      ""
                           Name:      "clock_gettime"
                           Type:      STT_Func
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xa30
                           Size:      0x305
@@ -87,7 +85,6 @@ Sections:  - Name:      ""
                           Name:      "__vdso_gettimeofday"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xd40
                           Size:      0x1c1
@@ -95,7 +92,6 @@ Sections:  - Name:      ""
                           Name:      "gettimeofday"
                           Type:      STT_Func
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xd40
                           Size:      0x1c1
@@ -103,7 +99,6 @@ Sections:  - Name:      ""
                           Name:      "__vdso_time"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xf10
                           Size:      0x15
@@ -111,7 +106,6 @@ Sections:  - Name:      ""
                           Name:      "time"
                           Type:      STT_Func
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xf10
                           Size:      0x15
@@ -119,7 +113,6 @@ Sections:  - Name:      ""
                           Name:      "__vdso_clock_gettime"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xa30
                           Size:      0x305
@@ -127,7 +120,6 @@ Sections:  - Name:      ""
                           Name:      "LINUX_2.6"
                           Type:      STT_Object
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_Abs
                           Value:     0x0
                           Size:      0x0
@@ -135,7 +127,6 @@ Sections:  - Name:      ""
                           Name:      "__vdso_getcpu"
                           Type:      STT_Func
                           Binding:   STB_Global
-                          Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xf30
                           Size:      0x2a
@@ -143,7 +134,6 @@ Sections:  - Name:      ""
                           Name:      "getcpu"
                           Type:      STT_Func
                           Binding:   STB_Weak
-                          Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xf30
                           Size:      0x2a
