@@ -90,7 +90,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x158
@@ -98,7 +98,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x10
@@ -106,7 +106,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x1f
@@ -114,7 +114,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x10f
@@ -122,7 +122,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x165
@@ -130,7 +130,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x33
@@ -138,7 +138,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x69
@@ -146,7 +146,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x4f
@@ -154,7 +154,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0xab
@@ -162,7 +162,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x149
@@ -170,7 +170,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 16
+                          SectionIndex: SHN_EXT 16
                           Value:     0x80487ec
                           Size:      0x4
                         - NameIndex: 0xbc
@@ -178,7 +178,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x80485a0
                           Size:      0x0
                         - NameIndex: 0xf7
@@ -186,7 +186,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x8048570
                           Size:      0x0
                         - NameIndex: 0xa1
@@ -194,7 +194,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 26
+                          SectionIndex: SHN_EXT 26
                           Value:     0x804a040
                           Size:      0x8c
            - Name:      ".dynstr"
@@ -675,7 +675,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x0
@@ -683,7 +683,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 1
+                          SectionIndex: SHN_EXT 1
                           Value:     0x8048154
                           Size:      0x0
                         - NameIndex: 0x0
@@ -691,7 +691,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 2
+                          SectionIndex: SHN_EXT 2
                           Value:     0x8048168
                           Size:      0x0
                         - NameIndex: 0x0
@@ -699,7 +699,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 3
+                          SectionIndex: SHN_EXT 3
                           Value:     0x8048188
                           Size:      0x0
                         - NameIndex: 0x0
@@ -707,7 +707,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 4
+                          SectionIndex: SHN_EXT 4
                           Value:     0x80481ac
                           Size:      0x0
                         - NameIndex: 0x0
@@ -715,7 +715,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 5
+                          SectionIndex: SHN_EXT 5
                           Value:     0x80481dc
                           Size:      0x0
                         - NameIndex: 0x0
@@ -723,7 +723,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 6
+                          SectionIndex: SHN_EXT 6
                           Value:     0x80482bc
                           Size:      0x0
                         - NameIndex: 0x0
@@ -731,7 +731,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 7
+                          SectionIndex: SHN_EXT 7
                           Value:     0x8048456
                           Size:      0x0
                         - NameIndex: 0x0
@@ -739,7 +739,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 8
+                          SectionIndex: SHN_EXT 8
                           Value:     0x8048474
                           Size:      0x0
                         - NameIndex: 0x0
@@ -747,7 +747,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 9
+                          SectionIndex: SHN_EXT 9
                           Value:     0x80484c4
                           Size:      0x0
                         - NameIndex: 0x0
@@ -755,7 +755,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 10
+                          SectionIndex: SHN_EXT 10
                           Value:     0x80484d4
                           Size:      0x0
                         - NameIndex: 0x0
@@ -763,7 +763,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 11
+                          SectionIndex: SHN_EXT 11
                           Value:     0x804850c
                           Size:      0x0
                         - NameIndex: 0x0
@@ -771,7 +771,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 12
+                          SectionIndex: SHN_EXT 12
                           Value:     0x8048530
                           Size:      0x0
                         - NameIndex: 0x0
@@ -779,7 +779,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 13
+                          SectionIndex: SHN_EXT 13
                           Value:     0x80485b0
                           Size:      0x0
                         - NameIndex: 0x0
@@ -787,7 +787,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 14
+                          SectionIndex: SHN_EXT 14
                           Value:     0x80485c0
                           Size:      0x0
                         - NameIndex: 0x0
@@ -795,7 +795,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 15
+                          SectionIndex: SHN_EXT 15
                           Value:     0x80487d4
                           Size:      0x0
                         - NameIndex: 0x0
@@ -803,7 +803,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 16
+                          SectionIndex: SHN_EXT 16
                           Value:     0x80487e8
                           Size:      0x0
                         - NameIndex: 0x0
@@ -811,7 +811,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 17
+                          SectionIndex: SHN_EXT 17
                           Value:     0x8048804
                           Size:      0x0
                         - NameIndex: 0x0
@@ -819,7 +819,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 18
+                          SectionIndex: SHN_EXT 18
                           Value:     0x8048840
                           Size:      0x0
                         - NameIndex: 0x0
@@ -827,7 +827,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 19
+                          SectionIndex: SHN_EXT 19
                           Value:     0x8049eec
                           Size:      0x0
                         - NameIndex: 0x0
@@ -835,7 +835,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 20
+                          SectionIndex: SHN_EXT 20
                           Value:     0x8049ef4
                           Size:      0x0
                         - NameIndex: 0x0
@@ -843,7 +843,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 21
+                          SectionIndex: SHN_EXT 21
                           Value:     0x8049ef8
                           Size:      0x0
                         - NameIndex: 0x0
@@ -851,7 +851,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 22
+                          SectionIndex: SHN_EXT 22
                           Value:     0x8049efc
                           Size:      0x0
                         - NameIndex: 0x0
@@ -859,7 +859,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 23
+                          SectionIndex: SHN_EXT 23
                           Value:     0x8049ffc
                           Size:      0x0
                         - NameIndex: 0x0
@@ -867,7 +867,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 24
+                          SectionIndex: SHN_EXT 24
                           Value:     0x804a000
                           Size:      0x0
                         - NameIndex: 0x0
@@ -875,7 +875,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 25
+                          SectionIndex: SHN_EXT 25
                           Value:     0x804a028
                           Size:      0x0
                         - NameIndex: 0x0
@@ -883,7 +883,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 26
+                          SectionIndex: SHN_EXT 26
                           Value:     0x804a040
                           Size:      0x0
                         - NameIndex: 0x0
@@ -891,7 +891,7 @@ Sections:  - Name:      ""
                           Type:      STT_Section
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 27
+                          SectionIndex: SHN_EXT 27
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x10
@@ -899,7 +899,7 @@ Sections:  - Name:      ""
                           Type:      STT_File
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNAbs
+                          SectionIndex: SHN_Abs
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x1
@@ -907,7 +907,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 14
+                          SectionIndex: SHN_EXT 14
                           Value:     0x8048600
                           Size:      0x10
                         - NameIndex: 0x1c
@@ -915,7 +915,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 26
+                          SectionIndex: SHN_EXT 26
                           Value:     0x804a0cd
                           Size:      0x1
                         - NameIndex: 0x2b
@@ -923,7 +923,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 14
+                          SectionIndex: SHN_EXT 14
                           Value:     0x80485c0
                           Size:      0x3e
                         - NameIndex: 0x41
@@ -931,7 +931,7 @@ Sections:  - Name:      ""
                           Type:      STT_File
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNAbs
+                          SectionIndex: SHN_Abs
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x4c
@@ -939,7 +939,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 21
+                          SectionIndex: SHN_EXT 21
                           Value:     0x8049ef8
                           Size:      0x0
                         - NameIndex: 0x59
@@ -947,7 +947,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 14
+                          SectionIndex: SHN_EXT 14
                           Value:     0x8048650
                           Size:      0x0
                         - NameIndex: 0x5b
@@ -955,7 +955,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 14
+                          SectionIndex: SHN_EXT 14
                           Value:     0x8048680
                           Size:      0x0
                         - NameIndex: 0x6e
@@ -963,7 +963,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 14
+                          SectionIndex: SHN_EXT 14
                           Value:     0x80486c0
                           Size:      0x0
                         - NameIndex: 0x84
@@ -971,7 +971,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 26
+                          SectionIndex: SHN_EXT 26
                           Value:     0x804a0cc
                           Size:      0x1
                         - NameIndex: 0x93
@@ -979,7 +979,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 20
+                          SectionIndex: SHN_EXT 20
                           Value:     0x8049ef4
                           Size:      0x0
                         - NameIndex: 0xba
@@ -987,7 +987,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 14
+                          SectionIndex: SHN_EXT 14
                           Value:     0x80486e0
                           Size:      0x0
                         - NameIndex: 0xc6
@@ -995,7 +995,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 19
+                          SectionIndex: SHN_EXT 19
                           Value:     0x8049eec
                           Size:      0x0
                         - NameIndex: 0x41
@@ -1003,7 +1003,7 @@ Sections:  - Name:      ""
                           Type:      STT_File
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNAbs
+                          SectionIndex: SHN_Abs
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0xe5
@@ -1011,7 +1011,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 18
+                          SectionIndex: SHN_EXT 18
                           Value:     0x8048930
                           Size:      0x0
                         - NameIndex: 0xf3
@@ -1019,7 +1019,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 21
+                          SectionIndex: SHN_EXT 21
                           Value:     0x8049ef8
                           Size:      0x0
                         - NameIndex: 0x0
@@ -1027,7 +1027,7 @@ Sections:  - Name:      ""
                           Type:      STT_File
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNAbs
+                          SectionIndex: SHN_Abs
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0xff
@@ -1035,7 +1035,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 17
+                          SectionIndex: SHN_EXT 17
                           Value:     0x8048804
                           Size:      0x0
                         - NameIndex: 0x112
@@ -1043,7 +1043,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 24
+                          SectionIndex: SHN_EXT 24
                           Value:     0x804a000
                           Size:      0x0
                         - NameIndex: 0x128
@@ -1051,7 +1051,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 19
+                          SectionIndex: SHN_EXT 19
                           Value:     0x8049ef4
                           Size:      0x0
                         - NameIndex: 0x139
@@ -1059,7 +1059,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 19
+                          SectionIndex: SHN_EXT 19
                           Value:     0x8049eec
                           Size:      0x0
                         - NameIndex: 0x14c
@@ -1067,7 +1067,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNIndex 22
+                          SectionIndex: SHN_EXT 22
                           Value:     0x8049efc
                           Size:      0x0
                         - NameIndex: 0x29c
@@ -1075,7 +1075,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNIndex 25
+                          SectionIndex: SHN_EXT 25
                           Value:     0x804a028
                           Size:      0x0
                         - NameIndex: 0x155
@@ -1083,7 +1083,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x16f
@@ -1091,7 +1091,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 14
+                          SectionIndex: SHN_EXT 14
                           Value:     0x80487d0
                           Size:      0x2
                         - NameIndex: 0x2a0
@@ -1099,7 +1099,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 14
+                          SectionIndex: SHN_EXT 14
                           Value:     0x8048610
                           Size:      0x0
                         - NameIndex: 0x17f
@@ -1107,7 +1107,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x18e
@@ -1115,7 +1115,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x1a2
@@ -1123,7 +1123,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 16
+                          SectionIndex: SHN_EXT 16
                           Value:     0x80487e8
                           Size:      0x4
                         - NameIndex: 0x179
@@ -1131,7 +1131,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 15
+                          SectionIndex: SHN_EXT 15
                           Value:     0x80487d4
                           Size:      0x0
                         - NameIndex: 0x1a9
@@ -1139,7 +1139,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x1ce
@@ -1147,7 +1147,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x1eb
@@ -1155,7 +1155,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x8048570
                           Size:      0x0
                         - NameIndex: 0x210
@@ -1163,7 +1163,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x22c
@@ -1171,7 +1171,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x271
@@ -1179,7 +1179,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 16
+                          SectionIndex: SHN_EXT 16
                           Value:     0x80487ec
                           Size:      0x4
                         - NameIndex: 0x280
@@ -1187,7 +1187,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x29a
@@ -1195,7 +1195,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 25
+                          SectionIndex: SHN_EXT 25
                           Value:     0x804a028
                           Size:      0x0
                         - NameIndex: 0x2a7
@@ -1203,7 +1203,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x2
-                          SectionIndex: SHNIndex 14
+                          SectionIndex: SHN_EXT 14
                           Value:     0x8048640
                           Size:      0x4
                         - NameIndex: 0x2bd
@@ -1211,7 +1211,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Global
                           Other:     0x2
-                          SectionIndex: SHNIndex 25
+                          SectionIndex: SHN_EXT 25
                           Value:     0x804a02c
                           Size:      0x0
                         - NameIndex: 0x2c9
@@ -1219,7 +1219,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 26
+                          SectionIndex: SHN_EXT 26
                           Value:     0x804a040
                           Size:      0x8c
                         - NameIndex: 0x2e0
@@ -1227,7 +1227,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Global
                           Other:     0x2
-                          SectionIndex: SHNIndex 16
+                          SectionIndex: SHN_EXT 16
                           Value:     0x80487f0
                           Size:      0x0
                         - NameIndex: 0x2ed
@@ -1235,7 +1235,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 14
+                          SectionIndex: SHN_EXT 14
                           Value:     0x8048770
                           Size:      0x5d
                         - NameIndex: 0x2fd
@@ -1243,7 +1243,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 26
+                          SectionIndex: SHN_EXT 26
                           Value:     0x804a02c
                           Size:      0x0
                         - NameIndex: 0x134
@@ -1251,7 +1251,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 26
+                          SectionIndex: SHN_EXT 26
                           Value:     0x804a0d0
                           Size:      0x0
                         - NameIndex: 0x309
@@ -1259,7 +1259,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x327
@@ -1267,7 +1267,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x80485a0
                           Size:      0x0
                         - NameIndex: 0x36f
@@ -1275,7 +1275,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 25
+                          SectionIndex: SHN_EXT 25
                           Value:     0x804a02c
                           Size:      0x0
                         - NameIndex: 0x376
@@ -1283,7 +1283,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 14
+                          SectionIndex: SHN_EXT 14
                           Value:     0x8048710
                           Size:      0x51
                         - NameIndex: 0x3b
@@ -1291,7 +1291,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 11
+                          SectionIndex: SHN_EXT 11
                           Value:     0x804850c
                           Size:      0x0
            - Name:      ".strtab"

@@ -72,7 +72,7 @@ Sections:  - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Local
                           Other:     0x0
-                          SectionIndex: SHNUndef
+                          SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x8
@@ -80,7 +80,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNIndex 12
+                          SectionIndex: SHN_EXT 12
                           Value:     0xa30
                           Size:      0x305
                         - NameIndex: 0x16
@@ -88,7 +88,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 12
+                          SectionIndex: SHN_EXT 12
                           Value:     0xd40
                           Size:      0x1c1
                         - NameIndex: 0x1d
@@ -96,7 +96,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNIndex 12
+                          SectionIndex: SHN_EXT 12
                           Value:     0xd40
                           Size:      0x1c1
                         - NameIndex: 0x2a
@@ -104,7 +104,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 12
+                          SectionIndex: SHN_EXT 12
                           Value:     0xf10
                           Size:      0x15
                         - NameIndex: 0x31
@@ -112,7 +112,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNIndex 12
+                          SectionIndex: SHN_EXT 12
                           Value:     0xf10
                           Size:      0x15
                         - NameIndex: 0x1
@@ -120,7 +120,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 12
+                          SectionIndex: SHN_EXT 12
                           Value:     0xa30
                           Size:      0x305
                         - NameIndex: 0x54
@@ -128,7 +128,7 @@ Sections:  - Name:      ""
                           Type:      STT_Object
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNAbs
+                          SectionIndex: SHN_Abs
                           Value:     0x0
                           Size:      0x0
                         - NameIndex: 0x36
@@ -136,7 +136,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
-                          SectionIndex: SHNIndex 12
+                          SectionIndex: SHN_EXT 12
                           Value:     0xf30
                           Size:      0x2a
                         - NameIndex: 0x3d
@@ -144,7 +144,7 @@ Sections:  - Name:      ""
                           Type:      STT_Func
                           Binding:   STB_Weak
                           Other:     0x0
-                          SectionIndex: SHNIndex 12
+                          SectionIndex: SHN_EXT 12
                           Value:     0xf30
                           Size:      0x2a
            - Name:      ".dynstr"

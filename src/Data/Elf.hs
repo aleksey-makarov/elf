@@ -51,7 +51,6 @@ module Data.Elf ( ElfClass(..)
                 , splitBits
 
                 , ElfSymbolTableEntry(..)
-                , ElfSectionIndex(..)
                 , elfParseSymbolTable
 
 {-
@@ -566,7 +565,7 @@ getSymbolTableEntry e strtlb =
     size  <- liftM fromIntegral (getWord32 er)
     info  <- getWord8
     other <- getWord8
-    sTlbIdx <- liftM (toEnum . fromIntegral) (getWord16 er)
+    sTlbIdx <- liftM (ElfSectionIndex . fromIntegral) (getWord16 er)
     let name = stringByIndex nameIdx strs
         (typ,bind) = infoToTypeAndBind info
         -- sec = sectionByIndex e sTlbIdx
@@ -575,7 +574,7 @@ getSymbolTableEntry e strtlb =
     nameIdx <- liftM fromIntegral (getWord32 er)
     info <- getWord8
     other <- getWord8
-    sTlbIdx <- liftM (toEnum . fromIntegral) (getWord16 er)
+    sTlbIdx <- liftM (ElfSectionIndex . fromIntegral) (getWord16 er)
     symVal <- getWord64 er
     size <- getWord64 er
     let name = stringByIndex nameIdx strs
@@ -588,43 +587,6 @@ infoToTypeAndBind i =
     let t = fromIntegral $ i .&. 0x0F
         b = fromIntegral $ (i .&. 0xF0) `shiftR` 4
     in (ElfSymbolType t, ElfSymbolBinding b)
-
-data ElfSectionIndex
-    = SHNUndef
-    | SHNLoProc
-    | SHNCustomProc Word64
-    | SHNHiProc
-    | SHNLoOS
-    | SHNCustomOS Word64
-    | SHNHiOS
-    | SHNAbs
-    | SHNCommon
-    | SHNIndex Word64
-    deriving (Eq, Ord, Show, Read)
-
-instance Enum ElfSectionIndex where
-    fromEnum SHNUndef = 0
-    fromEnum SHNLoProc = 0xFF00
-    fromEnum SHNHiProc = 0xFF1F
-    fromEnum SHNLoOS   = 0xFF20
-    fromEnum SHNHiOS   = 0xFF3F
-    fromEnum SHNAbs    = 0xFFF1
-    fromEnum SHNCommon = 0xFFF2
-    fromEnum (SHNCustomProc x) = fromIntegral x
-    fromEnum (SHNCustomOS x) = fromIntegral x
-    fromEnum (SHNIndex x) = fromIntegral x
-    toEnum 0 = SHNUndef
-    toEnum 0xff00 = SHNLoProc
-    toEnum 0xFF1F = SHNHiProc
-    toEnum 0xFF20 = SHNLoOS
-    toEnum 0xFF3F = SHNHiOS
-    toEnum 0xFFF1 = SHNAbs
-    toEnum 0xFFF2 = SHNCommon
-    toEnum x
-        | x > fromEnum SHNLoProc && x < fromEnum SHNHiProc = SHNCustomProc (fromIntegral x)
-        | x > fromEnum SHNLoOS && x < fromEnum SHNHiOS = SHNCustomOS (fromIntegral x)
-        | x < fromEnum SHNLoProc || x > 0xFFFF = SHNIndex (fromIntegral x)
-        | otherwise = error "Section index number is in a reserved range but we don't recognize the value from any standard."
 
 -- -- | Given a section name, extract the ElfSection.
 -- findSectionByName :: String -> Elf -> Maybe ElfSection

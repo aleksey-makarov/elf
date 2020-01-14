@@ -222,3 +222,13 @@ $(mkDeclarations BaseWord8 "ElfSymbolBinding" "STB" "STB_EXT"
     , ("_LoProc", 13)
     , ("_HiProc", 15)
     ])
+
+$(mkDeclarations BaseWord32 "ElfSectionIndex" "SHN" "SHN_EXT"
+    [ ("_Undef",       0)
+    , ("_LoProc", 0xFF00)
+    , ("_HiProc", 0xFF1F)
+    , ("_LoOS",   0xFF20)
+    , ("_HiOS",   0xFF3F)
+    , ("_Abs",    0xFFF1)
+    , ("_Common", 0xFFF2)
+    ])
