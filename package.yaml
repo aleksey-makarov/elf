@@ -16,7 +16,6 @@ extra-source-files:
 - testdata/HOWTO
 - testdata/bloated.cpp
 - testdata/tiny.asm
-- testdata/empty
 - testdata/vdso
 tested-with: GHC == 8.6.2, GHC == 8.4.4, GHC == 8.2.2, GHC == 8.0.2
 ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
@@ -45,6 +44,7 @@ tests:
       - Data.ElfSpec
     dependencies:
       - base
+      - binary
       - bytestring
       - hspec >= 2.4 && < 3
       - containers >= 0.5.9.2
@@ -68,5 +68,6 @@ executables:
     ghc-options: -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
     dependencies:
       - elf
+      - binary
       - bytestring
       - prettyprinter

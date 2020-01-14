@@ -48,7 +48,6 @@ module Data.Elf ( ElfClass(..)
                 , elfSegmentData
                 , elfSegmentMemSize
 
-                , parseElf
                 , splitBits
 
                 , ElfSymbolTableEntry(..)
@@ -493,12 +492,6 @@ data ElfReader = ElfReader
 elfReader :: ElfData -> ElfReader
 elfReader ELFDATA2LSB = ElfReader { getWord16 = getWord16le, getWord32 = getWord32le, getWord64 = getWord64le }
 elfReader ELFDATA2MSB = ElfReader { getWord16 = getWord16be, getWord32 = getWord32be, getWord64 = getWord64be }
-
--- | Parses a ByteString into an Elf record. Parse failures call error. 32-bit ELF objects have their
--- fields promoted to 64-bit so that the 32- and 64-bit ELF records can be the same.
-{- FIXME: # DEPRECATED parseElf "Use decodeFile from Data.Binary instead" #-}
-parseElf :: B.ByteString -> Elf
-parseElf b = decode $ L.fromChunks [b]
 
 -- | The symbol table entries consist of index information to be read from other
 -- parts of the ELF file. Some of this information is automatically retrieved

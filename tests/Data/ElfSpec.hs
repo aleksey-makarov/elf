@@ -1,41 +1,31 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Data.ElfSpec (spec) where
 
 import Test.Hspec
 
 import Control.Exception (evaluate)
-import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as L
 import qualified Data.ByteString.Char8 as C
 import Data.Foldable (find)
 import qualified Data.Map as Map
 import Data.Maybe
-import System.IO
+import Data.Binary
 
 import Data.Elf
-
-
-getBinaryFileContents :: FilePath -> IO BS.ByteString
-getBinaryFileContents fname = withBinaryFile fname ReadMode BS.hGetContents
 
 parseSymbolTables :: Elf -> [[ElfSymbolTableEntry]]
 parseSymbolTables e = filter (/= []) $ fmap elfParseSymbolTable $ elfSections e
 
 spec :: Spec
 spec = do
-    emptyContents   <- runIO $ getBinaryFileContents "./testdata/empty"
-    tinyContents    <- runIO $ getBinaryFileContents "./testdata/tiny"
-    bloatedContents <- runIO $ getBinaryFileContents "./testdata/bloated"
-    dynsymContents  <- runIO $ getBinaryFileContents "./testdata/vdso"
-
-    let tinyElf = parseElf tinyContents
-        bloatedElf = parseElf bloatedContents
-        dynsymElf  = parseElf dynsymContents
+    tinyElf    <- runIO $ decodeFile "./testdata/tiny"
+    bloatedElf <- runIO $ decodeFile "./testdata/bloated"
+    dynsymElf  <- runIO $ decodeFile "./testdata/vdso"
 
     describe "parseElf" $ do
-        -- TODO: That was the original only test in this package. This test
-        -- should be removed, and future versions of this library should return
-        -- an 'Either ParseError Elf'.
         it "does not accept an empty elf" $
-            evaluate (parseElf emptyContents) `shouldThrow` anyException
+            evaluate (decode L.empty :: Elf) `shouldThrow` anyErrorCall
 
         context "Headers parsing" $ do
 

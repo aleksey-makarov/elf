@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 97bc34d51a63a6a08ceb9539bc8653e32f3ff35e635a7109d656eff747c6968d
+-- hash: e52b4d89ec3bc2a5c29b2eacaeab1e13fdf0adfe8097eb69986a4280ed45f331
 
 name:           elf
 version:        0.31
@@ -26,7 +26,6 @@ extra-source-files:
     testdata/HOWTO
     testdata/bloated.cpp
     testdata/tiny.asm
-    testdata/empty
     testdata/vdso
 
 source-repository head
@@ -58,6 +57,7 @@ executable hobjdump
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.6 && <5.0
+    , binary
     , bytestring
     , elf
     , prettyprinter
@@ -89,6 +89,7 @@ test-suite tests
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
       base
+    , binary
     , bytestring
     , containers >=0.5.9.2
     , elf

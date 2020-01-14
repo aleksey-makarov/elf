@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
+import Data.Binary
 import Data.ByteString as B
 import Data.ByteString.Char8 as BC8
 import Data.Char
@@ -8,7 +9,6 @@ import Data.Elf
 import Data.Text.Prettyprint.Doc as D
 import Data.Text.Prettyprint.Doc.Util
 import Data.List as L
-import Data.Word
 import Numeric
 import System.Environment
 
@@ -119,8 +119,8 @@ formatElf elf =
 
 printElf :: String -> IO ()
 printElf fileName = do
-    bs <- B.readFile fileName
-    putDocW 80 $ (formatElf $ parseElf bs) <> line
+    elf <- decodeFile fileName
+    putDocW 80 $ formatElf elf <> line
 
 main :: IO ()
 main = do
