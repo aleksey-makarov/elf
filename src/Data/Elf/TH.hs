@@ -41,6 +41,7 @@ mkDeclarations baseType typeNameString patternPrefixString defaultPatternNameStr
                                       , conT (mkName "Num")
                                       , conT (mkName "Bits")
                                       , conT (mkName "FiniteBits")
+                                      , conT (mkName "Ord")
                                       ]
                 ]
 
