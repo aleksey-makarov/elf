@@ -120,8 +120,8 @@ spec = do
             fmap steValue initSymbol `shouldBe` Just 0x0804850c
 
         it "parses symbol type" $ do
-            fmap steType initSymbol  `shouldBe` Just STTFunc
-            fmap steType fnameSymbol `shouldBe` Just STTFile
+            fmap steType initSymbol  `shouldBe` Just STT_Func
+            fmap steType fnameSymbol `shouldBe` Just STT_File
     describe "parse DynSym symbols" $ do
         let dynSymbols    = parseSymbolTables dynsymElf
         it "parses dyn symbol table" $ do

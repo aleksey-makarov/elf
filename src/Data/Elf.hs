@@ -51,7 +51,6 @@ module Data.Elf ( ElfClass(..)
                 , splitBits
 
                 , ElfSymbolTableEntry(..)
-                , ElfSymbolType(..)
                 , ElfSymbolBinding(..)
                 , ElfSectionIndex(..)
                 , elfParseSymbolTable
@@ -589,7 +588,7 @@ infoToTypeAndBind :: Word8 -> (ElfSymbolType,ElfSymbolBinding)
 infoToTypeAndBind i =
     let t = fromIntegral $ i .&. 0x0F
         b = fromIntegral $ (i .&. 0xF0) `shiftR` 4
-    in (toEnum t, toEnum b)
+    in (ElfSymbolType t, toEnum b)
 
 data ElfSymbolBinding
     = STBLocal
@@ -617,45 +616,6 @@ instance Enum ElfSymbolBinding where
     toEnum 13 = STBLoProc
     toEnum 15 = STBHiProc
     toEnum  _ = STBLocal -- FIXME
-
-data ElfSymbolType
-    = STTNoType
-    | STTObject
-    | STTFunc
-    | STTSection
-    | STTFile
-    | STTCommon
-    | STTTLS
-    | STTLoOS
-    | STTHiOS
-    | STTLoProc
-    | STTHiProc
-    deriving (Eq, Ord, Show, Read)
-
-instance Enum ElfSymbolType where
-    fromEnum STTNoType  = 0
-    fromEnum STTObject  = 1
-    fromEnum STTFunc    = 2
-    fromEnum STTSection = 3
-    fromEnum STTFile    = 4
-    fromEnum STTCommon  = 5
-    fromEnum STTTLS     = 6
-    fromEnum STTLoOS    = 10
-    fromEnum STTHiOS    = 12
-    fromEnum STTLoProc  = 13
-    fromEnum STTHiProc  = 15
-    toEnum  0 = STTNoType
-    toEnum  1 = STTObject
-    toEnum  2 = STTFunc
-    toEnum  3 = STTSection
-    toEnum  4 = STTFile
-    toEnum  5 = STTCommon
-    toEnum  6 = STTTLS
-    toEnum 10 = STTLoOS
-    toEnum 12 = STTHiOS
-    toEnum 13 = STTLoProc
-    toEnum 15 = STTHiProc
-    toEnum  _ = STTNoType
 
 data ElfSectionIndex
     = SHNUndef

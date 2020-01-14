@@ -198,3 +198,17 @@ $(mkDeclarations BaseWord32 "ElfSegmentFlag" "PF" "PF_EXT"
     , ("_W", (1 `shiftL` 1)) -- Write permission
     , ("_R", (1 `shiftL` 2)) -- Read permission
     ])
+
+$(mkDeclarations BaseWord8 "ElfSymbolType" "STT" "STT_EXT"
+    [ ("_NoType",  0)
+    , ("_Object",  1)
+    , ("_Func",    2)
+    , ("_Section", 3)
+    , ("_File",    4)
+    , ("_Common",  5)
+    , ("_TLS",     6)
+    , ("_LoOS",   10)
+    , ("_HiOS",   12)
+    , ("_LoProc", 13)
+    , ("_HiProc", 15)
+    ])
