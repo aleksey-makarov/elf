@@ -67,80 +67,70 @@ Sections:  - Name:      ""
                         36 00 00 00 12 00 0c 00 30 0f 00 00 00 00 00 00 # 6.......0.......
                         2a 00 00 00 00 00 00 00 3d 00 00 00 22 00 0c 00 # *.......=..."...
                         30 0f 00 00 00 00 00 00 2a 00 00 00 00 00 00 00 # 0.......*.......
-             Symbols:   - NameIndex: 0x0
-                          Name:      ""
+             Symbols:   - Name:      ""
                           Type:      STT_NoType
                           Binding:   STB_Local
                           Other:     0x0
                           SectionIndex: SHN_Undef
                           Value:     0x0
                           Size:      0x0
-                        - NameIndex: 0x8
-                          Name:      "clock_gettime"
+                        - Name:      "clock_gettime"
                           Type:      STT_Func
                           Binding:   STB_Weak
                           Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xa30
                           Size:      0x305
-                        - NameIndex: 0x16
-                          Name:      "__vdso_gettimeofday"
+                        - Name:      "__vdso_gettimeofday"
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xd40
                           Size:      0x1c1
-                        - NameIndex: 0x1d
-                          Name:      "gettimeofday"
+                        - Name:      "gettimeofday"
                           Type:      STT_Func
                           Binding:   STB_Weak
                           Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xd40
                           Size:      0x1c1
-                        - NameIndex: 0x2a
-                          Name:      "__vdso_time"
+                        - Name:      "__vdso_time"
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xf10
                           Size:      0x15
-                        - NameIndex: 0x31
-                          Name:      "time"
+                        - Name:      "time"
                           Type:      STT_Func
                           Binding:   STB_Weak
                           Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xf10
                           Size:      0x15
-                        - NameIndex: 0x1
-                          Name:      "__vdso_clock_gettime"
+                        - Name:      "__vdso_clock_gettime"
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xa30
                           Size:      0x305
-                        - NameIndex: 0x54
-                          Name:      "LINUX_2.6"
+                        - Name:      "LINUX_2.6"
                           Type:      STT_Object
                           Binding:   STB_Global
                           Other:     0x0
                           SectionIndex: SHN_Abs
                           Value:     0x0
                           Size:      0x0
-                        - NameIndex: 0x36
-                          Name:      "__vdso_getcpu"
+                        - Name:      "__vdso_getcpu"
                           Type:      STT_Func
                           Binding:   STB_Global
                           Other:     0x0
                           SectionIndex: SHN_EXT 12
                           Value:     0xf30
                           Size:      0x2a
-                        - NameIndex: 0x3d
-                          Name:      "getcpu"
+                        - Name:      "getcpu"
                           Type:      STT_Func
                           Binding:   STB_Weak
                           Other:     0x0

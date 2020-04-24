@@ -62,7 +62,6 @@ module Data.Elf ( ElfClass(..)
                 , nameToString
 
                 , ElfSymbolTableEntry
-                , steNameIndex
                 , steName
                 , steType
                 , steBind
@@ -515,10 +514,6 @@ instance forall (c :: ElfClass) . SingI c => Binary (Be (ElfSymbolTableEntryXX c
     get = Be <$> getElfSymbolTableEntryXX sing (getEndian ELFDATA2LSB)
 
 data ElfSymbolTableEntry = forall a . ElfSymbolTableEntry (ElfXX a) (ElfSectionXX a) (ElfSymbolTableEntryXX a)
-
-steNameIndex :: ElfSymbolTableEntry -> Word32
-steNameIndex (ElfSymbolTableEntry _ _ ElfSymbolTableEntry64{..}) = st64Name
-steNameIndex (ElfSymbolTableEntry _ _ ElfSymbolTableEntry32{..}) = st32Name
 
 steName :: ElfSymbolTableEntry -> Maybe B.ByteString
 steName (ElfSymbolTableEntry elfXX ElfSection64{..} ElfSymbolTableEntry64{..}) = getString elfXX s64Link st64Name

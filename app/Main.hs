@@ -55,8 +55,7 @@ formatList = align . vsep . fmap f
 
 formatSymbol :: ElfSymbolTableEntry -> Doc ()
 formatSymbol ste =
-    formatPairs [ ("NameIndex",    showHexDoc $ steNameIndex ste)
-                , ("Name",         dquotes $ pretty $ nameToString $ steName ste)
+    formatPairs [ ("Name",         dquotes $ pretty $ nameToString $ steName ste)
                 , ("Type",         viaShow $ steType ste)
                 , ("Binding",      viaShow $ steBind ste)
                 , ("Other",        showHexDoc $ steOther ste)
