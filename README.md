@@ -12,3 +12,8 @@ https://docs.oracle.com/cd/E23824_01/html/819-0690/chapter6-79797.html
 Special sections in Linux binaries: https://lwn.net/Articles/531148/
 Understanding the ELF File Format: https://linuxhint.com/understanding_elf_file_format/
 Рецепты для ELFов: https://habr.com/ru/company/inforion/blog/460247/
+
+# Singleton
+
+https://blog.jle.im/entry/introduction-to-singletons-1.html
+https://serokell.io/blog/dimensions-haskell-singletons

@@ -54,23 +54,20 @@ formatList = align . vsep . fmap f
         f x = pretty '-' <+> x
 
 formatSymbol :: ElfSymbolTableEntry -> Doc ()
-formatSymbol EST {..} =
-    formatPairs [ ("NameIndex",    showHexDoc nameIndex)
-                , ("Name",         dquotes nameDoc)
-                , ("Type",         viaShow $ steType)
-                , ("Binding",      viaShow $ steBind)
-                , ("Other",        showHexDoc $ steOther)
-                , ("SectionIndex", viaShow $ steIndex)
-                , ("Value",        showHexDoc $ steValue)
-                , ("Size" ,        showHexDoc $ steSize)
+formatSymbol ste =
+    formatPairs [ ("NameIndex",    showHexDoc $ steNameIndex ste)
+                , ("Name",         dquotes $ pretty $ nameToString $ steName ste)
+                , ("Type",         viaShow $ steType ste)
+                , ("Binding",      viaShow $ steBind ste)
+                , ("Other",        showHexDoc $ steOther ste)
+                , ("SectionIndex", viaShow $ steIndex ste)
+                , ("Value",        showHexDoc $ steValue ste)
+                , ("Size" ,        showHexDoc $ steSize ste)
                 ]
-    where
-        (nameIndex, name) = steName
-        nameDoc = maybe "" formatBytestringChar name
 
 formatSection :: ElfSection -> Doc ()
 formatSection s =
-    formatPairs ( ("Name",      viaShow $ elfSectionName s)
+    formatPairs ( ("Name",      dquotes $ pretty $ nameToString $ elfSectionName s)
                 : ("Type",      viaShow $ elfSectionType s)
                 : ("Flags",     formatList $ fmap viaShow $ splitBits $ elfSectionFlags s)
                 : ("Addr",      showHexDoc $ elfSectionAddr s)

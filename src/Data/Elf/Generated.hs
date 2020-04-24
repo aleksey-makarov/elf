@@ -12,8 +12,8 @@ import Data.Bits
 
 import Data.Elf.TH
 
-newtype Be a = Be { fromBe :: a }
-newtype Le a = Le { fromLe :: a }
+newtype Be a = Be { fromBe :: a } deriving Eq
+newtype Le a = Le { fromLe :: a } deriving Eq
 
 instance Binary (Be Word16) where
     put = putWord16be . fromBe
@@ -223,7 +223,7 @@ $(mkDeclarations BaseWord8 "ElfSymbolBinding" "STB" "STB_EXT"
     , ("_HiProc", 15)
     ])
 
-$(mkDeclarations BaseWord32 "ElfSectionIndex" "SHN" "SHN_EXT"
+$(mkDeclarations BaseWord16 "ElfSectionIndex" "SHN" "SHN_EXT"
     [ ("_Undef",       0)
     , ("_LoProc", 0xFF00)
     , ("_HiProc", 0xFF1F)
