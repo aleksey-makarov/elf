@@ -63,7 +63,16 @@ tests:
 
 executables:
   hobjdump:
-    main: Main.hs
+    main: hObjDump.hs
+    source-dirs: app
+    ghc-options: -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
+    dependencies:
+      - elf
+      - binary
+      - bytestring
+      - prettyprinter
+  hobjcopy:
+    main: hObjCopy.hs
     source-dirs: app
     ghc-options: -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
     dependencies:

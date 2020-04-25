@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 89833daf3103dfdf9ec4c8146cdf568eff56f18cf6da68955108bb84098906b6
+-- hash: 1104b10b65c8b983e814a6f733e29144912fbc3c75701403064a265265647c8d
 
 name:           elf
 version:        0.31
@@ -49,8 +49,23 @@ library
     , template-haskell
   default-language: Haskell2010
 
+executable hobjcopy
+  main-is: hObjCopy.hs
+  other-modules:
+      Paths_elf
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.6 && <5.0
+    , binary
+    , bytestring
+    , elf
+    , prettyprinter
+  default-language: Haskell2010
+
 executable hobjdump
-  main-is: Main.hs
+  main-is: hObjDump.hs
   other-modules:
       Paths_elf
   hs-source-dirs:

@@ -1,3 +1,4 @@
+{-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
@@ -38,7 +39,25 @@ main = do
                             [dir </> t]
                             (dir </> t <.> "out"))
 
+        mkTestCopy :: String -> TestTree
+        mkTestCopy t = goldenVsFile
+                        (t ++ ".copy")
+                        (dir </> t <.> "golden")
+                        (dir </> t <.> "copy" <.> "out")
+                        do
+                            runExecWithStdoutFile
+                                (binDir </> "hobjcopy")
+                                [dir </> t, dir </> t <.> "copy"]
+                                "/dev/null"
+                            runExecWithStdoutFile
+                                (binDir </> "hobjdump")
+                                [dir </> t <.> "copy"]
+                                (dir </> t <.> "copy" <.> "out")
+
     defaultMain $ testGroup "Golden" [ mkTest "bloated"
                                      , mkTest "tiny"
                                      , mkTest "vdso"
+                                     , mkTestCopy "bloated"
+                                     , mkTestCopy "tiny"
+                                     , mkTestCopy "vdso"
                                      ]

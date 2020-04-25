@@ -76,6 +76,7 @@ module Data.Elf ( ElfClass(..)
 
 import Data.Binary
 import Data.Binary.Get as G
+import Data.Binary.Put
 import Data.Bits
 import Data.Kind
 import Control.Monad
@@ -225,7 +226,7 @@ data ElfXX (c :: ElfClass) =
 type Elf = Sigma ElfClass (TyCon1 ElfXX)
 
 instance Binary Elf where
-    put = undefined
+    put (_ :&: ElfXX{..}) = putByteString exxContent
     get = getElf
 
 elfSupportedVersion :: Word8
