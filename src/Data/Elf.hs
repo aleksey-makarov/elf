@@ -24,6 +24,7 @@
 -- | Data.Elf is a module for parsing a ByteString of an ELF file into an Elf record.
 module Data.Elf ( ElfClass(..)
                 , ElfData(..)
+                , ElfInterval
 
                 , Elf
                 , elfClass
@@ -74,21 +75,25 @@ module Data.Elf ( ElfClass(..)
                 , module Data.Elf.Generated) where
 
 
+import Control.Monad
 import Data.Binary
-import Data.Binary.Get as G
+import Data.Binary.Get
 import Data.Binary.Put
 import Data.Bits
+import Data.ByteString       as BS
+import Data.ByteString.Lazy  as BSL
+import Data.ByteString.Char8 as BSC
 import Data.Kind
-import Control.Monad
-import qualified Data.ByteString       as B
-import qualified Data.ByteString.Lazy  as L
-import qualified Data.ByteString.Char8 as C
-import Data.Singletons.TH
+import Data.List as L
 import Data.Singletons.Sigma
+import Data.Singletons.TH
+import Numeric.Interval
 
 -- https://stackoverflow.com/questions/10672981/export-template-haskell-generated-definitions
 
 import Data.Elf.Generated
+
+type ElfInterval = Interval Word64
 
 $(singletons [d|
     data ElfClass
@@ -220,7 +225,7 @@ data ElfXX (c :: ElfClass) =
         , exxShStrNdx   :: Word16
         , exxSegments   :: [ElfSegmentXX c]
         , exxSections   :: [ElfSectionXX c]
-        , exxContent    :: B.ByteString
+        , exxContent    :: BS.ByteString
         }
 
 type Elf = Sigma ElfClass (TyCon1 ElfXX)
@@ -268,17 +273,17 @@ at (_ : xs) n | n > 0     = xs `at` (n - 1)
               | otherwise = Nothing
 at _        _             = Nothing
 
-nameToString :: Maybe B.ByteString -> String
-nameToString bs = maybe "" id $ C.unpack <$> bs
+nameToString :: Maybe BS.ByteString -> String
+nameToString bs = maybe "" id $ BSC.unpack <$> bs
 
-getStringSectionData :: ElfXX a -> Word32 -> Maybe B.ByteString
+getStringSectionData :: ElfXX a -> Word32 -> Maybe BS.ByteString
 getStringSectionData elfXX@ElfXX{..} sectionIndex = elfSectionData' elfXX <$> exxSections `at` sectionIndex
 
-getString :: ElfXX a -> Word32 -> Word32 -> Maybe B.ByteString
-getString elfXX sectionIndex offset = B.takeWhile (/= 0) <$> B.drop (fromIntegral offset) <$> getStringSectionData elfXX sectionIndex
+getString :: ElfXX a -> Word32 -> Word32 -> Maybe BS.ByteString
+getString elfXX sectionIndex offset = BS.takeWhile (/= 0) <$> BS.drop (fromIntegral offset) <$> getStringSectionData elfXX sectionIndex
 
 -- FIXME: export the index of the string, not the name
-elfSectionName :: ElfSection -> Maybe B.ByteString -- ^ Identifies the name of the section.
+elfSectionName :: ElfSection -> Maybe BS.ByteString -- ^ Identifies the name of the section.
 elfSectionName (ElfSection elfXX@ElfXX{..} ElfSection64{..}) = getString elfXX (fromIntegral exxShStrNdx) s64Name
 elfSectionName (ElfSection elfXX@ElfXX{..} ElfSection32{..}) = getString elfXX (fromIntegral exxShStrNdx) s32Name
 
@@ -314,15 +319,15 @@ elfSectionEntSize :: ElfSection -> Word64 -- ^ Size of entries if section has a 
 elfSectionEntSize (ElfSection _ ElfSection64{..}) = s64EntSize
 elfSectionEntSize (ElfSection _ ElfSection32{..}) = fromIntegral s32EntSize
 
-cut :: B.ByteString -> Int -> Int -> B.ByteString
-cut content offset size = B.take size $ B.drop offset content
+cut :: BS.ByteString -> Int -> Int -> BS.ByteString
+cut content offset size = BS.take size $ BS.drop offset content
 
 -- FIXME: this can fail on 32 bit machine working with 64 bit elfs
-elfSectionData' :: ElfXX a -> ElfSectionXX a -> B.ByteString
+elfSectionData' :: ElfXX a -> ElfSectionXX a -> BS.ByteString
 elfSectionData' ElfXX{..} ElfSection64{..} = cut exxContent (fromIntegral s64Offset) (fromIntegral s64Size)
 elfSectionData' ElfXX{..} ElfSection32{..} = cut exxContent (fromIntegral s32Offset) (fromIntegral s32Size)
 
-elfSectionData :: ElfSection -> B.ByteString -- ^ The raw data for the section.
+elfSectionData :: ElfSection -> BS.ByteString -- ^ The raw data for the section.
 elfSectionData (ElfSection elfXX elfSectionXX) = elfSectionData' elfXX elfSectionXX
 
 elfSegmentType :: ElfSegment -> ElfSegmentType -- ^ Segment type
@@ -345,7 +350,7 @@ elfSegmentAlign :: ElfSegment -> Word64 -- ^ Segment alignment
 elfSegmentAlign (ElfSegment _ ElfSegment64{..}) = p64Align
 elfSegmentAlign (ElfSegment _ ElfSegment32{..}) = fromIntegral p32Align
 
-elfSegmentData :: ElfSegment -> B.ByteString -- ^ Data for the segment
+elfSegmentData :: ElfSegment -> BS.ByteString -- ^ Data for the segment
 elfSegmentData (ElfSegment ElfXX{..} ElfSegment64{..}) = cut exxContent (fromIntegral p64Offset) (fromIntegral p64FileSize)
 elfSegmentData (ElfSegment ElfXX{..} ElfSegment32{..}) = cut exxContent (fromIntegral p32Offset) (fromIntegral p32FileSize)
 
@@ -375,7 +380,7 @@ getEndian :: (Binary (Le a), Binary (Be a)) => ElfData -> Get a
 getEndian ELFDATA2LSB = fromLe <$> get
 getEndian ELFDATA2MSB = fromBe <$> get
 
-getElf' :: forall (a :: ElfClass) . B.ByteString -> Sing a -> Get Elf
+getElf' :: forall (a :: ElfClass) . BS.ByteString -> Sing a -> Get Elf
 getElf' exxContent exxClassS = do
 
     exxData     <- get
@@ -421,7 +426,7 @@ getElf' exxContent exxClassS = do
 getElf :: Get Elf
 getElf = do
 
-    eContent <- L.toStrict <$> lookAhead getRemainingLazyByteString
+    eContent <- BSL.toStrict <$> lookAhead getRemainingLazyByteString
 
     verify "magic" elfMagic
 
@@ -470,7 +475,7 @@ getElfSegmentXX SELFCLASS32 getE = ElfSegment32 <$> getE
                                                 <*> getE
 
 splitBits :: (Num w, FiniteBits w) => w -> [w]
-splitBits w = map (shiftL 1) $ filter (testBit w) $ map (subtract 1) [ 1 .. (finiteBitSize w) ]
+splitBits w = fmap (shiftL 1) $ L.filter (testBit w) $ fmap (subtract 1) [ 1 .. (finiteBitSize w) ]
 
 data ElfSymbolTableEntryXX (c :: ElfClass) where
     ElfSymbolTableEntry64 ::
@@ -516,7 +521,7 @@ instance forall (c :: ElfClass) . SingI c => Binary (Be (ElfSymbolTableEntryXX c
 
 data ElfSymbolTableEntry = forall a . ElfSymbolTableEntry (ElfXX a) (ElfSectionXX a) (ElfSymbolTableEntryXX a)
 
-steName :: ElfSymbolTableEntry -> Maybe B.ByteString
+steName :: ElfSymbolTableEntry -> Maybe BS.ByteString
 steName (ElfSymbolTableEntry elfXX ElfSection64{..} ElfSymbolTableEntry64{..}) = getString elfXX s64Link st64Name
 steName (ElfSymbolTableEntry elfXX ElfSection32{..} ElfSymbolTableEntry32{..}) = getString elfXX s32Link st32Name
 
@@ -559,10 +564,10 @@ instance Binary a => Binary (BList a) where
             (BList as) <- get
             return $ BList $ a : as
 
-elfParseSymbolTableX :: forall (c :: ElfClass) . SingI c => ElfData -> B.ByteString -> [ElfSymbolTableEntryXX c]
+elfParseSymbolTableX :: forall (c :: ElfClass) . SingI c => ElfData -> BS.ByteString -> [ElfSymbolTableEntryXX c]
 elfParseSymbolTableX d bs =
     let
-        bsl = L.fromChunks [bs]
+        bsl = BSL.fromChunks [bs]
     in
         case d of
             ELFDATA2LSB -> fmap fromLe (fromBList (decode bsl))
@@ -574,7 +579,7 @@ elfSectionXXToSing ElfSection32{..} = SELFCLASS32
 
 elfParseSymbolTable :: ElfSection -> [ElfSymbolTableEntry]
 elfParseSymbolTable sec@(ElfSection elfXX@ElfXX{..} sXX) =
-    if elfSectionType sec `elem` [SHT_SYMTAB, SHT_DYNSYM]
+    if elfSectionType sec `L.elem` [SHT_SYMTAB, SHT_DYNSYM]
         then
             let
                 s = elfSectionXXToSing sXX

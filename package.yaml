@@ -29,6 +29,7 @@ library:
     - binary
     - template-haskell
     - singletons
+    - intervals
   source-dirs: src
   other-modules:
     - Data.Elf.TH
