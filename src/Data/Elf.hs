@@ -38,6 +38,11 @@ module Data.Elf ( ElfClass(..)
                 , elfSections
                 , elfSegments
 
+                , ElfTableInterval(..)
+                , elfHeaderInterval
+                , elfSectionsInterval
+                , elfSegmentsInterval
+
                 , ElfSection
                 , elfSectionName
                 , elfSectionType
@@ -221,7 +226,14 @@ data ElfXX (c :: ElfClass) =
         , exxType       :: ElfType       -- ^ Identifies the object file type.
         , exxMachine    :: ElfMachine    -- ^ Identifies the target architecture.
         , exxEntry      :: WordXX c
+        , exxPhOff      :: WordXX c
+        , exxShOff      :: WordXX c
         , exxFlags      :: Word32
+        , exxHSize      :: Word16
+        , exxPhEntSize  :: Word16
+        , exxPhNum      :: Word16
+        , exxShEntSize  :: Word16
+        , exxShNum      :: Word16
         , exxShStrNdx   :: Word16
         , exxSegments   :: [ElfSegmentXX c]
         , exxSections   :: [ElfSectionXX c]
@@ -266,6 +278,28 @@ elfSections (_ :&: elfXX@ElfXX{..}) = fmap (ElfSection elfXX) exxSections
 
 elfSegments :: Elf -> [ElfSegment]
 elfSegments (_ :&: elfXX@ElfXX{..}) = fmap (ElfSegment elfXX) exxSegments
+
+elfHeaderInterval :: Elf -> ElfInterval
+elfHeaderInterval (_ :&: ElfXX{..}) = 0 ... fromIntegral exxHSize - 1
+
+data ElfTableInterval = ElfTableInterval { interval :: ElfInterval
+                                         , size     :: Word16
+                                         , num      :: Word16
+                                         }
+
+elfSectionsInterval :: Elf -> ElfTableInterval
+elfSectionsInterval (_ :&: ElfXX{..}) = ElfTableInterval (o ... o + s * n - 1) exxShEntSize exxShNum
+    where
+        o = fromWordXX   exxShOff
+        s = fromIntegral exxShEntSize
+        n = fromIntegral exxShNum
+
+elfSegmentsInterval :: Elf -> ElfTableInterval
+elfSegmentsInterval (_ :&: ElfXX{..}) = ElfTableInterval (o ... o + s * n - 1) exxPhEntSize exxPhNum
+    where
+        o = fromWordXX   exxPhOff
+        s = fromIntegral exxPhEntSize
+        n = fromIntegral exxPhNum
 
 at :: (Integral i) => [a] -> i -> Maybe a
 at (x : _)  0             = Just x
@@ -401,25 +435,25 @@ getElf' exxContent exxClassS = do
 
     exxEntry      <- withSingI exxClassS $ getE
 
-    (exxPhOff :: WordXX a) <- withSingI exxClassS $ getE
-    (exxShOff :: WordXX a) <- withSingI exxClassS $ getE
+    exxPhOff      <- withSingI exxClassS $ getE
+    exxShOff      <- withSingI exxClassS $ getE
 
     exxFlags      <- getE
 
-    (exxEhSize :: Word16) <- getE
+    exxHSize      <- getE
 
-    (exxPhEntSize :: Word16)  <- getE
-    (exxPhNum     :: Word16)  <- getE
-    (exxShEntSize :: Word16)  <- getE
-    (exxShNum     :: Word16)  <- getE
+    exxPhEntSize  <- getE
+    exxPhNum      <- getE
+    exxShEntSize  <- getE
+    exxShNum      <- getE
 
     exxShStrNdx   <- getE
 
     hSize         <- bytesRead
-    when (hSize /= fromIntegral exxEhSize) $ error "incorrect size of elf header"
+    when (hSize /= fromIntegral exxHSize) $ error "incorrect size of elf header"
 
-    exxSegments   <- withSingI exxClassS $ getTable exxData (fromWordXX exxPhOff - fromIntegral exxEhSize) exxPhEntSize exxPhNum
-    exxSections   <- withSingI exxClassS $ getTable exxData (fromWordXX exxShOff - fromIntegral exxEhSize) exxShEntSize exxShNum
+    exxSegments   <- withSingI exxClassS $ getTable exxData (fromWordXX exxPhOff - fromIntegral exxHSize) exxPhEntSize exxPhNum
+    exxSections   <- withSingI exxClassS $ getTable exxData (fromWordXX exxShOff - fromIntegral exxHSize) exxShEntSize exxShNum
 
     return $ exxClassS :&: ElfXX{..}
 

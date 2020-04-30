@@ -86,3 +86,4 @@ executables:
     dependencies:
       - elf
       - binary
+      - intervals
