@@ -42,6 +42,8 @@ module Data.Elf ( ElfClass(..)
                 , elfHeaderInterval
                 , elfSectionTableInterval
                 , elfSegmentTableInterval
+                , elfSectionInterval
+                , elfSegmentInterval
 
                 , ElfSection
                 , elfSectionName
@@ -92,7 +94,7 @@ import Data.Kind
 import Data.List as L
 import Data.Singletons.Sigma
 import Data.Singletons.TH
-import Numeric.Interval
+import Numeric.Interval as I
 
 -- https://stackoverflow.com/questions/10672981/export-template-haskell-generated-definitions
 
@@ -363,6 +365,20 @@ elfSectionData' ElfXX{..} ElfSection32{..} = cut exxContent (fromIntegral s32Off
 
 elfSectionData :: ElfSection -> BS.ByteString -- ^ The raw data for the section.
 elfSectionData (ElfSection elfXX elfSectionXX) = elfSectionData' elfXX elfSectionXX
+
+elfSectionInterval :: ElfSection -> ElfInterval
+elfSectionInterval (ElfSection _ sXX) = if t == SHT_NOBITS then I.empty else (o ... o + s - 1)
+    where
+        (t, o, s) = case sXX of
+            ElfSection32{..} -> (s32Type, fromIntegral s32Offset, fromIntegral s32Size)
+            ElfSection64{..} -> (s64Type,              s64Offset,              s64Size)
+
+elfSegmentInterval :: ElfSegment -> ElfInterval
+elfSegmentInterval (ElfSegment _ pXX)= (o ... o + s - 1)
+    where
+        (o, s) = case pXX of
+            ElfSegment32{..} -> (fromIntegral p32Offset, fromIntegral p32FileSize)
+            ElfSegment64{..} -> (             p64Offset,              p64FileSize)
 
 elfSegmentType :: ElfSegment -> ElfSegmentType -- ^ Segment type
 elfSegmentType (ElfSegment _ ElfSegment64{..}) = p64Type
