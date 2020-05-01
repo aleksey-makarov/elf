@@ -40,8 +40,8 @@ module Data.Elf ( ElfClass(..)
 
                 , ElfTableInterval(..)
                 , elfHeaderInterval
-                , elfSectionsInterval
-                , elfSegmentsInterval
+                , elfSectionTableInterval
+                , elfSegmentTableInterval
 
                 , ElfSection
                 , elfSectionName
@@ -287,15 +287,15 @@ data ElfTableInterval = ElfTableInterval { interval :: ElfInterval
                                          , num      :: Word16
                                          }
 
-elfSectionsInterval :: Elf -> ElfTableInterval
-elfSectionsInterval (_ :&: ElfXX{..}) = ElfTableInterval (o ... o + s * n - 1) exxShEntSize exxShNum
+elfSectionTableInterval :: Elf -> ElfTableInterval
+elfSectionTableInterval (_ :&: ElfXX{..}) = ElfTableInterval (o ... o + s * n - 1) exxShEntSize exxShNum
     where
         o = fromWordXX   exxShOff
         s = fromIntegral exxShEntSize
         n = fromIntegral exxShNum
 
-elfSegmentsInterval :: Elf -> ElfTableInterval
-elfSegmentsInterval (_ :&: ElfXX{..}) = ElfTableInterval (o ... o + s * n - 1) exxPhEntSize exxPhNum
+elfSegmentTableInterval :: Elf -> ElfTableInterval
+elfSegmentTableInterval (_ :&: ElfXX{..}) = ElfTableInterval (o ... o + s * n - 1) exxPhEntSize exxPhNum
     where
         o = fromWordXX   exxPhOff
         s = fromIntegral exxPhEntSize

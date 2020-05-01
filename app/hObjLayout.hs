@@ -25,8 +25,8 @@ printElf fileName = do
     mapM_ printSegment $ elfSegments elf
 
     let
-        ElfTableInterval ss _ _ = elfSectionsInterval elf
-        ElfTableInterval ps _ _ = elfSegmentsInterval elf
+        ElfTableInterval ss _ _ = elfSectionTableInterval elf
+        ElfTableInterval ps _ _ = elfSegmentTableInterval elf
         intervals = [ (elfHeaderInterval elf, "Header")
                     , (ss,                    "Section table")
                     , (ps,                    "Segment table")
