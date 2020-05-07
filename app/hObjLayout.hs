@@ -23,6 +23,11 @@ data T = S (INE.Interval Word64) Word ElfSection [T]
        | P (INE.Interval Word64) Word ElfSegment [T]
        | A (INE.Interval Word64) String          [T]
 
+instance Show T where
+    show (S i n s _) = "(" ++ show n ++ ": [" ++ show i ++ "] " ++ (nameToString $ elfSectionName s) ++ ")"
+    show (P i n p _) = "(" ++ show n ++ ": [" ++ show i ++ "] " ++ (show $ elfSegmentType p)         ++ ")"
+    show (A i   s _) = "(" ++             "[" ++ show i ++ "] " ++ s                                 ++ ")"
+
 class HasInterval a t | a -> t where
     getInterval :: a -> INE.Interval t
 
@@ -46,13 +51,8 @@ foldInterval (LZip l         (Just c) r) = foldInterval $ LZip l  Nothing (c : r
 foldInterval (LZip (l : ls)  Nothing  r) = foldInterval $ LZip ls Nothing (l : r)
 foldInterval (LZip []        Nothing  r) = r
 
-showId :: T -> String
-showId (S i n s _) = "(" ++ show n ++ ": [" ++ show i ++ "] " ++ (nameToString $ elfSectionName s) ++ ")"
-showId (P i n p _) = "(" ++ show n ++ ": [" ++ show i ++ "] " ++ (show $ elfSegmentType p)         ++ ")"
-showId (A i   s _) = "(" ++             "[" ++ show i ++ "] " ++ s                                 ++ ")"
-
 intersectMessage :: T -> T -> String
-intersectMessage a b = showId a ++ " and " ++ showId b ++ " interlap"
+intersectMessage a b = show a ++ " and " ++ show b ++ " interlap"
 
 addTs :: [T] -> T -> T
 addTs ts (S i at s tl) = S i at s $ addTsToList ts tl
@@ -73,15 +73,16 @@ addT t ts =
                 let
                     c'i = getInterval c'
                 in
-                    -- (unsafePerformIO $ putStrLn $ "s: " ++ show s ++ " I: " ++ (show $ getInterval c')) `seq`
                     if c'i `INE.contains` ti then
                         foldInterval $ LZip l (Just $ addTs [t] c') r
                     else  if ti `INE.contains` c'i then
-                        foldInterval $ LZip l (Just $ addTs [c'] t) r
+                        case c2 of
+                            Nothing -> foldInterval $ LZip l (Just $ addTs (c' : l2) t) r2
+                            Just c2' -> error $ "@1 " ++ intersectMessage t c2'
                     else
                         error $ "@2 " ++ intersectMessage t c'
             (Nothing, Nothing)  -> foldInterval $ LZip l (Just $ addTs l2 t) r2
-            (Nothing, Just c2') -> error $ "@1 " ++ intersectMessage t c2'
+            (Nothing, Just c2') -> error $ "@3 " ++ intersectMessage t c2'
 
 addTsToList :: [T] -> [T] -> [T]
 addTsToList newTs l = foldl (flip addT) l newTs
@@ -94,7 +95,6 @@ char_S_BEGIN = '\x250c'
 char_S_MIDDLE = '\x2502'
 char_S_END = '\x2514'
 char_H = '\x2500'
-
 
 printElf :: String -> IO ()
 printElf fileName = do
@@ -138,8 +138,7 @@ printElf fileName = do
         sectionIntervals = mapMaybe fSection $ zip [0 ..] ss
         segmentIntervals = mapMaybe fSegment $ zip [0 ..] ps
 
-        -- intervals = addTsToList sectionIntervals $ addTsToList headerIntervals $ addTsToList segmentIntervals []
-        intervals = addTsToList segmentIntervals []
+        intervals = addTsToList sectionIntervals $ addTsToList headerIntervals $ addTsToList segmentIntervals []
 
         tsDepth :: [T] -> Word
         tsDepth l = getMax $ foldr (<>) 0 $ fmap (Max . tDepth) l
@@ -161,22 +160,22 @@ printElf fileName = do
         printT :: [Char] -> Word -> T -> IO ()
         printT p w t@(S i at s tl) = do
             printHeader p w char_S_BEGIN
-            printf " %016x %s\n" (INE.inf i) $ showId t
+            printf " %016x %s\n" (INE.inf i) $ show t
             mapM_ (printT (char_S_MIDDLE : p) w) tl
             printHeader p w char_S_END
-            printf " %016x %s\n" (INE.sup i) $ showId t
+            printf " %016x %s\n" (INE.sup i) $ show t
         printT p w t@(P i at _p tl) = do
             printHeader p w char_P_BEGIN
-            printf " %016x %s\n" (INE.inf i) $ showId t
+            printf " %016x %s\n" (INE.inf i) $ show t
             mapM_ (printT (char_P_MIDDLE : p) w) tl
             printHeader p w char_P_END
-            printf " %016x %s\n" (INE.sup i) $ showId t
+            printf " %016x %s\n" (INE.sup i) $ show t
         printT p w t@(A i s    tl) = do
             printHeader p w char_S_BEGIN
-            printf " %016x %s\n" (INE.inf i) $ showId t
+            printf " %016x %s\n" (INE.inf i) $ show t
             mapM_ (printT (char_S_MIDDLE : p) w) tl
             printHeader p w char_S_END
-            printf " %016x %s\n" (INE.sup i) $ showId t
+            printf " %016x %s\n" (INE.sup i) $ show t
 
         printTs :: [T] -> IO ()
         printTs ts = mapM_ (printT [] (tsDepth ts)) ts
@@ -187,8 +186,6 @@ printElf fileName = do
 
 main :: IO ()
 main = do
-
-    print $ INE.member (23 :: Word64) (0 INE.... 18446744073709551615)
 
     args <- getArgs
     mapM_ printElf args
