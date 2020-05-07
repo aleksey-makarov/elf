@@ -17,8 +17,6 @@ import Numeric.Interval.NonEmpty as INE
 import System.Environment
 import Text.Printf
 
-import System.IO.Unsafe
-
 data T = S (INE.Interval Word64) Word ElfSection [T]
        | P (INE.Interval Word64) Word ElfSegment [T]
        | A (INE.Interval Word64) String          [T]
@@ -87,15 +85,6 @@ addT t ts =
 addTsToList :: [T] -> [T] -> [T]
 addTsToList newTs l = foldl (flip addT) l newTs
 
-char_S_BEGIN, char_S_MIDDLE, char_P_BEGIN, char_P_MIDDLE, char_P_END, char_H :: Char
-char_P_BEGIN = '\x2553'
-char_P_MIDDLE = '\x2551'
-char_P_END = '\x2559'
-char_S_BEGIN = '\x250c'
-char_S_MIDDLE = '\x2502'
-char_S_END = '\x2514'
-char_H = '\x2500'
-
 printElf :: String -> IO ()
 printElf fileName = do
 
@@ -124,7 +113,7 @@ printElf fileName = do
 
         ElfTableInterval sti _ _ = elfSectionTableInterval elf
         ElfTableInterval pti _ _ = elfSegmentTableInterval elf
-        headerIntervals = [ A (toNonEmptyUnsafe $ elfHeaderInterval elf) "Header"        []
+        headerIntervals = [ A (toNonEmptyUnsafe $ elfHeaderInterval elf) "ELF Header"    []
                           , A (toNonEmptyUnsafe sti)                     "Section table" []
                           , A (toNonEmptyUnsafe pti)                     "Segment table" []
                           ]
@@ -149,33 +138,33 @@ printElf fileName = do
         tDepth (A _   _ l) = 1 + tsDepth l
 
         printHeader :: [Char] -> Word -> Char -> IO ()
-        printHeader p d fst = do
+        printHeader p d f = do
             mapM_ putChar $ reverse p
             let
                 n = fromIntegral d - length p
-            putChar fst
+            putChar f
             when (n > 1) do
-                mapM_ putChar $ genericReplicate (n - 1) char_H
+                mapM_ putChar $ genericReplicate (n - 1) '─'
 
         printT :: [Char] -> Word -> T -> IO ()
-        printT p w t@(S i at s tl) = do
-            printHeader p w char_S_BEGIN
-            printf " %016x %s\n" (INE.inf i) $ show t
-            mapM_ (printT (char_S_MIDDLE : p) w) tl
-            printHeader p w char_S_END
-            printf " %016x %s\n" (INE.sup i) $ show t
-        printT p w t@(P i at _p tl) = do
-            printHeader p w char_P_BEGIN
-            printf " %016x %s\n" (INE.inf i) $ show t
-            mapM_ (printT (char_P_MIDDLE : p) w) tl
-            printHeader p w char_P_END
-            printf " %016x %s\n" (INE.sup i) $ show t
-        printT p w t@(A i s    tl) = do
-            printHeader p w char_S_BEGIN
-            printf " %016x %s\n" (INE.inf i) $ show t
-            mapM_ (printT (char_S_MIDDLE : p) w) tl
-            printHeader p w char_S_END
-            printf " %016x %s\n" (INE.sup i) $ show t
+        printT p w (S i at s tl) = do
+            printHeader p w '┌'
+            printf " %016x S %d name: \"%s\"; type: %s; flags: %s\n" (INE.inf i) at (nameToString $ elfSectionName s) (show $ elfSectionType s) (show $ splitBits $ elfSectionFlags s)
+            mapM_ (printT ('│' : p) w) tl
+            printHeader p w '└'
+            printf " %016x S %d\n" (INE.sup i) at
+        printT p w (P i at segment tl) = do
+            printHeader p w '╓'
+            printf " %016x P %d type: %s; flags: %s\n" (INE.inf i) at (show $ elfSegmentType segment) (show $ splitBits $ elfSegmentFlags segment)
+            mapM_ (printT ('║' : p) w) tl
+            printHeader p w '╙'
+            printf " %016x P %d\n" (INE.sup i) at
+        printT p w (A i s    tl) = do
+            printHeader p w '┎'
+            printf " %016x H %s\n" (INE.inf i) s
+            mapM_ (printT ('┃' : p) w) tl
+            printHeader p w '┖'
+            printf " %016x H\n" (INE.sup i)
 
         printTs :: [T] -> IO ()
         printTs ts = mapM_ (printT [] (tsDepth ts)) ts
