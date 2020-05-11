@@ -7,7 +7,6 @@ module Main (main) where
 
 import Paths_elf
 
-import Control.Monad
 import Data.Foldable
 import System.Directory
 import System.FilePath
@@ -20,7 +19,7 @@ runExecWithStdoutFile :: FilePath -> [String] -> FilePath -> IO ()
 runExecWithStdoutFile execFilePath args stdoutPath =
     withBinaryFile stdoutPath WriteMode (\ oh -> do
         let cfg = setStdout (useHandleClose oh) $ proc execFilePath args
-        void $ runProcess cfg
+        runProcess_ cfg
     )
 
 partitionM :: Monad m => (a -> m Bool) -> [a] -> m ([a], [a])
@@ -53,8 +52,6 @@ main = do
     binDir <- getBinDir
     elfs <- traverseDir dir isElf
 
-    print elfs
-
     let
         mkTestDump :: FilePath -> TestTree
         mkTestDump p = goldenVsFile
@@ -84,20 +81,5 @@ main = do
 
         mkTest :: FilePath -> TestTree
         mkTest p = testGroup p [mkTestDump p, mkTestLayout p]
-
---        mkTestCopy :: String -> TestTree
---        mkTestCopy t = goldenVsFile
---                        (t ++ ".copy")
---                        (dir </> t <.> "golden")
---                        (dir </> t <.> "copy" <.> "out")
---                        do
---                            runExecWithStdoutFile
---                                (binDir </> "hobjcopy")
---                                [dir </> t, dir </> t <.> "copy"]
---                                "/dev/null"
---                            runExecWithStdoutFile
---                                (binDir </> "hobjdump")
---                                [dir </> t <.> "copy"]
---                                (dir </> t <.> "copy" <.> "out")
 
     defaultMain $ testGroup "Golden" (mkTest <$> elfs)
