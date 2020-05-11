@@ -1,0 +1,71 @@
+sections:
+	- 0  
+	- 1  .hash
+	- 2  .gnu.hash
+	- 3  .dynsym
+	- 4  .dynstr
+	- 5  .gnu.version
+	- 6  .gnu.version_d
+	- 7  .dynamic
+	- 8  .rodata
+	- 9  .note
+	- 10 .eh_frame_hdr
+	- 11 .eh_frame
+	- 12 .text
+	- 13 .altinstructions
+	- 14 .altinstr_replacement
+	- 15 .comment
+	- 16 .shstrtab
+segments:
+	- 0  PT_LOAD
+	- 1  PT_DYNAMIC
+	- 2  PT_NOTE
+	- 3  PT_EXT 1685382480
+┌─── 0000000000000000 S 0 name: ""; type: SHT_NULL; flags: []
+│╓── 0000000000000000 P 0 type: PT_LOAD; flags: [PF_X,PF_R]
+│║┎─ 0000000000000000 H ELF Header
+│║┖─ 000000000000003f H
+│║┎─ 0000000000000040 H Segment table
+│║┖─ 000000000000011f H
+│║┌─ 0000000000000120 S 1 name: ".hash"; type: SHT_HASH; flags: [SHF_ALLOC]
+│║└─ 000000000000015b S 1
+│║┌─ 0000000000000160 S 2 name: ".gnu.hash"; type: SHT_EXT 1879048182; flags: [SHF_ALLOC]
+│║└─ 00000000000001a7 S 2
+│║┌─ 00000000000001a8 S 3 name: ".dynsym"; type: SHT_DYNSYM; flags: [SHF_ALLOC]
+│║└─ 0000000000000297 S 3
+│║┌─ 0000000000000298 S 4 name: ".dynstr"; type: SHT_STRTAB; flags: [SHF_ALLOC]
+│║└─ 00000000000002f5 S 4
+│║┌─ 00000000000002f6 S 5 name: ".gnu.version"; type: SHT_EXT 1879048191; flags: [SHF_ALLOC]
+│║└─ 0000000000000309 S 5
+│║┌─ 0000000000000310 S 6 name: ".gnu.version_d"; type: SHT_EXT 1879048189; flags: [SHF_ALLOC]
+│║└─ 0000000000000347 S 6
+│║╓─ 0000000000000348 P 1 type: PT_DYNAMIC; flags: [PF_R]
+│║║┌ 0000000000000348 S 7 name: ".dynamic"; type: SHT_DYNAMIC; flags: [SHF_WRITE,SHF_ALLOC]
+│║║└ 0000000000000467 S 7
+│║╙─ 0000000000000467 P 1
+│║┌─ 0000000000000468 S 8 name: ".rodata"; type: SHT_PROGBITS; flags: [SHF_WRITE,SHF_ALLOC]
+│║└─ 00000000000007a7 S 8
+│║╓─ 00000000000007a8 P 2 type: PT_NOTE; flags: [PF_R]
+│║║┌ 00000000000007a8 S 9 name: ".note"; type: SHT_NOTE; flags: [SHF_ALLOC]
+│║║└ 00000000000007e3 S 9
+│║╙─ 00000000000007e3 P 2
+│║╓─ 00000000000007e4 P 3 type: PT_EXT 1685382480; flags: [PF_R]
+│║║┌ 00000000000007e4 S 10 name: ".eh_frame_hdr"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+│║║└ 000000000000081f S 10
+│║╙─ 000000000000081f P 3
+│║┌─ 0000000000000820 S 11 name: ".eh_frame"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+│║└─ 0000000000000967 S 11
+│║┌─ 0000000000000970 S 12 name: ".text"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
+│║└─ 0000000000000f59 S 12
+│║┌─ 0000000000000f5a S 13 name: ".altinstructions"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+│║└─ 0000000000000fe8 S 13
+│║┌─ 0000000000000fe9 S 14 name: ".altinstr_replacement"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
+│║└─ 000000000000100a S 14
+│╙── 000000000000100a P 0
+│┌── 000000000000100b S 15 name: ".comment"; type: SHT_PROGBITS; flags: [SHF_EXT 16,SHF_EXT 32]
+│└── 000000000000102e S 15
+│┌── 000000000000102f S 16 name: ".shstrtab"; type: SHT_STRTAB; flags: []
+│└── 00000000000010d4 S 16
+│┎── 00000000000010d8 H Section table
+│┖── 0000000000001517 H
+└─── ffffffffffffffff S 0

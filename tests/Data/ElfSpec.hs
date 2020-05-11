@@ -19,9 +19,9 @@ parseSymbolTables e = filter (not . null) $ fmap elfParseSymbolTable $ elfSectio
 
 spec :: Spec
 spec = do
-    tinyElf    <- runIO $ decodeFile "./testdata/tiny"
-    bloatedElf <- runIO $ decodeFile "./testdata/bloated"
-    dynsymElf  <- runIO $ decodeFile "./testdata/vdso"
+    tinyElf    <- runIO $ decodeFile "./testdata/tiny.elf"
+    bloatedElf <- runIO $ decodeFile "./testdata/bloated.elf"
+    dynsymElf  <- runIO $ decodeFile "./testdata/vdso.elf"
 
     describe "parseElf" $ do
         it "does not accept an empty elf" $

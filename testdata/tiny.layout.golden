@@ -1,0 +1,23 @@
+sections:
+	- 0  
+	- 1  .text
+	- 2  .shstrtab
+segments:
+	- 0  PT_LOAD
+	- 1  PT_NOTE
+╓─── 0000000000000000 P 1 type: PT_NOTE; flags: [PF_R]
+║┌── 0000000000000000 S 0 name: ""; type: SHT_NULL; flags: []
+║│╓─ 0000000000000000 P 0 type: PT_LOAD; flags: [PF_X,PF_R]
+║│║┎ 0000000000000000 H ELF Header
+║│║┖ 000000000000003f H
+║│║┎ 0000000000000040 H Segment table
+║│║┖ 00000000000000af H
+║│║┌ 00000000000000e0 S 1 name: ".text"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
+║│║└ 00000000000000eb S 1
+║│╙─ 00000000000000eb P 0
+║│┌─ 00000000000000ec S 2 name: ".shstrtab"; type: SHT_STRTAB; flags: []
+║│└─ 00000000000000fc S 2
+║│┎─ 0000000000000100 H Section table
+║│┖─ 00000000000001bf H
+║└── ffffffffffffffff S 0
+╙─── ffffffffffffffff P 1

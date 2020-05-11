@@ -8,6 +8,8 @@ module Main (main) where
 import Paths_elf
 
 import Control.Monad
+import Data.Foldable
+import System.Directory
 import System.FilePath
 import System.IO
 import System.Process.Typed
@@ -21,43 +23,81 @@ runExecWithStdoutFile execFilePath args stdoutPath =
         void $ runProcess cfg
     )
 
+partitionM :: Monad m => (a -> m Bool) -> [a] -> m ([a], [a])
+partitionM p l = foldlM f ([], []) l
+    where
+        f (ts, fs) x = do
+            b <- p x
+            return $ if b then (x:ts, fs) else (ts, x:fs)
+
+traverseDir :: FilePath -> (FilePath -> Bool) -> IO [FilePath]
+traverseDir root ok = go root
+    where
+        go :: FilePath -> IO [FilePath]
+        go dir = do
+            paths <- map (dir </>) <$> listDirectory dir
+            (dirPaths, filePaths) <- partitionM doesDirectoryExist paths
+            let
+                oks = filter ok filePaths
+            (oks ++) <$> (concat <$> (sequence $ map go dirPaths))
+
+isElf :: FilePath -> Bool
+isElf p = takeExtension p == ".elf"
+
 main :: IO ()
 main = do
-
-    binDir <- getBinDir
 
     let
         dir = "testdata"
 
-        mkTest :: String -> TestTree
-        mkTest t = goldenVsFile
-                        t
-                        (dir </> t <.> "golden")
-                        (dir </> t <.> "out")
-                        (runExecWithStdoutFile
-                            (binDir </> "hobjdump")
-                            [dir </> t]
-                            (dir </> t <.> "out"))
+    binDir <- getBinDir
+    elfs <- traverseDir dir isElf
 
-        mkTestCopy :: String -> TestTree
-        mkTestCopy t = goldenVsFile
-                        (t ++ ".copy")
-                        (dir </> t <.> "golden")
-                        (dir </> t <.> "copy" <.> "out")
-                        do
-                            runExecWithStdoutFile
-                                (binDir </> "hobjcopy")
-                                [dir </> t, dir </> t <.> "copy"]
-                                "/dev/null"
-                            runExecWithStdoutFile
-                                (binDir </> "hobjdump")
-                                [dir </> t <.> "copy"]
-                                (dir </> t <.> "copy" <.> "out")
+    print elfs
 
-    defaultMain $ testGroup "Golden" [ mkTest "bloated"
-                                     , mkTest "tiny"
-                                     , mkTest "vdso"
-                                     , mkTestCopy "bloated"
-                                     , mkTestCopy "tiny"
-                                     , mkTestCopy "vdso"
-                                     ]
+    let
+        mkTestDump :: FilePath -> TestTree
+        mkTestDump p = goldenVsFile
+            "dump"
+            g
+            o
+            (runExecWithStdoutFile
+                (binDir </> "hobjdump")
+                [p]
+                o)
+            where
+                o = replaceExtension p ".out"
+                g = replaceExtension p ".golden"
+
+        mkTestLayout :: FilePath -> TestTree
+        mkTestLayout p = goldenVsFile
+            "layout"
+            g
+            o
+            (runExecWithStdoutFile
+                (binDir </> "hobjlayout")
+                [p]
+                o)
+            where
+                o = replaceExtension p ".layout.out"
+                g = replaceExtension p ".layout.golden"
+
+        mkTest :: FilePath -> TestTree
+        mkTest p = testGroup p [mkTestDump p, mkTestLayout p]
+
+--        mkTestCopy :: String -> TestTree
+--        mkTestCopy t = goldenVsFile
+--                        (t ++ ".copy")
+--                        (dir </> t <.> "golden")
+--                        (dir </> t <.> "copy" <.> "out")
+--                        do
+--                            runExecWithStdoutFile
+--                                (binDir </> "hobjcopy")
+--                                [dir </> t, dir </> t <.> "copy"]
+--                                "/dev/null"
+--                            runExecWithStdoutFile
+--                                (binDir </> "hobjdump")
+--                                [dir </> t <.> "copy"]
+--                                (dir </> t <.> "copy" <.> "out")
+
+    defaultMain $ testGroup "Golden" (mkTest <$> elfs)
