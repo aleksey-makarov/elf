@@ -80,7 +80,14 @@ addT t ts =
                     else
                         error $ "@2 " ++ intersectMessage t c'
             (Nothing, Nothing)  -> foldInterval $ LZip l (Just $ addTs l2 t) r2
-            (Nothing, Just c2') -> error $ "@3 " ++ intersectMessage t c2'
+            (Nothing, Just c2') ->
+                let
+                    c2'i = getInterval c2'
+                in
+                    if ti `INE.contains` c2'i then
+                        foldInterval $ LZip l (Just $ addTs (l2 ++ [c2']) t) r2
+                    else
+                        error $ "@3 " ++ intersectMessage t c2'
 
 addTsToList :: [T] -> [T] -> [T]
 addTsToList newTs l = foldl (flip addT) l newTs
