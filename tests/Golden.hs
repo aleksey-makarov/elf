@@ -46,11 +46,8 @@ isElf p = takeExtension p == ".elf"
 main :: IO ()
 main = do
 
-    let
-        dir = "testdata"
-
     binDir <- getBinDir
-    elfs <- traverseDir dir isElf
+    elfs <- traverseDir "testdata" isElf
 
     let
         mkTestDump :: FilePath -> TestTree
