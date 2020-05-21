@@ -79,8 +79,10 @@ module Data.Elf ( ElfClass(..)
                 , steOther
                 , elfParseSymbolTable
 
-                , module Data.Elf.Generated) where
+                , ElfSectionList (..)
+                , mkElf
 
+                , module Data.Elf.Generated) where
 
 import Control.Monad
 import Data.Binary
@@ -638,3 +640,14 @@ elfParseSymbolTable sec@(ElfSection elfXX@ElfXX{..} sXX) =
             in
                 ElfSymbolTableEntry elfXX sXX <$> stXX
         else []
+
+--------------------------------------------------------------------------
+
+data ElfSectionList where
+    S      :: BSL.ByteString -> ElfSectionList
+    P      :: ElfSectionList
+    PEnd   :: ElfSectionList -> ElfSectionList
+    (:++)  :: ElfSectionList -> ElfSectionList -> ElfSectionList
+
+mkElf :: ElfSectionList -> Elf
+mkElf = undefined

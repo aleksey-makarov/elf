@@ -6,14 +6,22 @@
 module Main (main) where
 
 import Paths_elf
+import Prelude as P
 
-import Data.Foldable
+import Data.Binary
+import Data.ByteString.Lazy as BSL
+import Data.Elf
+import Data.Foldable as F
 import System.Directory
 import System.FilePath
 import System.IO
 import System.Process.Typed
 import Test.Tasty
 import Test.Tasty.Golden
+import Test.Tasty.HUnit
+
+workDir :: FilePath
+workDir = "testdata"
 
 runExecWithStdoutFile :: FilePath -> [String] -> FilePath -> IO ()
 runExecWithStdoutFile execFilePath args stdoutPath =
@@ -34,20 +42,35 @@ traverseDir root ok = go root
     where
         go :: FilePath -> IO [FilePath]
         go dir = do
-            paths <- map (dir </>) <$> listDirectory dir
+            paths <- P.map (dir </>) <$> listDirectory dir
             (dirPaths, filePaths) <- partitionM doesDirectoryExist paths
             let
-                oks = filter ok filePaths
-            (oks ++) <$> (concat <$> (sequence $ map go dirPaths))
+                oks = P.filter ok filePaths
+            (oks ++) <$> (F.concat <$> (sequence $ P.map go dirPaths))
 
 isElf :: FilePath -> Bool
 isElf p = takeExtension p == ".elf"
+
+syscallTest :: TestTree
+syscallTest = testCase "syscall" $ encodeFile (workDir </> "syscall") $ mkElf sectionList
+    where
+        sectionList :: ElfSectionList
+        sectionList   = S BSL.empty
+                    :++ p1
+                    :++ S BSL.empty
+                    :++ S BSL.empty
+                    :++ PEnd p1
+                    :++ p2
+                    :++ S BSL.empty
+                    :++ PEnd p2
+        p1 = P
+        p2 = P
 
 main :: IO ()
 main = do
 
     binDir <- getBinDir
-    elfs <- traverseDir "testdata" isElf
+    elfs <- traverseDir workDir isElf
 
     let
         mkTestDump :: FilePath -> TestTree
@@ -79,4 +102,6 @@ main = do
         mkTest :: FilePath -> TestTree
         mkTest p = testGroup p [mkTestDump p, mkTestLayout p]
 
-    defaultMain $ testGroup "Golden" (mkTest <$> elfs)
+    defaultMain $ testGroup "Golden" [ testGroup "Reference" (mkTest <$> elfs)
+                                     , testGroup "Generated" [ syscallTest ]
+                                     ]

@@ -27,9 +27,10 @@ library:
     - base >= 2 && < 5
     - bytestring
     - binary
-    - template-haskell
-    - singletons
     - intervals
+    - singletons
+    - template-haskell
+    - transformers
   source-dirs: src
   other-modules:
     - Data.Elf.TH
@@ -57,11 +58,15 @@ tests:
       - Paths_elf
     dependencies:
       - base
+      - binary
+      - bytestring
       - directory
+      - elf
       - filepath
       - typed-process
       - tasty
       - tasty-golden
+      - tasty-hunit
 
 executables:
   hobjdump:
@@ -73,13 +78,6 @@ executables:
       - binary
       - bytestring
       - prettyprinter
-  hobjcopy:
-    main: hObjCopy.hs
-    source-dirs: app
-    ghc-options: -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
-    dependencies:
-      - elf
-      - binary
   hobjlayout:
     main: hObjLayout.hs
     source-dirs: app

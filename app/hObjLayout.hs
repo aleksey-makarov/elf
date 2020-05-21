@@ -8,7 +8,7 @@
 
 import Control.Monad
 import Data.Binary
-import Data.Elf
+import Data.Elf hiding (ElfSectionList (..))
 import Data.List
 import Data.Maybe
 import Data.Semigroup

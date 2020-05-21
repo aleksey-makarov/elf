@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ad7665a77969e14b136ef851b35d72d249eb096ae73672354b12e9c9b09c872c
+-- hash: 9470928723ec438e0eff941d34c380f60d4be327b5b3ca50d75502d0051974e4
 
 name:           elf
 version:        0.31
@@ -48,19 +48,7 @@ library
     , intervals
     , singletons
     , template-haskell
-  default-language: Haskell2010
-
-executable hobjcopy
-  main-is: hObjCopy.hs
-  other-modules:
-      Paths_elf
-  hs-source-dirs:
-      app
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      base >=4.6 && <5.0
-    , binary
-    , elf
+    , transformers
   default-language: Haskell2010
 
 executable hobjdump
@@ -102,10 +90,14 @@ test-suite golden
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints
   build-depends:
       base
+    , binary
+    , bytestring
     , directory
+    , elf
     , filepath
     , tasty
     , tasty-golden
+    , tasty-hunit
     , typed-process
   default-language: Haskell2010
 
