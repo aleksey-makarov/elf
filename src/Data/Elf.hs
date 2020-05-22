@@ -369,14 +369,14 @@ elfSectionData :: ElfSection -> BS.ByteString -- ^ The raw data for the section.
 elfSectionData (ElfSection elfXX elfSectionXX) = elfSectionData' elfXX elfSectionXX
 
 elfSectionInterval :: ElfSection -> ElfInterval
-elfSectionInterval (ElfSection _ sXX) = if t == SHT_NOBITS then I.empty else (o ... o + s - 1)
+elfSectionInterval (ElfSection _ sXX) = if (t == SHT_NOBITS) || (s == 0) then I.empty else (o ... o + s - 1)
     where
         (t, o, s) = case sXX of
             ElfSection32{..} -> (s32Type, fromIntegral s32Offset, fromIntegral s32Size)
             ElfSection64{..} -> (s64Type,              s64Offset,              s64Size)
 
 elfSegmentInterval :: ElfSegment -> ElfInterval
-elfSegmentInterval (ElfSegment _ pXX)= (o ... o + s - 1)
+elfSegmentInterval (ElfSegment _ pXX) = if (s == 0) then I.empty else (o ... o + s - 1)
     where
         (o, s) = case pXX of
             ElfSegment32{..} -> (fromIntegral p32Offset, fromIntegral p32FileSize)
