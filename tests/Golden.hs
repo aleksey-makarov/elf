@@ -51,20 +51,20 @@ traverseDir root ok = go root
 isElf :: FilePath -> Bool
 isElf p = takeExtension p == ".elf"
 
-syscallTest :: TestTree
-syscallTest = testCase "syscall" $ encodeFile (workDir </> "syscall") $ mkElf sectionList
-    where
-        sectionList :: ElfSectionList
-        sectionList   = S BSL.empty
-                    :++ p1
-                    :++ S BSL.empty
-                    :++ S BSL.empty
-                    :++ PEnd p1
-                    :++ p2
-                    :++ S BSL.empty
-                    :++ PEnd p2
-        p1 = P
-        p2 = P
+-- syscallTest :: TestTree
+-- syscallTest = testCase "syscall" $ encodeFile (workDir </> "syscall") $ mkElf sectionList
+--     where
+--         sectionList :: ElfSectionList
+--         sectionList   = S BSL.empty
+--                     :++ p1
+--                     :++ S BSL.empty
+--                     :++ S BSL.empty
+--                     :++ PEnd p1
+--                     :++ p2
+--                     :++ S BSL.empty
+--                     :++ PEnd p2
+--         p1 = P
+--         p2 = P
 
 main :: IO ()
 main = do
@@ -103,5 +103,5 @@ main = do
         mkTest p = testGroup p [mkTestDump p, mkTestLayout p]
 
     defaultMain $ testGroup "Golden" [ testGroup "Reference" (mkTest <$> elfs)
-                                     , testGroup "Generated" [ syscallTest ]
+                                     -- , testGroup "Generated" [ syscallTest ]
                                      ]
