@@ -24,7 +24,6 @@
 -- | Data.Elf is a module for parsing a ByteString of an ELF file into an Elf record.
 module Data.Elf ( ElfClass(..)
                 , ElfData(..)
-                , ElfInterval
 
                 , Elf
                 , elfClass
@@ -97,12 +96,11 @@ import Data.List as L
 import Data.Singletons.Sigma
 import Data.Singletons.TH
 import Numeric.Interval as I
+import Numeric.Interval.NonEmpty as INE
 
 -- https://stackoverflow.com/questions/10672981/export-template-haskell-generated-definitions
 
 import Data.Elf.Generated
-
-type ElfInterval = Interval Word64
 
 $(singletons [d|
     data ElfClass
@@ -283,27 +281,29 @@ elfSections (_ :&: elfXX@ElfXX{..}) = fmap (ElfSection elfXX) exxSections
 elfSegments :: Elf -> [ElfSegment]
 elfSegments (_ :&: elfXX@ElfXX{..}) = fmap (ElfSegment elfXX) exxSegments
 
-elfHeaderInterval :: Elf -> ElfInterval
-elfHeaderInterval (_ :&: ElfXX{..}) = 0 ... fromIntegral exxHSize - 1
+elfHeaderInterval :: Elf -> INE.Interval Word64
+elfHeaderInterval (_ :&: ElfXX{..}) = 0 INE.... fromIntegral exxHSize - 1
 
-data ElfTableInterval = ElfTableInterval { interval :: ElfInterval
+data ElfTableInterval = ElfTableInterval { interval :: INE.Interval Word64
                                          , size     :: Word16
                                          , num      :: Word16
                                          }
 
-elfSectionTableInterval :: Elf -> ElfTableInterval
-elfSectionTableInterval (_ :&: ElfXX{..}) = ElfTableInterval (o ... o + s * n - 1) exxShEntSize exxShNum
+elfSectionTableInterval :: Elf -> Maybe ElfTableInterval
+elfSectionTableInterval (_ :&: ElfXX{..}) = if (s == 0) then Nothing else Just $ ElfTableInterval i exxShEntSize exxShNum
     where
         o = fromWordXX   exxShOff
         s = fromIntegral exxShEntSize
         n = fromIntegral exxShNum
+        i = o INE.... o + s * n - 1
 
-elfSegmentTableInterval :: Elf -> ElfTableInterval
-elfSegmentTableInterval (_ :&: ElfXX{..}) = ElfTableInterval (o ... o + s * n - 1) exxPhEntSize exxPhNum
+elfSegmentTableInterval :: Elf -> Maybe ElfTableInterval
+elfSegmentTableInterval (_ :&: ElfXX{..}) =  if (s == 0) then Nothing else Just $ ElfTableInterval i exxPhEntSize exxPhNum
     where
         o = fromWordXX   exxPhOff
         s = fromIntegral exxPhEntSize
         n = fromIntegral exxPhNum
+        i = o INE.... o + s * n - 1
 
 at :: (Integral i) => [a] -> i -> Maybe a
 at (x : _)  0             = Just x
@@ -368,15 +368,15 @@ elfSectionData' ElfXX{..} ElfSection32{..} = cut exxContent (fromIntegral s32Off
 elfSectionData :: ElfSection -> BS.ByteString -- ^ The raw data for the section.
 elfSectionData (ElfSection elfXX elfSectionXX) = elfSectionData' elfXX elfSectionXX
 
-elfSectionInterval :: ElfSection -> ElfInterval
-elfSectionInterval (ElfSection _ sXX) = if (t == SHT_NOBITS) || (s == 0) then I.empty else (o ... o + s - 1)
+elfSectionInterval :: ElfSection -> I.Interval Word64
+elfSectionInterval (ElfSection _ sXX) = if (t == SHT_NOBITS) || (s == 0) then I.empty else (o I.... o + s - 1)
     where
         (t, o, s) = case sXX of
             ElfSection32{..} -> (s32Type, fromIntegral s32Offset, fromIntegral s32Size)
             ElfSection64{..} -> (s64Type,              s64Offset,              s64Size)
 
-elfSegmentInterval :: ElfSegment -> ElfInterval
-elfSegmentInterval (ElfSegment _ pXX) = if (s == 0) then I.empty else (o ... o + s - 1)
+elfSegmentInterval :: ElfSegment -> I.Interval Word64
+elfSegmentInterval (ElfSegment _ pXX) = if (s == 0) then I.empty else (o I.... o + s - 1)
     where
         (o, s) = case pXX of
             ElfSegment32{..} -> (fromIntegral p32Offset, fromIntegral p32FileSize)

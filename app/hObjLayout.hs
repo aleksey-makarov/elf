@@ -19,12 +19,12 @@ import Text.Printf
 
 data T = S (INE.Interval Word64) Word ElfSection [T]
        | P (INE.Interval Word64) Word ElfSegment [T]
-       | A (INE.Interval Word64) String          [T]
+       | H (INE.Interval Word64) String          [T]
 
 instance Show T where
     show (S i n s _) = "(" ++ show n ++ ": [" ++ show i ++ "] " ++ (nameToString $ elfSectionName s) ++ ")"
     show (P i n p _) = "(" ++ show n ++ ": [" ++ show i ++ "] " ++ (show $ elfSegmentType p)         ++ ")"
-    show (A i   s _) = "(" ++             "[" ++ show i ++ "] " ++ s                                 ++ ")"
+    show (H i   s _) = "(" ++             "[" ++ show i ++ "] " ++ s                                 ++ ")"
 
 class HasInterval a t | a -> t where
     getInterval :: a -> INE.Interval t
@@ -32,7 +32,7 @@ class HasInterval a t | a -> t where
 instance HasInterval T Word64 where
     getInterval (S i _ _ _) = i
     getInterval (P i _ _ _) = i
-    getInterval (A i _ _)   = i
+    getInterval (H i _ _)   = i
 
 data LZip a = LZip [a] (Maybe a) [a]
 
@@ -55,7 +55,7 @@ intersectMessage a b = show a ++ " and " ++ show b ++ " interlap"
 addTs :: [T] -> T -> T
 addTs ts (S i at s tl) = S i at s $ addTsToList ts tl
 addTs ts (P i at p tl) = P i at p $ addTsToList ts tl
-addTs ts (A i s    tl) = A i s    $ addTsToList ts tl
+addTs ts (H i s    tl) = H i s    $ addTsToList ts tl
 
 addT :: T -> [T] -> [T]
 addT t ts =
@@ -113,17 +113,17 @@ printElf fileName = do
     mapM_ printSegment $ zip [0 ..] ps
 
     let
-        toNonEmptyUnsafe i = (I.inf i INE.... I.sup i)
 
         toNonEmpty i | I.null i  = Nothing
         toNonEmpty i | otherwise = Just (I.inf i INE.... I.sup i)
 
-        ElfTableInterval sti _ _ = elfSectionTableInterval elf
-        ElfTableInterval pti _ _ = elfSegmentTableInterval elf
-        headerIntervals = [ A (toNonEmptyUnsafe $ elfHeaderInterval elf) "ELF Header"    []
-                          , A (toNonEmptyUnsafe sti)                     "Section table" []
-                          , A (toNonEmptyUnsafe pti)                     "Segment table" []
-                          ]
+        sti = Data.Elf.interval <$> elfSectionTableInterval elf
+        pti = Data.Elf.interval <$> elfSegmentTableInterval elf
+
+        headerIntervals = mapMaybe id [ Just $ H (elfHeaderInterval elf) "ELF Header" []
+                                      , (\ x -> H x "Section table" []) <$> sti
+                                      , (\ x -> H x "Segment table" []) <$> pti
+                                      ]
 
         fSection :: (Word, ElfSection) -> Maybe T
         fSection (i, s) = (\ x -> S x i s []) <$> (toNonEmpty $ elfSectionInterval s)
@@ -142,7 +142,7 @@ printElf fileName = do
         tDepth :: T -> Word
         tDepth (S _ _ _ l) = 1 + tsDepth l
         tDepth (P _ _ _ l) = 1 + tsDepth l
-        tDepth (A _   _ l) = 1 + tsDepth l
+        tDepth (H _   _ l) = 1 + tsDepth l
 
         printHeader :: [Char] -> Word -> Char -> IO ()
         printHeader p d f = do
@@ -166,7 +166,7 @@ printElf fileName = do
             mapM_ (printT ('║' : p) w) tl
             printHeader p w '╙'
             printf " %016x P %d\n" (INE.sup i) at
-        printT p w (A i s    tl) = do
+        printT p w (H i s    tl) = do
             printHeader p w '┎'
             printf " %016x H %s\n" (INE.inf i) s
             mapM_ (printT ('┃' : p) w) tl
