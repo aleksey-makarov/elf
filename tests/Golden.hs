@@ -12,6 +12,7 @@ import Data.Binary
 import Data.ByteString.Lazy as BSL
 import Data.Elf
 import Data.Foldable as F
+import Data.Functor.Identity
 import System.Directory
 import System.FilePath
 import System.IO
@@ -52,19 +53,14 @@ isElf :: FilePath -> Bool
 isElf p = takeExtension p == ".elf"
 
 syscallTest :: TestTree
-syscallTest = testCase "syscall" $ encodeFile (workDir </> "syscall") $ mkElf sectionList
+syscallTest = testCase "syscall" $ encodeFile (workDir </> "syscall") elf
     where
-        sectionList :: ElfSectionList
-        sectionList   = S BSL.empty
-                    :++ p1
-                    :++ S BSL.empty
-                    :++ S BSL.empty
-                    :++ PEnd p1
-                    :++ p2
-                    :++ S BSL.empty
-                    :++ PEnd p2
-        p1 = P
-        p2 = P
+        elf = runIdentity $ mkElf do
+            mkSection BSL.empty
+            mkSegment do
+                mkSection BSL.empty
+                mkSection BSL.empty
+            mkSegment $ mkSection BSL.empty
 
 main :: IO ()
 main = do

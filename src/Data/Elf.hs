@@ -78,12 +78,15 @@ module Data.Elf ( ElfClass(..)
                 , steOther
                 , elfParseSymbolTable
 
-                , ElfSectionList (..)
+                , ElfBuilderT
+                , mkSection
+                , mkSegment
                 , mkElf
 
                 , module Data.Elf.Generated) where
 
 import Control.Monad
+import Control.Monad.State hiding (get, put)
 import Data.Binary
 import Data.Binary.Get
 import Data.Binary.Put
@@ -643,11 +646,29 @@ elfParseSymbolTable sec@(ElfSection elfXX@ElfXX{..} sXX) =
 
 --------------------------------------------------------------------------
 
-data ElfSectionList where
-    S      :: BSL.ByteString -> ElfSectionList
-    P      :: ElfSectionList
-    PEnd   :: ElfSectionList -> ElfSectionList
-    (:++)  :: ElfSectionList -> ElfSectionList -> ElfSectionList
+data SectionBuilder = SectionBuilder { sbStart  :: Word64
+                                     , sbLength :: Word64
+                                     , sbName   :: String
+                                     , sbAddr   :: Word64
+                                     }
 
-mkElf :: ElfSectionList -> Elf
+data SegmentBuilder = SegmentBuilder { pbStart  :: Word64
+                                     , pbLength :: Word64
+                                     , pbAddr   :: Word64
+                                     }
+
+data ElfBuilderState = ElfBuilderState { ebData        :: BSL.ByteString
+                                       , ebSectionsRev :: [SectionBuilder]
+                                       , ebSegments    :: [SegmentBuilder]
+                                       }
+
+type ElfBuilderT = StateT ElfBuilderState
+
+mkSection :: Monad m => BSL.ByteString -> ElfBuilderT m ()
+mkSection = undefined
+
+mkSegment :: Monad m => ElfBuilderT m () -> ElfBuilderT m ()
+mkSegment = undefined
+
+mkElf :: Monad m => ElfBuilderT m () -> m Elf
 mkElf = undefined

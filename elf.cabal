@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9470928723ec438e0eff941d34c380f60d4be327b5b3ca50d75502d0051974e4
+-- hash: f1deb8134ecc66c4735f740ef97861eab5cd8be40c1145e21137c909a56912c4
 
 name:           elf
 version:        0.31
@@ -46,9 +46,9 @@ library
     , binary
     , bytestring
     , intervals
+    , mtl
     , singletons
     , template-haskell
-    , transformers
   default-language: Haskell2010
 
 executable hobjdump

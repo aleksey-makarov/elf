@@ -30,7 +30,7 @@ library:
     - intervals
     - singletons
     - template-haskell
-    - transformers
+    - mtl
   source-dirs: src
   other-modules:
     - Data.Elf.TH
