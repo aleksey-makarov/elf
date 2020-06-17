@@ -10,6 +10,7 @@ import Prelude as P
 
 import Data.Binary
 import Data.ByteString.Lazy as BSL
+import Data.ByteString.Lazy.Char8 as BSC
 import Data.Elf
 import Data.Foldable as F
 import Data.Functor.Identity
@@ -56,11 +57,11 @@ syscallTest :: TestTree
 syscallTest = testCase "syscall" $ encodeFile (workDir </> "syscall") elf
     where
         elf = runIdentity $ mkElf do
-            mkSection BSL.empty
+            mkSection "section1" 1000 $ BSC.pack "section1 data"
             mkSegment do
-                mkSection BSL.empty
-                mkSection BSL.empty
-            mkSegment $ mkSection BSL.empty
+                mkSection "section2" 1000 $ BSC.pack "section2 data"
+                mkSection "section3" 1000 $ BSC.pack "section3 data"
+            mkSegment $ mkSection "section4" 1000 $ BSC.pack "section4 data"
 
 main :: IO ()
 main = do

@@ -659,16 +659,45 @@ data SegmentBuilder = SegmentBuilder { pbStart  :: Word64
 
 data ElfBuilderState = ElfBuilderState { ebData        :: BSL.ByteString
                                        , ebSectionsRev :: [SectionBuilder]
-                                       , ebSegments    :: [SegmentBuilder]
+                                       , ebSegmentsRev :: [SegmentBuilder]
                                        }
 
 type ElfBuilderT = StateT ElfBuilderState
 
-mkSection :: Monad m => BSL.ByteString -> ElfBuilderT m ()
-mkSection = undefined
+mkSectionS :: String -> Word64 -> BSL.ByteString -> ElfBuilderState -> ElfBuilderState
+mkSectionS n a d ElfBuilderState{..} = ElfBuilderState (BSL.append ebData d) (s : ebSectionsRev) ebSegmentsRev
+    where
+        s = SectionBuilder (fromIntegral $ BSL.length ebData) (fromIntegral $ BSL.length d) n a
+
+mkSection :: Monad m => String -> Word64 -> BSL.ByteString -> ElfBuilderT m ()
+mkSection n a d = modify $ mkSectionS n a d
 
 mkSegment :: Monad m => ElfBuilderT m () -> ElfBuilderT m ()
-mkSegment = undefined
+mkSegment = id
 
-mkElf :: Monad m => ElfBuilderT m () -> m Elf
-mkElf = undefined
+{-
+data ElfXX (c :: ElfClass) =
+    ElfXX
+        { exxData       :: ElfData       -- ^ Identifies the data encoding of the object file (endianness).
+        , exxOSABI      :: ElfOSABI      -- ^ Identifies the operating system and ABI for which the object is prepared.
+        , exxABIVersion :: Word8         -- ^ Identifies the ABI version for which the object is prepared.
+        , exxType       :: ElfType       -- ^ Identifies the object file type.
+        , exxMachine    :: ElfMachine    -- ^ Identifies the target architecture.
+        , exxEntry      :: WordXX c
+        , exxPhOff      :: WordXX c
+        , exxShOff      :: WordXX c
+        , exxFlags      :: Word32
+        , exxHSize      :: Word16
+        , exxPhEntSize  :: Word16
+        , exxPhNum      :: Word16
+        , exxShEntSize  :: Word16
+        , exxShNum      :: Word16
+        , exxShStrNdx   :: Word16
+        , exxSegments   :: [ElfSegmentXX c]
+        , exxSections   :: [ElfSectionXX c]
+        , exxContent    :: BS.ByteString
+        }
+-}
+
+mkElf :: Monad m => ElfClass -> ElfData -> ElfBuilderT m () -> m Elf
+mkElf c d = undefined
