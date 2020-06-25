@@ -699,5 +699,9 @@ data ElfXX (c :: ElfClass) =
         }
 -}
 
-mkElf :: Monad m => ElfClass -> ElfData -> ElfBuilderT m () -> m Elf
-mkElf c d = undefined
+mkElf :: Monad m => ElfClass -> ElfData -> ElfOSABI -> ElfBuilderT m () -> m Elf
+mkElf exxClass exxData exxOSABI _b = withSomeSing exxClass $ mkElf'
+    where
+        mkElf' :: Monad m => forall (a :: ElfClass) . Sing a -> m Elf
+        mkElf' exxClassS = do
+            return $ exxClassS :&: ElfXX{..}
