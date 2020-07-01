@@ -241,7 +241,7 @@ data ElfXX (c :: ElfClass) =
         , exxPhNum      :: Word16
         , exxShEntSize  :: Word16
         , exxShNum      :: Word16
-        , exxShStrNdx   :: Word16
+        , exxShStrNdx   :: ElfSectionIndex
         , exxSegments   :: [ElfSegmentXX c]
         , exxSections   :: [ElfSectionXX c]
         , exxContent    :: BS.ByteString
@@ -325,10 +325,16 @@ getStringSectionData elfXX@ElfXX{..} sectionIndex = elfSectionData' elfXX <$> ex
 getString :: ElfXX a -> Word32 -> Word32 -> Maybe BS.ByteString
 getString elfXX sectionIndex offset = BS.takeWhile (/= 0) <$> BS.drop (fromIntegral offset) <$> getStringSectionData elfXX sectionIndex
 
+getSectionIndex :: ElfSectionIndex -> Maybe Word32
+getSectionIndex SHN_Undef           = Nothing
+getSectionIndex x | x >= SHN_LoProc = Nothing
+getSectionIndex (SHN_EXT x)         = Just $ fromIntegral x
+getSectionIndex _                   = Nothing
+
 -- FIXME: export the index of the string, not the name
 elfSectionName :: ElfSection -> Maybe BS.ByteString -- ^ Identifies the name of the section.
-elfSectionName (ElfSection elfXX@ElfXX{..} ElfSection64{..}) = getString elfXX (fromIntegral exxShStrNdx) s64Name
-elfSectionName (ElfSection elfXX@ElfXX{..} ElfSection32{..}) = getString elfXX (fromIntegral exxShStrNdx) s32Name
+elfSectionName (ElfSection elfXX@ElfXX{..} ElfSection64{..}) = getSectionIndex exxShStrNdx >>= \ i -> getString elfXX i s64Name
+elfSectionName (ElfSection elfXX@ElfXX{..} ElfSection32{..}) = getSectionIndex exxShStrNdx >>= \ i -> getString elfXX i s32Name
 
 elfSectionType :: ElfSection -> ElfSectionType -- ^ Identifies the name of the section.
 elfSectionType (ElfSection _ ElfSection64{..}) = s64Type
@@ -699,9 +705,9 @@ data ElfXX (c :: ElfClass) =
         , exxShEntSize  :: Word16     -- contains the size, in bytes, of a program header table entry
         , exxShNum      :: Word16     -- contains the number of entries in the section header table
 
-        , exxShStrNdx   :: Word16     -- contains the section header table index of the section
-                                      -- containing the section name string table. If there is no section name string
-                                      -- table, this field has the value SHN_UNDEF (0)
+        , exxShStrNdx   :: ElfSectionIndex -- contains the section header table index of the section
+                                           -- containing the section name string table. If there is no section name string
+                                           -- table, this field has the value SHN_UNDEF (0)
 
         , exxSegments   :: [ElfSegmentXX c]
         , exxSections   :: [ElfSectionXX c]
@@ -724,7 +730,7 @@ mkElf exxClassS exxData exxOSABI exxABIVersion exxType exxMachine exxEntry' _b =
     return $ exxClassS :&: ElfXX{..}
         where
             exxEntry = wxx exxClassS exxEntry'
-            -- exxShStrNdx = SHN_Undef
+            exxShStrNdx = SHN_Undef
             exxSegments = []
             exxSections = []
             exxContent = BS.empty
