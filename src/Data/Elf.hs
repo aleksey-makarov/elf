@@ -25,6 +25,8 @@
 module Data.Elf ( ElfClass(..)
                 , ElfData(..)
 
+                , SElfClass (..)
+
                 , Elf
                 , elfClass
                 , elfData
@@ -678,30 +680,51 @@ mkSegment = id
 {-
 data ElfXX (c :: ElfClass) =
     ElfXX
-        { exxData       :: ElfData       -- ^ Identifies the data encoding of the object file (endianness).
-        , exxOSABI      :: ElfOSABI      -- ^ Identifies the operating system and ABI for which the object is prepared.
-        , exxABIVersion :: Word8         -- ^ Identifies the ABI version for which the object is prepared.
-        , exxType       :: ElfType       -- ^ Identifies the object file type.
-        , exxMachine    :: ElfMachine    -- ^ Identifies the target architecture.
+        { exxData       :: ElfData    -- ^ Identifies the data encoding of the object file (endianness).
+        , exxOSABI      :: ElfOSABI   -- ^ Identifies the operating system and ABI for which the object is prepared.
+        , exxABIVersion :: Word8      -- ^ Identifies the ABI version for which the object is prepared.
+        , exxType       :: ElfType    -- ^ Identifies the object file type.
+        , exxMachine    :: ElfMachine -- ^ Identifies the target architecture.
         , exxEntry      :: WordXX c
-        , exxPhOff      :: WordXX c
-        , exxShOff      :: WordXX c
+
+        , exxPhOff      :: WordXX c   -- contains the file offset, in bytes, of the program header table.
+        , exxShOff      :: WordXX c   -- contains the file offset, in bytes, of the section header table.
+
         , exxFlags      :: Word32
-        , exxHSize      :: Word16
-        , exxPhEntSize  :: Word16
-        , exxPhNum      :: Word16
-        , exxShEntSize  :: Word16
-        , exxShNum      :: Word16
-        , exxShStrNdx   :: Word16
+
+        , exxHSize      :: Word16     -- contains the size, in bytes, of the ELF header.
+
+        , exxPhEntSize  :: Word16     -- contains the size, in bytes, of a program header table entry
+        , exxPhNum      :: Word16     -- contains the number of entries in the program header table
+        , exxShEntSize  :: Word16     -- contains the size, in bytes, of a program header table entry
+        , exxShNum      :: Word16     -- contains the number of entries in the section header table
+
+        , exxShStrNdx   :: Word16     -- contains the section header table index of the section
+                                      -- containing the section name string table. If there is no section name string
+                                      -- table, this field has the value SHN_UNDEF (0)
+
         , exxSegments   :: [ElfSegmentXX c]
         , exxSections   :: [ElfSectionXX c]
         , exxContent    :: BS.ByteString
+
         }
 -}
 
-mkElf :: Monad m => ElfClass -> ElfData -> ElfOSABI -> ElfBuilderT m () -> m Elf
-mkElf exxClass exxData exxOSABI _b = withSomeSing exxClass $ mkElf'
-    where
-        mkElf' :: Monad m => forall (a :: ElfClass) . Sing a -> m Elf
-        mkElf' exxClassS = do
-            return $ exxClassS :&: ElfXX{..}
+-- this is disgusting, but let's bear with it for a while
+type family WXX (a :: ElfClass) where
+    WXX 'ELFCLASS64 = Word64
+    WXX 'ELFCLASS32 = Word32
+
+wxx :: forall (a :: ElfClass) . Sing a -> WXX a -> WordXX a
+wxx SELFCLASS64 w = W64 w
+wxx SELFCLASS32 w = W32 w
+
+mkElf :: Monad m => forall (a :: ElfClass) . Sing a -> ElfData -> ElfOSABI -> Word8 -> ElfType -> ElfMachine -> WXX a -> ElfBuilderT m () -> m Elf
+mkElf exxClassS exxData exxOSABI exxABIVersion exxType exxMachine exxEntry' _b = do
+    return $ exxClassS :&: ElfXX{..}
+        where
+            exxEntry = wxx exxClassS exxEntry'
+            -- exxShStrNdx = SHN_Undef
+            exxSegments = []
+            exxSections = []
+            exxContent = BS.empty
