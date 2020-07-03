@@ -674,12 +674,15 @@ data ElfBuilderState = ElfBuilderState { ebData        :: BSL.ByteString
                                        , ebSegmentsRev :: [SegmentBuilder]
                                        }
 
+stateInitial :: ElfBuilderState
+stateInitial = ElfBuilderState BSL.empty [] []
+
 type ElfBuilderT = StateT ElfBuilderState
 
 mkSectionS :: String -> Word64 -> BSL.ByteString -> ElfBuilderState -> ElfBuilderState
-mkSectionS n a d ElfBuilderState{..} = ElfBuilderState (BSL.append ebData d) (s : ebSectionsRev) ebSegmentsRev
+mkSectionS name address d ElfBuilderState{..} = ElfBuilderState (BSL.append ebData d) (s : ebSectionsRev) ebSegmentsRev
     where
-        s = SectionBuilder (fromIntegral $ BSL.length ebData) (fromIntegral $ BSL.length d) n a
+        s = SectionBuilder (fromIntegral $ BSL.length ebData) (fromIntegral $ BSL.length d) name address
 
 mkSection :: Monad m => String -> Word64 -> BSL.ByteString -> ElfBuilderT m ()
 mkSection n a d = modify $ mkSectionS n a d
@@ -731,23 +734,29 @@ wxx SELFCLASS64 w = W64 w
 wxx SELFCLASS32 w = W32 w
 
 mkElf :: Monad m => Sing a -> ElfData -> ElfOSABI -> Word8 -> ElfType -> ElfMachine -> WXX a -> ElfBuilderT m () -> m Elf
-mkElf exxClassS exxData exxOSABI exxABIVersion exxType exxMachine exxEntry' _b = do
+mkElf exxClassS exxData exxOSABI exxABIVersion exxType exxMachine exxEntry' b = do
+
+    ElfBuilderState{..} <- execStateT b stateInitial
+
+    let
+        exxEntry = wxx exxClassS exxEntry'
+        exxShStrNdx = SHN_Undef
+        exxSegments = []
+        exxSections = []
+
+        exxContent = toStrict ebData
+
+        exxPhOff = wxx exxClassS exxEntry'
+        exxShOff = wxx exxClassS exxEntry'
+
+        exxFlags = 0
+
+        exxHSize = 0
+
+        exxPhEntSize = 0
+        exxPhNum = 0
+        exxShEntSize = 0
+        exxShNum = 0
+
+
     return $ exxClassS :&: ElfXX{..}
-        where
-            exxEntry = wxx exxClassS exxEntry'
-            exxShStrNdx = SHN_Undef
-            exxSegments = []
-            exxSections = []
-            exxContent = BS.empty
-
-            exxPhOff = wxx exxClassS exxEntry'
-            exxShOff = wxx exxClassS exxEntry'
-
-            exxFlags = 0
-
-            exxHSize = 0
-
-            exxPhEntSize = 0
-            exxPhNum = 0
-            exxShEntSize = 0
-            exxShNum = 0
