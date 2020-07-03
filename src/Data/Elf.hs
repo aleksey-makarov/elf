@@ -19,6 +19,10 @@
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 
+{-# LANGUAGE TypeFamilyDependencies #-}
+
+-- {-# LANGUAGE AllowAmbiguousTypes #-}
+
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 -- | Data.Elf is a module for parsing a ByteString of an ELF file into an Elf record.
@@ -717,15 +721,16 @@ data ElfXX (c :: ElfClass) =
 -}
 
 -- this is disgusting, but let's bear with it for a while
+-- type family WXX (a :: ElfClass) = r | r -> a where
 type family WXX (a :: ElfClass) where
     WXX 'ELFCLASS64 = Word64
     WXX 'ELFCLASS32 = Word32
 
-wxx :: forall (a :: ElfClass) . Sing a -> WXX a -> WordXX a
+wxx :: Sing a -> WXX a -> WordXX a
 wxx SELFCLASS64 w = W64 w
 wxx SELFCLASS32 w = W32 w
 
-mkElf :: Monad m => forall (a :: ElfClass) . Sing a -> ElfData -> ElfOSABI -> Word8 -> ElfType -> ElfMachine -> WXX a -> ElfBuilderT m () -> m Elf
+mkElf :: Monad m => Sing a -> ElfData -> ElfOSABI -> Word8 -> ElfType -> ElfMachine -> WXX a -> ElfBuilderT m () -> m Elf
 mkElf exxClassS exxData exxOSABI exxABIVersion exxType exxMachine exxEntry' _b = do
     return $ exxClassS :&: ElfXX{..}
         where
@@ -734,3 +739,15 @@ mkElf exxClassS exxData exxOSABI exxABIVersion exxType exxMachine exxEntry' _b =
             exxSegments = []
             exxSections = []
             exxContent = BS.empty
+
+            exxPhOff = wxx exxClassS exxEntry'
+            exxShOff = wxx exxClassS exxEntry'
+
+            exxFlags = 0
+
+            exxHSize = 0
+
+            exxPhEntSize = 0
+            exxPhNum = 0
+            exxShEntSize = 0
+            exxShNum = 0

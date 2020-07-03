@@ -9,7 +9,7 @@ import Paths_elf
 import Prelude as P
 
 import Data.Binary
-import Data.ByteString.Lazy as BSL
+-- import Data.ByteString.Lazy as BSL
 import Data.ByteString.Lazy.Char8 as BSC
 import Data.Elf
 import Data.Foldable as F
