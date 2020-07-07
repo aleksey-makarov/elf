@@ -16,12 +16,9 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
-
-{-# LANGUAGE TypeFamilyDependencies #-}
-
--- {-# LANGUAGE AllowAmbiguousTypes #-}
 
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
@@ -658,36 +655,58 @@ elfParseSymbolTable sec@(ElfSection elfXX@ElfXX{..} sXX) =
 
 --------------------------------------------------------------------------
 
-data SectionBuilder = SectionBuilder { sbStart  :: Word64
-                                     , sbLength :: Word64
-                                     , sbName   :: String
-                                     , sbAddr   :: Word64
-                                     }
+type family WXX (a :: ElfClass) = r | r -> a where
+-- type family WXX (a :: ElfClass) where
+    WXX 'ELFCLASS64 = Word64
+    WXX 'ELFCLASS32 = Word32
 
-data SegmentBuilder = SegmentBuilder { pbStart  :: Word64
-                                     , pbLength :: Word64
-                                     , pbAddr   :: Word64
-                                     }
+-- this is disgusting, but let's bear with it for a while
+wxxs :: Sing a -> WXX a -> WordXX a
+wxxs SELFCLASS64 w = W64 w
+wxxs SELFCLASS32 w = W32 w
 
-data ElfBuilderState = ElfBuilderState { ebData        :: BSL.ByteString
-                                       , ebSectionsRev :: [SectionBuilder]
-                                       , ebSegmentsRev :: [SegmentBuilder]
-                                       }
+wxx :: SingI a => WXX a -> WordXX a
+wxx w = wxxs sing w
 
-stateInitial :: ElfBuilderState
+wxxFromIntegral :: (SingI a, Integral i) => i -> WXX a
+wxxFromIntegral = undefined
+
+data SectionBuilder (c :: ElfClass) =
+    SectionBuilder
+        { sbStart  :: WXX c
+        , sbLength :: WXX c
+        , sbName   :: String
+        , sbAddr   :: WXX c
+        }
+
+data SegmentBuilder (c :: ElfClass) =
+    SegmentBuilder
+        { pbStart  :: WXX c
+        , pbLength :: WXX c
+        , pbAddr   :: WXX c
+        }
+
+data ElfBuilderState (c :: ElfClass) =
+    ElfBuilderState
+        { ebData        :: BSL.ByteString
+        , ebSectionsRev :: [SectionBuilder c]
+        , ebSegmentsRev :: [SegmentBuilder c]
+        }
+
+stateInitial :: SingI a => ElfBuilderState a
 stateInitial = ElfBuilderState BSL.empty [] []
 
-type ElfBuilderT = StateT ElfBuilderState
+type ElfBuilderT a = StateT (ElfBuilderState a)
 
-mkSectionS :: String -> Word64 -> BSL.ByteString -> ElfBuilderState -> ElfBuilderState
+mkSectionS :: SingI a => String -> WXX a -> BSL.ByteString -> ElfBuilderState a -> ElfBuilderState a
 mkSectionS name address d ElfBuilderState{..} = ElfBuilderState (BSL.append ebData d) (s : ebSectionsRev) ebSegmentsRev
     where
-        s = SectionBuilder (fromIntegral $ BSL.length ebData) (fromIntegral $ BSL.length d) name address
+        s = SectionBuilder (wxxFromIntegral $ BSL.length ebData) (wxxFromIntegral $ BSL.length d) name address
 
-mkSection :: Monad m => String -> Word64 -> BSL.ByteString -> ElfBuilderT m ()
+mkSection :: (Monad m, SingI a) => String -> WXX a -> BSL.ByteString -> ElfBuilderT a m ()
 mkSection n a d = modify $ mkSectionS n a d
 
-mkSegment :: Monad m => ElfBuilderT m () -> ElfBuilderT m ()
+mkSegment :: (Monad m, SingI a) => ElfBuilderT a m () -> ElfBuilderT a m ()
 mkSegment = id
 
 {-
@@ -723,31 +742,49 @@ data ElfXX (c :: ElfClass) =
         }
 -}
 
--- this is disgusting, but let's bear with it for a while
--- type family WXX (a :: ElfClass) = r | r -> a where
-type family WXX (a :: ElfClass) where
-    WXX 'ELFCLASS64 = Word64
-    WXX 'ELFCLASS32 = Word32
+-- data ElfSectionXX (c :: ElfClass) where
+--     ElfSection64 ::
+--         { s64Name      :: Word32
+--         , s64Type      :: ElfSectionType    -- ^ Identifies the type of the section.
+--         , s64Flags     :: Word64            -- ^ Identifies the attributes of the section.
+--         , s64Addr      :: Word64            -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
+--         , s64Offset    :: Word64
+--         , s64Size      :: Word64            -- ^ The size of the section. Except for SHT_NOBITS sections, this is the size of elfSectionData.
+--         , s64Link      :: Word32            -- ^ Contains a section index of an associated section, depending on section type.
+--         , s64Info      :: Word32            -- ^ Contains extra information for the index, depending on type.
+--         , s64AddrAlign :: Word64            -- ^ Contains the required alignment of the section. Must be a power of two.
+--         , s64EntSize   :: Word64            -- ^ Size of entries if section has a table.
+--         } -> ElfSectionXX 'ELFCLASS64
+--     ElfSection32 ::
+--         { s32Name      :: Word32
+--         , s32Type      :: ElfSectionType    -- ^ Identifies the type of the section.
+--         , s32Flags     :: Word32            -- ^ Identifies the attributes of the section.
+--         , s32Addr      :: Word32            -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
+--         , s32Offset    :: Word32
+--         , s32Size      :: Word32            -- ^ The size of the section. Except for SHT_NOBITS sections, this is the size of elfSectionData.
+--         , s32Link      :: Word32            -- ^ Contains a section index of an associated section, depending on section type.
+--         , s32Info      :: Word32            -- ^ Contains extra information for the index, depending on type.
+--         , s32AddrAlign :: Word32            -- ^ Contains the required alignment of the section. Must be a power of two.
+--         , s32EntSize   :: Word32            -- ^ Size of entries if section has a table.
+--         } -> ElfSectionXX 'ELFCLASS32
 
-wxx :: Sing a -> WXX a -> WordXX a
-wxx SELFCLASS64 w = W64 w
-wxx SELFCLASS32 w = W32 w
+-- mkElf :: (Monad m, SingI a) => ElfData -> ElfOSABI -> Word8 -> ElfType -> ElfMachine -> WXX a -> ElfBuilderT a m () -> m Elf
 
-mkElf :: Monad m => Sing a -> ElfData -> ElfOSABI -> Word8 -> ElfType -> ElfMachine -> WXX a -> ElfBuilderT m () -> m Elf
+mkElf :: Monad m => Sing a -> ElfData -> ElfOSABI -> Word8 -> ElfType -> ElfMachine -> WXX a -> ElfBuilderT a m () -> m Elf
 mkElf exxClassS exxData exxOSABI exxABIVersion exxType exxMachine exxEntry' b = do
 
-    ElfBuilderState{..} <- execStateT b stateInitial
+    ElfBuilderState{..} <- execStateT b $ withSingI exxClassS stateInitial
 
     let
-        exxEntry = wxx exxClassS exxEntry'
+        exxEntry = withSingI exxClassS $ wxx exxEntry'
         exxShStrNdx = SHN_Undef
         exxSegments = []
         exxSections = []
 
         exxContent = toStrict ebData
 
-        exxPhOff = wxx exxClassS exxEntry'
-        exxShOff = wxx exxClassS exxEntry'
+        exxPhOff = withSingI exxClassS $ wxx exxEntry'
+        exxShOff = withSingI exxClassS $ wxx exxEntry'
 
         exxFlags = 0
 
