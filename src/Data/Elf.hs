@@ -661,15 +661,19 @@ type family WXX (a :: ElfClass) = r | r -> a where
     WXX 'ELFCLASS32 = Word32
 
 -- this is disgusting, but let's bear with it for a while
-wxxs :: Sing a -> WXX a -> WordXX a
-wxxs SELFCLASS64 w = W64 w
-wxxs SELFCLASS32 w = W32 w
+wxxS :: Sing a -> WXX a -> WordXX a
+wxxS SELFCLASS64 w = W64 w
+wxxS SELFCLASS32 w = W32 w
 
 wxx :: SingI a => WXX a -> WordXX a
-wxx w = wxxs sing w
+wxx w = wxxS sing w
+
+wxxFromIntegralS :: Integral i => Sing a -> i -> WXX a
+wxxFromIntegralS SELFCLASS64 = fromIntegral
+wxxFromIntegralS SELFCLASS32 = fromIntegral
 
 wxxFromIntegral :: (SingI a, Integral i) => i -> WXX a
-wxxFromIntegral = undefined
+wxxFromIntegral = wxxFromIntegralS sing
 
 data SectionBuilder (c :: ElfClass) =
     SectionBuilder
@@ -776,15 +780,15 @@ mkElf exxClassS exxData exxOSABI exxABIVersion exxType exxMachine exxEntry' b = 
     ElfBuilderState{..} <- execStateT b $ withSingI exxClassS stateInitial
 
     let
-        exxEntry = wxxs exxClassS exxEntry'
+        exxEntry = wxxS exxClassS exxEntry'
         exxShStrNdx = SHN_Undef
         exxSegments = []
         exxSections = []
 
         exxContent = toStrict ebData
 
-        exxPhOff = wxxs exxClassS exxEntry'
-        exxShOff = wxxs exxClassS exxEntry'
+        exxPhOff = withSingI exxClassS $ wxx $ wxxFromIntegral (0 :: Integer)
+        exxShOff = withSingI exxClassS $ wxx $ wxxFromIntegral (0 :: Integer)
 
         exxFlags = 0
 
