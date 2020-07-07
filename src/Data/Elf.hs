@@ -776,15 +776,15 @@ mkElf exxClassS exxData exxOSABI exxABIVersion exxType exxMachine exxEntry' b = 
     ElfBuilderState{..} <- execStateT b $ withSingI exxClassS stateInitial
 
     let
-        exxEntry = withSingI exxClassS $ wxx exxEntry'
+        exxEntry = wxxs exxClassS exxEntry'
         exxShStrNdx = SHN_Undef
         exxSegments = []
         exxSections = []
 
         exxContent = toStrict ebData
 
-        exxPhOff = withSingI exxClassS $ wxx exxEntry'
-        exxShOff = withSingI exxClassS $ wxx exxEntry'
+        exxPhOff = wxxs exxClassS exxEntry'
+        exxShOff = wxxs exxClassS exxEntry'
 
         exxFlags = 0
 
