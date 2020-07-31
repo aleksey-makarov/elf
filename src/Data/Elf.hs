@@ -82,6 +82,9 @@ module Data.Elf ( ElfClass(..)
                 , elfParseSymbolTable
 
                 , ElfBuilderT
+                , mkHeader
+                , mkSectionTable
+                , mkSegmentTable
                 , mkSection
                 , mkSegment
                 , mkElf
@@ -90,6 +93,7 @@ module Data.Elf ( ElfClass(..)
 
 import Control.Monad
 import Control.Monad.State hiding (get, put)
+import qualified Control.Monad.State as S
 import Data.Binary
 import Data.Binary.Get
 import Data.Binary.Put
@@ -695,15 +699,43 @@ data ElfBuilderState (c :: ElfClass) =
         { ebData        :: BSL.ByteString
         , ebSectionsRev :: [SectionBuilder c]
         , ebSegmentsRev :: [SegmentBuilder c]
+        , ebPhOff       :: Maybe (WXX c)
+        , ebShOff       :: Maybe (WXX c)
         }
 
 stateInitial :: SingI a => ElfBuilderState a
-stateInitial = ElfBuilderState BSL.empty [] []
+stateInitial = ElfBuilderState BSL.empty [] [] Nothing Nothing
 
 type ElfBuilderT a = StateT (ElfBuilderState a)
 
+-- data ElfSectionXX (c :: ElfClass) where
+--     ElfSection64 ::
+--         { s64Name      :: Word32
+--         , s64Type      :: ElfSectionType    -- ^ Identifies the type of the section.
+--         , s64Flags     :: Word64            -- ^ Identifies the attributes of the section.
+--         , s64Addr      :: Word64            -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
+--         , s64Offset    :: Word64
+--         , s64Size      :: Word64            -- ^ The size of the section. Except for SHT_NOBITS sections, this is the size of elfSectionData.
+--         , s64Link      :: Word32            -- ^ Contains a section index of an associated section, depending on section type.
+--         , s64Info      :: Word32            -- ^ Contains extra information for the index, depending on type.
+--         , s64AddrAlign :: Word64            -- ^ Contains the required alignment of the section. Must be a power of two.
+--         , s64EntSize   :: Word64            -- ^ Size of entries if section has a table.
+--         } -> ElfSectionXX 'ELFCLASS64
+--     ElfSection32 ::
+--         { s32Name      :: Word32
+--         , s32Type      :: ElfSectionType    -- ^ Identifies the type of the section.
+--         , s32Flags     :: Word32            -- ^ Identifies the attributes of the section.
+--         , s32Addr      :: Word32            -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
+--         , s32Offset    :: Word32
+--         , s32Size      :: Word32            -- ^ The size of the section. Except for SHT_NOBITS sections, this is the size of elfSectionData.
+--         , s32Link      :: Word32            -- ^ Contains a section index of an associated section, depending on section type.
+--         , s32Info      :: Word32            -- ^ Contains extra information for the index, depending on type.
+--         , s32AddrAlign :: Word32            -- ^ Contains the required alignment of the section. Must be a power of two.
+--         , s32EntSize   :: Word32            -- ^ Size of entries if section has a table.
+--         } -> ElfSectionXX 'ELFCLASS32
+
 mkSectionS :: SingI a => String -> WXX a -> BSL.ByteString -> ElfBuilderState a -> ElfBuilderState a
-mkSectionS name address d ElfBuilderState{..} = ElfBuilderState (BSL.append ebData d) (s : ebSectionsRev) ebSegmentsRev
+mkSectionS name address d ElfBuilderState{..} = ElfBuilderState (BSL.append ebData d) (s : ebSectionsRev) ebSegmentsRev ebPhOff ebShOff
     where
         s = SectionBuilder (wxxFromIntegral $ BSL.length ebData) (wxxFromIntegral $ BSL.length d) name address
 
@@ -712,6 +744,17 @@ mkSection n a d = modify $ mkSectionS n a d
 
 mkSegment :: (Monad m, SingI a) => ElfBuilderT a m () -> ElfBuilderT a m ()
 mkSegment = id
+
+mkHeader :: (Monad m, SingI a) => ElfBuilderT a m ()
+mkHeader = do
+    s <- S.get
+    when undefined $ error "Header should be the first chunk of data"
+
+mkSectionTable :: (Monad m, SingI a) => ElfBuilderT a m ()
+mkSectionTable = return ()
+
+mkSegmentTable :: (Monad m, SingI a) => ElfBuilderT a m ()
+mkSegmentTable = return ()
 
 {-
 data ElfXX (c :: ElfClass) =
@@ -746,34 +789,7 @@ data ElfXX (c :: ElfClass) =
         }
 -}
 
--- data ElfSectionXX (c :: ElfClass) where
---     ElfSection64 ::
---         { s64Name      :: Word32
---         , s64Type      :: ElfSectionType    -- ^ Identifies the type of the section.
---         , s64Flags     :: Word64            -- ^ Identifies the attributes of the section.
---         , s64Addr      :: Word64            -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
---         , s64Offset    :: Word64
---         , s64Size      :: Word64            -- ^ The size of the section. Except for SHT_NOBITS sections, this is the size of elfSectionData.
---         , s64Link      :: Word32            -- ^ Contains a section index of an associated section, depending on section type.
---         , s64Info      :: Word32            -- ^ Contains extra information for the index, depending on type.
---         , s64AddrAlign :: Word64            -- ^ Contains the required alignment of the section. Must be a power of two.
---         , s64EntSize   :: Word64            -- ^ Size of entries if section has a table.
---         } -> ElfSectionXX 'ELFCLASS64
---     ElfSection32 ::
---         { s32Name      :: Word32
---         , s32Type      :: ElfSectionType    -- ^ Identifies the type of the section.
---         , s32Flags     :: Word32            -- ^ Identifies the attributes of the section.
---         , s32Addr      :: Word32            -- ^ The virtual address of the beginning of the section in memory. 0 for sections that are not loaded into target memory.
---         , s32Offset    :: Word32
---         , s32Size      :: Word32            -- ^ The size of the section. Except for SHT_NOBITS sections, this is the size of elfSectionData.
---         , s32Link      :: Word32            -- ^ Contains a section index of an associated section, depending on section type.
---         , s32Info      :: Word32            -- ^ Contains extra information for the index, depending on type.
---         , s32AddrAlign :: Word32            -- ^ Contains the required alignment of the section. Must be a power of two.
---         , s32EntSize   :: Word32            -- ^ Size of entries if section has a table.
---         } -> ElfSectionXX 'ELFCLASS32
-
 -- mkElf :: (Monad m, SingI a) => ElfData -> ElfOSABI -> Word8 -> ElfType -> ElfMachine -> WXX a -> ElfBuilderT a m () -> m Elf
-
 mkElf :: Monad m => Sing a -> ElfData -> ElfOSABI -> Word8 -> ElfType -> ElfMachine -> WXX a -> ElfBuilderT a m () -> m Elf
 mkElf exxClassS exxData exxOSABI exxABIVersion exxType exxMachine exxEntry' b = do
 
@@ -798,6 +814,5 @@ mkElf exxClassS exxData exxOSABI exxABIVersion exxType exxMachine exxEntry' b = 
         exxPhNum = 0
         exxShEntSize = 0
         exxShNum = 0
-
 
     return $ exxClassS :&: ElfXX{..}
