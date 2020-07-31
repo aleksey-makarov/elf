@@ -28,6 +28,7 @@ library:
     - bytestring
     - binary
     - intervals
+    - lens
     - singletons
     - template-haskell
     - mtl

@@ -91,6 +91,7 @@ module Data.Elf ( ElfClass(..)
 
                 , module Data.Elf.Generated) where
 
+import Control.Lens hiding (at)
 import Control.Monad
 import Control.Monad.State hiding (get, put)
 import qualified Control.Monad.State as S
@@ -696,12 +697,14 @@ data SegmentBuilder (c :: ElfClass) =
 
 data ElfBuilderState (c :: ElfClass) =
     ElfBuilderState
-        { ebData        :: BSL.ByteString
-        , ebSectionsRev :: [SectionBuilder c]
-        , ebSegmentsRev :: [SegmentBuilder c]
-        , ebPhOff       :: Maybe (WXX c)
-        , ebShOff       :: Maybe (WXX c)
+        { _ebData        :: BSL.ByteString
+        , _ebSectionsRev :: [SectionBuilder c]
+        , _ebSegmentsRev :: [SegmentBuilder c]
+        , _ebPhOff       :: Maybe (WXX c)
+        , _ebShOff       :: Maybe (WXX c)
         }
+
+makeLenses ''ElfBuilderState
 
 stateInitial :: SingI a => ElfBuilderState a
 stateInitial = ElfBuilderState BSL.empty [] [] Nothing Nothing
@@ -734,21 +737,21 @@ type ElfBuilderT a = StateT (ElfBuilderState a)
 --         , s32EntSize   :: Word32            -- ^ Size of entries if section has a table.
 --         } -> ElfSectionXX 'ELFCLASS32
 
-mkSectionS :: SingI a => String -> WXX a -> BSL.ByteString -> ElfBuilderState a -> ElfBuilderState a
-mkSectionS name address d ElfBuilderState{..} = ElfBuilderState (BSL.append ebData d) (s : ebSectionsRev) ebSegmentsRev ebPhOff ebShOff
-    where
-        s = SectionBuilder (wxxFromIntegral $ BSL.length ebData) (wxxFromIntegral $ BSL.length d) name address
-
 mkSection :: (Monad m, SingI a) => String -> WXX a -> BSL.ByteString -> ElfBuilderT a m ()
-mkSection n a d = modify $ mkSectionS n a d
+mkSection name address d = do
+    dd <- use ebData
+    let
+        s = SectionBuilder (wxxFromIntegral $ BSL.length dd) (wxxFromIntegral $ BSL.length d) name address
+    ebData .= BSL.append dd d
+    ebSectionsRev %= (s :)
 
 mkSegment :: (Monad m, SingI a) => ElfBuilderT a m () -> ElfBuilderT a m ()
 mkSegment = id
 
 mkHeader :: (Monad m, SingI a) => ElfBuilderT a m ()
-mkHeader = do
-    s <- S.get
-    when undefined $ error "Header should be the first chunk of data"
+mkHeader = undefined
+    -- s <- S.get
+    -- when undefined $ error "Header should be the first chunk of data"
 
 mkSectionTable :: (Monad m, SingI a) => ElfBuilderT a m ()
 mkSectionTable = return ()
@@ -801,7 +804,7 @@ mkElf exxClassS exxData exxOSABI exxABIVersion exxType exxMachine exxEntry' b = 
         exxSegments = []
         exxSections = []
 
-        exxContent = toStrict ebData
+        exxContent = toStrict _ebData
 
         exxPhOff = withSingI exxClassS $ wxx $ wxxFromIntegral (0 :: Integer)
         exxShOff = withSingI exxClassS $ wxx $ wxxFromIntegral (0 :: Integer)

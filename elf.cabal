@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f1deb8134ecc66c4735f740ef97861eab5cd8be40c1145e21137c909a56912c4
+-- hash: 6277a657e2f4e41e64f22469e812ff2d4242f267c504033195cbe6036385c530
 
 name:           elf
 version:        0.31
@@ -46,6 +46,7 @@ library
     , binary
     , bytestring
     , intervals
+    , lens
     , mtl
     , singletons
     , template-haskell
