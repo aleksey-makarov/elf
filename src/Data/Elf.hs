@@ -737,12 +737,15 @@ type ElfBuilderT a = StateT (ElfBuilderState a)
 --         , s32EntSize   :: Word32            -- ^ Size of entries if section has a table.
 --         } -> ElfSectionXX 'ELFCLASS32
 
+dataLength :: (Monad m, SingI a) => ElfBuilderT a m (WXX a)
+dataLength = (wxxFromIntegral . BSL.length) <$> use ebData
+
 mkSection :: (Monad m, SingI a) => String -> WXX a -> BSL.ByteString -> ElfBuilderT a m ()
 mkSection name address d = do
-    dd <- use ebData
+    l <- dataLength
+    ebData %= (flip BSL.append $ d)
     let
-        s = SectionBuilder (wxxFromIntegral $ BSL.length dd) (wxxFromIntegral $ BSL.length d) name address
-    ebData .= BSL.append dd d
+        s = SectionBuilder l (wxxFromIntegral $ BSL.length d) name address
     ebSectionsRev %= (s :)
 
 mkSegment :: (Monad m, SingI a) => ElfBuilderT a m () -> ElfBuilderT a m ()
@@ -750,14 +753,16 @@ mkSegment = id
 
 mkHeader :: (Monad m, SingI a) => ElfBuilderT a m ()
 mkHeader = undefined
-    -- s <- S.get
-    -- when undefined $ error "Header should be the first chunk of data"
 
 mkSectionTable :: (Monad m, SingI a) => ElfBuilderT a m ()
-mkSectionTable = return ()
+mkSectionTable =  do
+    l <- dataLength
+    ebShOff .= Just l
 
 mkSegmentTable :: (Monad m, SingI a) => ElfBuilderT a m ()
-mkSegmentTable = return ()
+mkSegmentTable =  do
+    l <- dataLength
+    ebPhOff .= Just l
 
 {-
 data ElfXX (c :: ElfClass) =
