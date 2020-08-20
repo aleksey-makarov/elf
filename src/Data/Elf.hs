@@ -686,7 +686,8 @@ data SectionBuilder (c :: ElfClass) =
         , sbLength :: WXX c
         , sbName   :: String
         , sbAddr   :: WXX c
-        }
+        } |
+    Header
 
 data SegmentBuilder (c :: ElfClass) =
     SegmentBuilder
@@ -752,7 +753,7 @@ mkSegment :: (Monad m, SingI a) => ElfBuilderT a m () -> ElfBuilderT a m ()
 mkSegment = id
 
 mkHeader :: (Monad m, SingI a) => ElfBuilderT a m ()
-mkHeader = undefined
+mkHeader = ebSectionsRev %= (Header :)
 
 mkSectionTable :: (Monad m, SingI a) => ElfBuilderT a m ()
 mkSectionTable =  do
