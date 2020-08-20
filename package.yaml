@@ -38,6 +38,7 @@ library:
     - Data.Elf.Generated
   exposed-modules:
     - Data.Elf
+    - Data.Elf2
 
 tests:
   tests:
@@ -52,8 +53,24 @@ tests:
       - hspec >= 2.4 && < 3
       - containers >= 0.5.9.2
       - elf
-  golden:
-    main: Golden.hs
+# golden:
+#    main: Golden.hs
+#    source-dirs: tests
+#    other-modules:
+#      - Paths_elf
+#    dependencies:
+#      - base
+#      - binary
+#      - bytestring
+#      - directory
+#      - elf
+#      - filepath
+#      - typed-process
+#      - tasty
+#      - tasty-golden
+#      - tasty-hunit
+  golden2:
+    main: Golden2.hs
     source-dirs: tests
     other-modules:
       - Paths_elf
