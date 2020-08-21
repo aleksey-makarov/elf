@@ -665,6 +665,17 @@ type family WXX (a :: ElfClass) = r | r -> a where
     WXX 'ELFCLASS64 = Word64
     WXX 'ELFCLASS32 = Word32
 
+-- instance forall (a :: ElfClass) . SingI a => Binary (Le (WXX a)) where
+--     put = undefined
+--     -- get = Le <$> getWordXX sing ELFDATA2LSB
+--     get = undefined
+
+-- Can not define
+-- instance forall (a :: ElfClass) . SingI a => Binary (Le (WXX a)) where
+-- because WXX is a type family
+getWXX :: forall (a :: ElfClass) . SingI a => ElfData -> Get (WXX a)
+getWXX = undefined
+
 type Addr a = WXX a
 type Off a = WXX a
 
@@ -697,10 +708,10 @@ data HeaderXX (c :: ElfClass) =
 
 type Header = Sigma ElfClass (TyCon1 HeaderXX)
 
-getHeader'' :: forall (c :: ElfClass) . Sing c -> (forall a . (Binary (Le a), Binary (Be a)) => Get a) -> Get Header
-getHeader'' classS getE = do
-    -- hEntry <- getE
-    return $ classS :&: HeaderXX{..}
+-- getHeader'' :: forall (c :: ElfClass) . Sing c -> (forall a . (Binary (Le a), Binary (Be a)) => Get a) -> Get Header
+-- getHeader'' classS getE = do
+--     hEntry <- getE
+--     return $ classS :&: HeaderXX{..}
     -- return HeaderXX {..}
 
 -- getHeader'' SELFCLASS64 getE = do
@@ -717,7 +728,10 @@ getHeader' classS = do
         getE :: (Binary (Le b), Binary (Be b)) => Get b
         getE = getEndian d
 
-    getHeader'' classS getE
+        -- getWXXE = getWXX d
+
+    -- hEntry <- getWXXE
+    return $ classS :&: HeaderXX{..}
 
 getHeader :: Get Header
 getHeader = do
