@@ -665,6 +665,9 @@ type family WXX (a :: ElfClass) = r | r -> a where
     WXX 'ELFCLASS64 = Word64
     WXX 'ELFCLASS32 = Word32
 
+type Addr a = WXX a
+type Off a = WXX a
+
 -- this is disgusting, but let's bear with it for a while
 wxxS :: Sing a -> WXX a -> WordXX a
 wxxS SELFCLASS64 w = W64 w
@@ -680,6 +683,98 @@ wxxFromIntegralS SELFCLASS32 = fromIntegral
 wxxFromIntegral :: (SingI a, Integral i) => i -> WXX a
 wxxFromIntegral = wxxFromIntegralS sing
 
+data HeaderXX (c :: ElfClass) =
+    HeaderXX
+        { hData       :: ElfData
+        , hOSABI      :: ElfOSABI
+        , hABIVersion :: Word8
+        , hType       :: ElfType
+        , hMachine    :: ElfMachine
+        , hEntry      :: Addr c
+        , hPhOff      :: Off c
+        , hShOff      :: Off c
+        }
+
+type Header = Sigma ElfClass (TyCon1 HeaderXX)
+
+getHeader'' :: forall (c :: ElfClass) . Sing c -> (forall a . (Binary (Le a), Binary (Be a)) => Get a) -> Get Header
+getHeader'' classS getE = do
+    -- hEntry <- getE
+    return $ classS :&: HeaderXX{..}
+    -- return HeaderXX {..}
+
+-- getHeader'' SELFCLASS64 getE = do
+--     hEntry <- getE
+--     return HeaderXX {..}
+-- getHeader'' SELFCLASS32 getE = do
+--     return HeaderXX {..}
+
+getHeader' :: forall (c :: ElfClass) . Sing c -> Get Header
+getHeader' classS = do
+    d <- get
+
+    let
+        getE :: (Binary (Le b), Binary (Be b)) => Get b
+        getE = getEndian d
+
+    getHeader'' classS getE
+
+getHeader :: Get Header
+getHeader = do
+    verify "magic" elfMagic
+    c <- get
+    withSomeSing c $ getHeader'
+
+--getElf' :: forall (a :: ElfClass) . BS.ByteString -> Sing a -> Get Elf
+--getElf' exxContent exxClassS = do
+--
+--    exxData     <- get
+--
+--    let
+--        getE :: (Binary (Le b), Binary (Be b)) => Get b
+--        getE = getEndian exxData
+--
+--    verify "version1" elfSupportedVersion
+--    exxOSABI      <- get
+--    exxABIVersion <- get
+--    skip 7
+--    exxType       <- getE
+--    exxMachine    <- getE
+--
+--    (exxVersion2 :: Word32)  <- getE
+--    when (exxVersion2 /= 1) $ error "verification failed: version2"
+--
+--    exxEntry      <- withSingI exxClassS $ getE
+--
+--    exxPhOff      <- withSingI exxClassS $ getE
+--    exxShOff      <- withSingI exxClassS $ getE
+--
+--    exxFlags      <- getE
+--
+--    exxHSize      <- getE
+--
+--    exxPhEntSize  <- getE
+--    exxPhNum      <- getE
+--    exxShEntSize  <- getE
+--    exxShNum      <- getE
+--
+--    exxShStrNdx   <- getE
+--
+--    hSize         <- bytesRead
+--    when (hSize /= fromIntegral exxHSize) $ error "incorrect size of elf header"
+--
+--    exxSegments   <- withSingI exxClassS $ getTable exxData (fromWordXX exxPhOff - fromIntegral exxHSize) exxPhEntSize exxPhNum
+--    exxSections   <- withSingI exxClassS $ getTable exxData (fromWordXX exxShOff - fromIntegral exxHSize) exxShEntSize exxShNum
+--
+--    return $ exxClassS :&: ElfXX{..}
+
+
+
+
+instance Binary Header where
+    put (_ :&: HeaderXX{..}) = undefined
+    get = getHeader
+
 data SectionBuilder (c :: ElfClass) =
     SectionBuilder
         { sbStart  :: WXX c
@@ -687,7 +782,7 @@ data SectionBuilder (c :: ElfClass) =
         , sbName   :: String
         , sbAddr   :: WXX c
         } |
-    Header
+    HeaderX
 
 data SegmentBuilder (c :: ElfClass) =
     SegmentBuilder
@@ -753,7 +848,7 @@ mkSegment :: (Monad m, SingI a) => ElfBuilderT a m () -> ElfBuilderT a m ()
 mkSegment = id
 
 mkHeader :: (Monad m, SingI a) => ElfBuilderT a m ()
-mkHeader = ebSectionsRev %= (Header :)
+mkHeader = ebSectionsRev %= (HeaderX :)
 
 mkSectionTable :: (Monad m, SingI a) => ElfBuilderT a m ()
 mkSectionTable =  do
