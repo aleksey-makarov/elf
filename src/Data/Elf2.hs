@@ -715,9 +715,8 @@ data HeaderXX (c :: ElfClass) =
 
 type Header = Sigma ElfClass (TyCon1 HeaderXX)
 
-getHeader' :: forall (c :: ElfClass) . Sing c -> Get Header
-getHeader' classS = do
-    hData <- get
+getHeader' :: forall (c :: ElfClass) . Sing c -> ElfData -> Get Header
+getHeader' classS hData = do
 
     let
         getE :: (Binary (Le b), Binary (Be b)) => Get b
@@ -755,11 +754,12 @@ getHeader' classS = do
 getHeader :: Get Header
 getHeader = do
     verify "magic" elfMagic
-    c <- get
-    withSomeSing c $ getHeader'
+    hClass <- get
+    hData <- get
+    withSomeSing hClass $ flip getHeader' $ hData
 
 instance Binary Header where
-    put (classS :&: HeaderXX{..}) = undefined
+    put (_classS :&: HeaderXX{..}) = undefined
     get = getHeader
 
 --------------------------------------------------------------------------
@@ -814,6 +814,70 @@ instance forall (a :: ElfClass) . SingI a => Binary (Le (SectionXX a)) where
 --------------------------------------------------------------------------
 -- Segment
 --------------------------------------------------------------------------
+
+data SegmentXX (c :: ElfClass) =
+    SegmentXX
+        { pType     :: ElfSegmentType
+        , pFlags    :: Word32
+        , pOffset   :: WXX c
+        , pVirtAddr :: WXX c
+        , pPhysAddr :: WXX c
+        , pFileSize :: WXX c
+        , pMemSize  :: WXX c
+        , pAlign    :: WXX c
+        }
+
+getSegment :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (SegmentXX c)
+getSegment SELFCLASS64 hData = do
+
+    -- FIXME: this was copypasted
+    let
+        getE :: (Binary (Le b), Binary (Be b)) => Get b
+        getE = getEndian hData
+
+        getWXXE = getWXX SELFCLASS64 hData
+
+    pType <- getE
+    pFlags <- getE
+    pOffset <- getWXXE
+    pVirtAddr <- getWXXE
+    pPhysAddr <- getWXXE
+    pFileSize <- getWXXE
+    pMemSize <- getWXXE
+    pAlign <- getWXXE
+
+    return SegmentXX {..}
+
+getSegment SELFCLASS32 hData = do
+
+    -- FIXME: this was copypasted
+    let
+        getE :: (Binary (Le b), Binary (Be b)) => Get b
+        getE = getEndian hData
+
+        getWXXE = getWXX SELFCLASS32 hData
+
+    pType <- getE
+    pOffset <- getWXXE
+    pVirtAddr <- getWXXE
+    pPhysAddr <- getWXXE
+    pFileSize <- getWXXE
+    pMemSize <- getWXXE
+    pFlags <- getE
+    pAlign <- getWXXE
+
+    return SegmentXX {..}
+
+instance forall (a :: ElfClass) . SingI a => Binary (Be (SegmentXX a)) where
+    put = undefined
+    get = Be <$> getSegment sing ELFDATA2MSB
+
+instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
+    put = undefined
+    get = Le <$> getSegment sing ELFDATA2LSB
+
+
+
 
 data SectionBuilder (c :: ElfClass) =
     SectionBuilder
