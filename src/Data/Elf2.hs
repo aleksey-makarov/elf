@@ -676,9 +676,6 @@ getWXX SELFCLASS64 ELFDATA2MSB = getWord64be
 getWXX SELFCLASS32 ELFDATA2LSB = getWord32le
 getWXX SELFCLASS32 ELFDATA2MSB = getWord32be
 
-type Addr a = WXX a
-type Off a = WXX a
-
 -- this is disgusting, but let's bear with it for a while
 wxxS :: Sing a -> WXX a -> WordXX a
 wxxS SELFCLASS64 w = W64 w
@@ -705,9 +702,9 @@ data HeaderXX (c :: ElfClass) =
         , hABIVersion :: Word8
         , hType       :: ElfType
         , hMachine    :: ElfMachine
-        , hEntry      :: Addr c
-        , hPhOff      :: Off c
-        , hShOff      :: Off c
+        , hEntry      :: WXX c
+        , hPhOff      :: WXX c
+        , hShOff      :: WXX c
         , hFlags      :: Word32
         , hPhEntSize  :: Word16
         , hPhNum      :: Word16
@@ -774,13 +771,13 @@ data SectionXX (c :: ElfClass) =
         { sName      :: Word32
         , sType      :: ElfSectionType
         , sFlags     :: WXX c
-        , sAddr      :: Addr c
-        , sOffset    :: Off c
-        , sSize      :: Off c
+        , sAddr      :: WXX c
+        , sOffset    :: WXX c
+        , sSize      :: WXX c
         , sLink      :: Word32
         , sInfo      :: Word32
-        , sAddrAlign :: Addr c
-        , sEntSize   :: Off c
+        , sAddrAlign :: WXX c
+        , sEntSize   :: WXX c
         }
 
 getSection :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (SectionXX c)
