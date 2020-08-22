@@ -781,7 +781,27 @@ data SectionXX (c :: ElfClass) =
         }
 
 getSection :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (SectionXX c)
-getSection = undefined
+getSection classS hData = do
+
+    -- FIXME: this was copypasted
+    let
+        getE :: (Binary (Le b), Binary (Be b)) => Get b
+        getE = getEndian hData
+
+        getWXXE = getWXX classS hData
+
+    sName <- getE
+    sType <- getE
+    sFlags <- getWXXE
+    sAddr <- getWXXE
+    sOffset <- getWXXE
+    sSize <- getWXXE
+    sLink <- getE
+    sInfo <- getE
+    sAddrAlign <- getWXXE
+    sEntSize <- getWXXE
+
+    return SectionXX {..}
 
 instance forall (a :: ElfClass) . SingI a => Binary (Be (SectionXX a)) where
     put = undefined
