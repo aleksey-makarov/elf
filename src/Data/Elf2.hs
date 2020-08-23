@@ -449,6 +449,10 @@ getEndian :: (Binary (Le a), Binary (Be a)) => ElfData -> Get a
 getEndian ELFDATA2LSB = fromLe <$> get
 getEndian ELFDATA2MSB = fromBe <$> get
 
+putEndian :: (Binary (Le a), Binary (Be a)) => ElfData -> a -> Put
+putEndian ELFDATA2LSB = put . Le
+putEndian ELFDATA2MSB = put . Be
+
 getElf' :: forall (a :: ElfClass) . BS.ByteString -> Sing a -> Get Elf
 getElf' exxContent exxClassS = do
 
@@ -676,6 +680,12 @@ getWXX SELFCLASS64 ELFDATA2MSB = getWord64be
 getWXX SELFCLASS32 ELFDATA2LSB = getWord32le
 getWXX SELFCLASS32 ELFDATA2MSB = getWord32be
 
+putWXX :: forall (c :: ElfClass) . Sing c -> ElfData -> WXX c -> Put
+putWXX SELFCLASS64 ELFDATA2LSB = putWord64le
+putWXX SELFCLASS64 ELFDATA2MSB = putWord64be
+putWXX SELFCLASS32 ELFDATA2LSB = putWord32le
+putWXX SELFCLASS32 ELFDATA2MSB = putWord32be
+
 -- this is disgusting, but let's bear with it for a while
 wxxS :: Sing a -> WXX a -> WordXX a
 wxxS SELFCLASS64 w = W64 w
@@ -715,6 +725,10 @@ data HeaderXX (c :: ElfClass) =
 
 type Header = Sigma ElfClass (TyCon1 HeaderXX)
 
+headerSize :: forall (c :: ElfClass) . Sing c -> Word16
+headerSize SELFCLASS64 = 64
+headerSize SELFCLASS32 = 52
+
 getHeader' :: forall (c :: ElfClass) . Sing c -> ElfData -> Get Header
 getHeader' classS hData = do
 
@@ -739,15 +753,13 @@ getHeader' classS hData = do
     hShOff <- getWXXE
 
     hFlags <- getE
-    (hSize :: Word16) <- getE
+    hSize <- getE
+    when (hSize /= headerSize classS) $ error "incorrect size of elf header"
     hPhEntSize <- getE
     hPhNum <- getE
     hShEntSize <- getE
     hShNum <- getE
     hShStrNdx <- getE
-
-    sz <- bytesRead
-    when (sz /= fromIntegral hSize) $ error "incorrect size of elf header"
 
     return $ classS :&: HeaderXX{..}
 
@@ -758,8 +770,39 @@ getHeader = do
     hData <- get
     withSomeSing hClass $ flip getHeader' $ hData
 
+putHeader :: Header -> Put
+putHeader (classS :&: HeaderXX{..}) = do
+
+    let
+        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
+        putE = putEndian hData
+
+        putWXXE = putWXX classS hData
+
+    put elfMagic
+    put $ fromSing classS
+    put hData
+    put elfSupportedVersion
+    put hOSABI
+    put hABIVersion
+
+    putByteString $ BS.replicate 7 0
+
+    putE hType
+    putE hMachine
+    putWXXE hEntry
+    putWXXE hPhOff
+    putWXXE hShOff
+    putE hFlags
+    putE $ headerSize classS
+    putE hPhEntSize
+    putE hPhNum
+    putE hShEntSize
+    putE hShNum
+    putE hShStrNdx
+
 instance Binary Header where
-    put (_classS :&: HeaderXX{..}) = undefined
+    put = putHeader
     get = getHeader
 
 --------------------------------------------------------------------------
