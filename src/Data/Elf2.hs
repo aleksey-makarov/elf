@@ -846,12 +846,32 @@ getSection classS hData = do
 
     return SectionXX {..}
 
+putSection :: forall (c :: ElfClass) . Sing c -> ElfData -> SectionXX c -> Put
+putSection  classS hData (SectionXX{..}) = do
+
+    let
+        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
+        putE = putEndian hData
+
+        putWXXE = putWXX classS hData
+
+    putE sName
+    putE sType
+    putWXXE sFlags
+    putWXXE sAddr
+    putWXXE sOffset
+    putWXXE sSize
+    putE sLink
+    putE sInfo
+    putWXXE sAddrAlign
+    putWXXE sEntSize
+
 instance forall (a :: ElfClass) . SingI a => Binary (Be (SectionXX a)) where
-    put = undefined
+    put = putSection sing ELFDATA2MSB . fromBe
     get = Be <$> getSection sing ELFDATA2MSB
 
 instance forall (a :: ElfClass) . SingI a => Binary (Le (SectionXX a)) where
-    put = undefined
+    put = putSection sing ELFDATA2LSB . fromLe
     get = Le <$> getSection sing ELFDATA2LSB
 
 --------------------------------------------------------------------------
@@ -889,7 +909,7 @@ getSegment SELFCLASS64 hData = do
     pMemSize <- getWXXE
     pAlign <- getWXXE
 
-    return SegmentXX {..}
+    return SegmentXX{..}
 
 getSegment SELFCLASS32 hData = do
 
@@ -909,14 +929,17 @@ getSegment SELFCLASS32 hData = do
     pFlags <- getE
     pAlign <- getWXXE
 
-    return SegmentXX {..}
+    return SegmentXX{..}
+
+putSegment :: forall (c :: ElfClass) . Sing c -> ElfData -> SegmentXX c -> Put
+putSegment  classS hData (SegmentXX{..}) = undefined
 
 instance forall (a :: ElfClass) . SingI a => Binary (Be (SegmentXX a)) where
-    put = undefined
+    put = putSegment sing ELFDATA2MSB . fromBe
     get = Be <$> getSegment sing ELFDATA2MSB
 
 instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
-    put = undefined
+    put = putSegment sing ELFDATA2LSB . fromLe
     get = Le <$> getSegment sing ELFDATA2LSB
 
 
