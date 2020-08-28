@@ -932,7 +932,38 @@ getSegment SELFCLASS32 hData = do
     return SegmentXX{..}
 
 putSegment :: forall (c :: ElfClass) . Sing c -> ElfData -> SegmentXX c -> Put
-putSegment  classS hData (SegmentXX{..}) = undefined
+putSegment SELFCLASS64 hData (SegmentXX{..}) = do
+    let
+        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
+        putE = putEndian hData
+
+        putWXXE = putWXX SELFCLASS64 hData
+
+    putE pType
+    putE pFlags
+    putWXXE pOffset
+    putWXXE pVirtAddr
+    putWXXE pPhysAddr
+    putWXXE pFileSize
+    putWXXE pMemSize
+    putWXXE pAlign
+
+putSegment SELFCLASS32 hData (SegmentXX{..}) = do
+    let
+        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
+        putE = putEndian hData
+
+        putWXXE = putWXX SELFCLASS32 hData
+
+    putE pType
+    putWXXE pOffset
+    putWXXE pVirtAddr
+    putWXXE pPhysAddr
+    putWXXE pFileSize
+    putWXXE pMemSize
+    putE pFlags
+    putWXXE pAlign
+
 
 instance forall (a :: ElfClass) . SingI a => Binary (Be (SegmentXX a)) where
     put = putSegment sing ELFDATA2MSB . fromBe
