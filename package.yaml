@@ -81,6 +81,7 @@ tests:
       - directory
       - elf
       - filepath
+      - singletons
       - typed-process
       - tasty
       - tasty-golden

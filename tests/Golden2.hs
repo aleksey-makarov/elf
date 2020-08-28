@@ -3,6 +3,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Main (main) where
 
@@ -14,6 +16,9 @@ import Data.ByteString.Lazy as BS
 import Data.ByteString.Lazy.Char8 as BSC
 import Data.Foldable as F
 import Data.Functor.Identity
+import Data.Int
+import Data.Singletons
+import Data.Singletons.Sigma
 import System.Directory
 import System.FilePath
 import System.IO as IO
@@ -21,6 +26,7 @@ import System.Process.Typed
 import Test.Tasty
 import Test.Tasty.Golden
 import Test.Tasty.HUnit
+
 
 import Data.Elf2
 
@@ -55,14 +61,35 @@ traverseDir root ok = go root
 isElf :: FilePath -> Bool
 isElf p = takeExtension p == ".elf"
 
+wxxToInt64S :: Sing a -> WXX a -> Int64
+wxxToInt64S SELFCLASS64 = fromIntegral
+wxxToInt64S SELFCLASS32 = fromIntegral
+
+wxxToInt64 :: SingI a => WXX a -> Int64
+wxxToInt64 = wxxToInt64S sing
+
+getSectionTableByteString :: Header -> ByteString -> ByteString
+getSectionTableByteString (classS :&: HeaderXX{..}) bs = BS.take (fromIntegral hShEntSize * fromIntegral hShNum) $ BS.drop (wxxToInt64S classS hShOff) bs
+
+getSegmentTableByteString :: Header -> ByteString -> ByteString
+getSegmentTableByteString (classS :&: HeaderXX{..}) bs = BS.take (fromIntegral hPhEntSize * fromIntegral hPhNum) $ BS.drop (wxxToInt64S classS hPhOff) bs
+
+decodeOrFailAssertion :: Binary a => ByteString -> IO (Int64, a)
+decodeOrFailAssertion bs = case decodeOrFail bs of
+    Left (_, off, err) -> assertFailure (err ++ " @" ++ show off)
+    Right (_, off, a) -> return (off, a)
+
 mkTest'' :: ByteString -> Assertion
 mkTest'' bs = do
-    case decodeOrFail bs of
-        Left (_, _, err) -> assertFailure err
-        Right (_, off, (elfh :: Header)) -> do
-            assertBool "Incorrect header size" ((headerSize ELFCLASS32 == fromIntegral off) || (headerSize ELFCLASS64 == fromIntegral off))
-            assertEqual "Round trip does not work" (BS.take off bs) (encode elfh)
-    -- assertFailure "No no no"
+    (off, (elfh :: Header)) <- decodeOrFailAssertion bs
+    assertBool "Incorrect header size" ((headerSize ELFCLASS32 == fromIntegral off) || (headerSize ELFCLASS64 == fromIntegral off))
+    assertEqual "Round trip does not work" (BS.take off bs) (encode elfh)
+
+    let
+        bsSections = getSectionTableByteString elfh bs
+        bsSegments = getSegmentTableByteString elfh bs
+
+    assertFailure "Oh no no no"
 
 mkTest' :: Handle -> Assertion
 mkTest' h = BS.hGetContents h >>= mkTest''

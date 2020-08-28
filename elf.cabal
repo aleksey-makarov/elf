@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e4992562ae524fd441af32906a61ee9667298382b091ecb1e21974cb4b8f869e
+-- hash: 18bce6bca8edcfc306152c53b5273f4ed252d2f445754e498009b78839b28fbf
 
 name:           elf
 version:        0.31
@@ -97,6 +97,7 @@ test-suite golden2
     , directory
     , elf
     , filepath
+    , singletons
     , tasty
     , tasty-golden
     , tasty-hunit

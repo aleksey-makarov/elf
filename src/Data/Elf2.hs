@@ -25,7 +25,10 @@
 -- | Data.Elf is a module for parsing a ByteString of an ELF file into an Elf record.
 module Data.Elf2 (
 
-                  Header
+                  WXX
+
+                , HeaderXX(..)
+                , Header
                 , headerSize
 
                 , ElfClass(..)
@@ -705,6 +708,13 @@ wxxFromIntegralS SELFCLASS32 = fromIntegral
 
 wxxFromIntegral :: (SingI a, Integral i) => i -> WXX a
 wxxFromIntegral = wxxFromIntegralS sing
+
+-- wxxToIntegerS :: Sing a -> WXX a -> Integer
+-- wxxToIntegerS SELFCLASS64 = toInteger
+-- wxxToIntegerS SELFCLASS32 = toInteger
+--
+-- wxxToInteger :: SingI a => WXX a -> Integer
+-- wxxToInteger = wxxToIntegerS sing
 
 --------------------------------------------------------------------------
 -- Header
