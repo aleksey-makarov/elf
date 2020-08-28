@@ -23,7 +23,12 @@
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 -- | Data.Elf is a module for parsing a ByteString of an ELF file into an Elf record.
-module Data.Elf2 ( ElfClass(..)
+module Data.Elf2 (
+
+                  Header
+                , headerSize
+
+                , ElfClass(..)
                 , ElfData(..)
 
                 , SElfClass (..)
@@ -725,9 +730,9 @@ data HeaderXX (c :: ElfClass) =
 
 type Header = Sigma ElfClass (TyCon1 HeaderXX)
 
-headerSize :: forall (c :: ElfClass) . Sing c -> Word16
-headerSize SELFCLASS64 = 64
-headerSize SELFCLASS32 = 52
+headerSize :: ElfClass -> Word16
+headerSize ELFCLASS64 = 64
+headerSize ELFCLASS32 = 52
 
 getHeader' :: forall (c :: ElfClass) . Sing c -> ElfData -> Get Header
 getHeader' classS hData = do
@@ -754,7 +759,7 @@ getHeader' classS hData = do
 
     hFlags <- getE
     hSize <- getE
-    when (hSize /= headerSize classS) $ error "incorrect size of elf header"
+    when (hSize /= (headerSize $ fromSing classS)) $ error "incorrect size of elf header"
     hPhEntSize <- getE
     hPhNum <- getE
     hShEntSize <- getE
@@ -790,11 +795,12 @@ putHeader (classS :&: HeaderXX{..}) = do
 
     putE hType
     putE hMachine
+    putE (1 :: Word32)
     putWXXE hEntry
     putWXXE hPhOff
     putWXXE hShOff
     putE hFlags
-    putE $ headerSize classS
+    putE $ headerSize $ fromSing classS
     putE hPhEntSize
     putE hPhNum
     putE hShEntSize
