@@ -26,6 +26,10 @@
 module Data.Elf2 (
 
                   WXX
+                , wxxFromIntegralS
+                , wxxFromIntegral
+                , wxxToIntegralS
+                , wxxToIntegral
 
                 , HeaderXX(..)
                 , Header
@@ -708,6 +712,13 @@ wxxFromIntegralS SELFCLASS32 = fromIntegral
 
 wxxFromIntegral :: (SingI a, Integral i) => i -> WXX a
 wxxFromIntegral = wxxFromIntegralS sing
+
+wxxToIntegralS :: Integral i => Sing a -> WXX a -> i
+wxxToIntegralS SELFCLASS64 = fromIntegral
+wxxToIntegralS SELFCLASS32 = fromIntegral
+
+wxxToIntegral :: (SingI a, Integral i) => WXX a -> i
+wxxToIntegral = wxxToIntegralS sing
 
 -- wxxToIntegerS :: Sing a -> WXX a -> Integer
 -- wxxToIntegerS SELFCLASS64 = toInteger

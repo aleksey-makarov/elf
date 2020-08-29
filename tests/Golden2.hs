@@ -61,18 +61,11 @@ traverseDir root ok = go root
 isElf :: FilePath -> Bool
 isElf p = takeExtension p == ".elf"
 
-wxxToInt64S :: Sing a -> WXX a -> Int64
-wxxToInt64S SELFCLASS64 = fromIntegral
-wxxToInt64S SELFCLASS32 = fromIntegral
-
-wxxToInt64 :: SingI a => WXX a -> Int64
-wxxToInt64 = wxxToInt64S sing
-
 getSectionTableByteString :: Header -> ByteString -> ByteString
-getSectionTableByteString (classS :&: HeaderXX{..}) bs = BS.take (fromIntegral hShEntSize * fromIntegral hShNum) $ BS.drop (wxxToInt64S classS hShOff) bs
+getSectionTableByteString (classS :&: HeaderXX{..}) bs = BS.take (fromIntegral hShEntSize * fromIntegral hShNum) $ BS.drop (wxxToIntegralS classS hShOff) bs
 
 getSegmentTableByteString :: Header -> ByteString -> ByteString
-getSegmentTableByteString (classS :&: HeaderXX{..}) bs = BS.take (fromIntegral hPhEntSize * fromIntegral hPhNum) $ BS.drop (wxxToInt64S classS hPhOff) bs
+getSegmentTableByteString (classS :&: HeaderXX{..}) bs = BS.take (fromIntegral hPhEntSize * fromIntegral hPhNum) $ BS.drop (wxxToIntegralS classS hPhOff) bs
 
 decodeOrFailAssertion :: Binary a => ByteString -> IO (Int64, a)
 decodeOrFailAssertion bs = case decodeOrFail bs of
