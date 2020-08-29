@@ -25,7 +25,10 @@
 -- | Data.Elf is a module for parsing a ByteString of an ELF file into an Elf record.
 module Data.Elf2 (
 
-                  WXX
+                  ElfClass(..)
+                , ElfData(..)
+
+                , WXX
                 , wxxFromIntegralS
                 , wxxFromIntegral
                 , wxxToIntegralS
@@ -35,8 +38,11 @@ module Data.Elf2 (
                 , Header
                 , headerSize
 
-                , ElfClass(..)
-                , ElfData(..)
+                , BList(..)
+
+                ---------------------------------
+
+
 
                 , SElfClass (..)
 

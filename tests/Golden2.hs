@@ -11,6 +11,8 @@ module Main (main) where
 import Paths_elf
 import Prelude as P
 
+import Control.Arrow
+import Control.Monad
 import Data.Binary
 import Data.ByteString.Lazy as BS
 import Data.ByteString.Lazy.Char8 as BSC
@@ -72,23 +74,25 @@ decodeOrFailAssertion bs = case decodeOrFail bs of
     Left (_, off, err) -> assertFailure (err ++ " @" ++ show off)
     Right (_, off, a) -> return (off, a)
 
-mkTest'' :: ByteString -> Assertion
-mkTest'' bs = do
-    (off, (elfh :: Header)) <- decodeOrFailAssertion bs
+mkTest' :: ByteString -> Assertion
+mkTest' bs = do
+    (off, elfh@(_ :&: HeaderXX{..})) <- decodeOrFailAssertion bs
     assertBool "Incorrect header size" ((headerSize ELFCLASS32 == fromIntegral off) || (headerSize ELFCLASS64 == fromIntegral off))
-    assertEqual "Round trip does not work" (BS.take off bs) (encode elfh)
+    assertEqual "Header round trip does not work" (BS.take off bs) (encode elfh)
 
     let
         bsSections = getSectionTableByteString elfh bs
         bsSegments = getSegmentTableByteString elfh bs
 
-    assertFailure "Oh no no no"
+    -- x <- case hData of
+    --     ELFDATA2LSB -> second (fmap fromLe . fromBList) <$> (decodeOrFailAssertion bsSections)
+    --     ELFDATA2MSB -> second (fmap fromBe . fromBList) <$> (decodeOrFailAssertion bsSections)
 
-mkTest' :: Handle -> Assertion
-mkTest' h = BS.hGetContents h >>= mkTest''
+    -- assertFailure "Oh no no no"
+    return ()
 
 mkTest :: FilePath -> TestTree
-mkTest p = testCase p $ withBinaryFile p ReadMode mkTest'
+mkTest p = testCase p $ withBinaryFile p ReadMode (BS.hGetContents >=> mkTest'')
 
 main :: IO ()
 main = do
