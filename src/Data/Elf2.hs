@@ -40,6 +40,9 @@ module Data.Elf2 (
 
                 , BList(..)
 
+                , SectionXX(..)
+                , SegmentXX(..)
+
                 ---------------------------------
 
 

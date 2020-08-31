@@ -5,6 +5,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE DataKinds #-}
 
 module Main (main) where
 
@@ -63,36 +64,39 @@ traverseDir root ok = go root
 isElf :: FilePath -> Bool
 isElf p = takeExtension p == ".elf"
 
-getSectionTableByteString :: Header -> ByteString -> ByteString
-getSectionTableByteString (classS :&: HeaderXX{..}) bs = BS.take (fromIntegral hShEntSize * fromIntegral hShNum) $ BS.drop (wxxToIntegralS classS hShOff) bs
-
-getSegmentTableByteString :: Header -> ByteString -> ByteString
-getSegmentTableByteString (classS :&: HeaderXX{..}) bs = BS.take (fromIntegral hPhEntSize * fromIntegral hPhNum) $ BS.drop (wxxToIntegralS classS hPhOff) bs
-
 decodeOrFailAssertion :: Binary a => ByteString -> IO (Int64, a)
 decodeOrFailAssertion bs = case decodeOrFail bs of
     Left (_, off, err) -> assertFailure (err ++ " @" ++ show off)
     Right (_, off, a) -> return (off, a)
 
-mkTest' :: ByteString -> Assertion
-mkTest' bs = do
-    (off, elfh@(_ :&: HeaderXX{..})) <- decodeOrFailAssertion bs
-    assertBool "Incorrect header size" ((headerSize ELFCLASS32 == fromIntegral off) || (headerSize ELFCLASS64 == fromIntegral off))
-    assertEqual "Header round trip does not work" (BS.take off bs) (encode elfh)
+mkTest'' :: forall (a :: ElfClass) . Sing a -> HeaderXX a -> ByteString -> Assertion
+mkTest'' classS hxx@HeaderXX{..} bs = do
 
     let
-        bsSections = getSectionTableByteString elfh bs
-        bsSegments = getSegmentTableByteString elfh bs
+        takeLen off len bs = BS.take len $ BS.drop off bs
+        bsSections = takeLen (wxxToIntegralS classS hShOff) (fromIntegral hShEntSize * fromIntegral hShNum) bs
+        bsSegments = takeLen (wxxToIntegralS classS hPhOff) (fromIntegral hPhEntSize * fromIntegral hPhNum) bs
 
-    -- x <- case hData of
-    --     ELFDATA2LSB -> second (fmap fromLe . fromBList) <$> (decodeOrFailAssertion bsSections)
-    --     ELFDATA2MSB -> second (fmap fromBe . fromBList) <$> (decodeOrFailAssertion bsSections)
+    (off, s :: [SectionXX a]) <- withSingI classS $ case hData of
+        ELFDATA2LSB -> second (fmap fromLe . fromBList) <$> (decodeOrFailAssertion bsSections)
+        ELFDATA2MSB -> second (fmap fromBe . fromBList) <$> (decodeOrFailAssertion bsSections)
+
+    assertEqual "Not all section table could be parsed" (BS.length bsSections) off
+    assertEqual "Section table round trip does not work" bsSections (withSingI classS $ encode $ BList $ Le <$> s)
 
     -- assertFailure "Oh no no no"
     return ()
 
+mkTest' :: ByteString -> Assertion
+mkTest' bs = do
+    (off, elfh@(classS :&: hxx) :: Header) <- decodeOrFailAssertion bs
+    assertBool "Incorrect header size" ((headerSize ELFCLASS32 == fromIntegral off) || (headerSize ELFCLASS64 == fromIntegral off))
+    assertEqual "Header round trip does not work" (BS.take off bs) (encode elfh)
+
+    mkTest'' classS hxx bs
+
 mkTest :: FilePath -> TestTree
-mkTest p = testCase p $ withBinaryFile p ReadMode (BS.hGetContents >=> mkTest'')
+mkTest p = testCase p $ withBinaryFile p ReadMode (BS.hGetContents >=> mkTest')
 
 main :: IO ()
 main = do
