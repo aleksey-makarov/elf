@@ -649,7 +649,7 @@ instance Show ElfSymbolTableEntry where
 newtype BList a = BList { fromBList :: [a] }
 
 instance Binary a => Binary (BList a) where
-    put (BList (a:as)) = put a >> put as
+    put (BList (a:as)) = put a >> put (BList as)
     put (BList []) = return ()
     get = do
         e <- isEmpty
