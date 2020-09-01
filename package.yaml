@@ -29,6 +29,7 @@ library:
     - binary
     - intervals
     - lens
+    - prettyprinter
     - singletons
     - template-haskell
     - mtl
@@ -39,6 +40,7 @@ library:
   exposed-modules:
     - Data.Elf
     - Data.Elf2
+    - Data.ElfDoc
 
 tests:
   tests:
@@ -81,6 +83,7 @@ tests:
       - directory
       - elf
       - filepath
+      - prettyprinter
       - singletons
       - typed-process
       - tasty

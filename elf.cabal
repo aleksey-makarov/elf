@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 18bce6bca8edcfc306152c53b5273f4ed252d2f445754e498009b78839b28fbf
+-- hash: b31c4a6c917805304e29ed50035326bbc900fde22c60f0344eadad7fb841bf74
 
 name:           elf
 version:        0.31
@@ -36,6 +36,7 @@ library
   exposed-modules:
       Data.Elf
       Data.Elf2
+      Data.ElfDoc
   other-modules:
       Data.Elf.TH
       Data.Elf.Generated
@@ -49,6 +50,7 @@ library
     , intervals
     , lens
     , mtl
+    , prettyprinter
     , singletons
     , template-haskell
   default-language: Haskell2010
@@ -97,6 +99,7 @@ test-suite golden2
     , directory
     , elf
     , filepath
+    , prettyprinter
     , singletons
     , tasty
     , tasty-golden

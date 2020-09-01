@@ -22,6 +22,7 @@ import Data.Functor.Identity
 import Data.Int
 import Data.Singletons
 import Data.Singletons.Sigma
+import Data.Text.Prettyprint.Doc as D
 import System.Directory
 import System.FilePath
 import System.IO as IO
@@ -29,7 +30,6 @@ import System.Process.Typed
 import Test.Tasty
 import Test.Tasty.Golden
 import Test.Tasty.HUnit
-
 
 import Data.Elf2
 
@@ -113,11 +113,6 @@ mkTest' bs = do
 mkTest :: FilePath -> TestTree
 mkTest p = testCase p $ withBinaryFile p ReadMode (BS.hGetContents >=> mkTest')
 
-main :: IO ()
-main = do
-
-    binDir <- getBinDir
-    elfs <- traverseDir workDir isElf
 
     --let
     --    mkTestDump :: FilePath -> TestTree
@@ -149,4 +144,18 @@ main = do
     --    mkTest :: FilePath -> TestTree
     --    mkTest p = testGroup p [mkTestDump p, mkTestLayout p]
 
-    defaultMain $ testGroup "elfs" (mkTest <$> elfs)
+mkGoldenTest :: (FilePath -> Doc ()) -> String -> String -> TestTree
+mkGoldenTest = undefined
+
+printHeader' :: FilePath -> Doc ()
+printHeader' = undefined
+
+main :: IO ()
+main = do
+
+    binDir <- getBinDir
+    elfs <- traverseDir workDir isElf
+
+    defaultMain $ testGroup "elf" [ testGroup "low level Binary" (mkTest <$> elfs)
+                                  -- , testGroup "low level golden header" (mkGoldenTest printHeader' "header" <$> elfs)
+                                  ]
