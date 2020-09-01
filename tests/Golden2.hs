@@ -88,6 +88,17 @@ mkTest'' classS hxx@HeaderXX{..} bs = do
             ELFDATA2MSB -> encode $ BList $ Be <$> s
     assertEqual "Section table round trip does not work" bsSections encoded
 
+    (offp, p :: [SegmentXX a]) <- withSingI classS $ case hData of
+        ELFDATA2LSB -> second (fmap fromLe . fromBList) <$> (decodeOrFailAssertion bsSegments)
+        ELFDATA2MSB -> second (fmap fromBe . fromBList) <$> (decodeOrFailAssertion bsSegments)
+
+    assertEqual "Not all ssgment table could be parsed" (BS.length bsSegments) offp
+    let
+        encodedp = withSingI classS $ case hData of
+            ELFDATA2LSB -> encode $ BList $ Le <$> p
+            ELFDATA2MSB -> encode $ BList $ Be <$> p
+    assertEqual "Segment table round trip does not work" bsSegments encodedp
+
     -- assertFailure "Oh no no no"
     return ()
 
