@@ -23,6 +23,7 @@ import Data.Int
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Text.Prettyprint.Doc as D
+import Data.Text.Prettyprint.Doc.Render.Text
 import System.Directory
 import System.FilePath
 import System.IO as IO
@@ -114,41 +115,19 @@ mkTest :: FilePath -> TestTree
 mkTest p = testCase p $ withBinaryFile p ReadMode (BS.hGetContents >=> mkTest')
 
 
-    --let
-    --    mkTestDump :: FilePath -> TestTree
-    --    mkTestDump p = goldenVsFile
-    --        "dump"
-    --        g
-    --        o
-    --        (runExecWithStdoutFile
-    --            (binDir </> "hobjdump")
-    --            [p]
-    --            o)
-    --        where
-    --            o = replaceExtension p ".out"
-    --            g = replaceExtension p ".golden"
+mkGoldenTest :: String -> (FilePath -> IO (Doc ())) -> FilePath -> TestTree
+mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
+    where
+        o = replaceExtension file "." ++ name ++ ".out"
+        g = replaceExtension file "." ++ name ++ ".golden"
 
-    --    mkTestLayout :: FilePath -> TestTree
-    --    mkTestLayout p = goldenVsFile
-    --        "layout"
-    --        g
-    --        o
-    --        (runExecWithStdoutFile
-    --            (binDir </> "hobjlayout")
-    --            [p]
-    --            o)
-    --        where
-    --            o = replaceExtension p ".layout.out"
-    --            g = replaceExtension p ".layout.golden"
+        mkGoldenTestOutput :: IO ()
+        mkGoldenTestOutput = do
+                    doc <- formatFunction file
+                    withFile o WriteMode (\ h -> hPutDoc h doc)
 
-    --    mkTest :: FilePath -> TestTree
-    --    mkTest p = testGroup p [mkTestDump p, mkTestLayout p]
-
-mkGoldenTest :: (FilePath -> Doc ()) -> String -> String -> TestTree
-mkGoldenTest = undefined
-
-printHeader' :: FilePath -> Doc ()
-printHeader' = undefined
+printHeaders :: FilePath -> IO (Doc ())
+printHeaders path = return $ pretty path
 
 main :: IO ()
 main = do
@@ -156,6 +135,6 @@ main = do
     binDir <- getBinDir
     elfs <- traverseDir workDir isElf
 
-    defaultMain $ testGroup "elf" [ testGroup "low level Binary" (mkTest <$> elfs)
-                                  -- , testGroup "low level golden header" (mkGoldenTest printHeader' "header" <$> elfs)
+    defaultMain $ testGroup "elf" [ testGroup "headers round trip" (mkTest <$> elfs)
+                                  , testGroup "headers golden" (mkGoldenTest "header" printHeaders <$> elfs)
                                   ]
