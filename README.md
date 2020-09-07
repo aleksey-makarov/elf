@@ -17,3 +17,9 @@ Understanding the ELF File Format: https://linuxhint.com/understanding_elf_file_
 
 https://blog.jle.im/entry/introduction-to-singletons-1.html
 https://serokell.io/blog/dimensions-haskell-singletons
+
+# Habr Article
+
+https://habr.com/ru/post/485174/
+https://cs.stackexchange.com/questions/525/what-is-coinduction
+http://homepages.inf.ed.ac.uk/slindley/papers/hasochism.pdf
