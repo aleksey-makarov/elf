@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b31c4a6c917805304e29ed50035326bbc900fde22c60f0344eadad7fb841bf74
+-- hash: c208cfd851ca3417eaa9691d4eb96e19e74b02929dab4d8f496d7966937c5591
 
 name:           elf
 version:        0.31
@@ -53,35 +53,6 @@ library
     , prettyprinter
     , singletons
     , template-haskell
-  default-language: Haskell2010
-
-executable hobjdump
-  main-is: hObjDump.hs
-  other-modules:
-      Paths_elf
-  hs-source-dirs:
-      app
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      base >=4.6 && <5.0
-    , binary
-    , bytestring
-    , elf
-    , prettyprinter
-  default-language: Haskell2010
-
-executable hobjlayout
-  main-is: hObjLayout.hs
-  other-modules:
-      Paths_elf
-  hs-source-dirs:
-      app
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
-  build-depends:
-      base >=4.6 && <5.0
-    , binary
-    , elf
-    , intervals
   default-language: Haskell2010
 
 test-suite golden2

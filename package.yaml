@@ -90,21 +90,21 @@ tests:
       - tasty-golden
       - tasty-hunit
 
-executables:
-  hobjdump:
-    main: hObjDump.hs
-    source-dirs: app
-    ghc-options: -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
-    dependencies:
-      - elf
-      - binary
-      - bytestring
-      - prettyprinter
-  hobjlayout:
-    main: hObjLayout.hs
-    source-dirs: app
-    ghc-options: -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
-    dependencies:
-      - elf
-      - binary
-      - intervals
+# executables:
+#   hobjdump:
+#     main: hObjDump.hs
+#     source-dirs: app
+#     ghc-options: -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
+#     dependencies:
+#       - elf
+#       - binary
+#       - bytestring
+#       - prettyprinter
+#   hobjlayout:
+#     main: hObjLayout.hs
+#     source-dirs: app
+#     ghc-options: -O2 -fno-warn-unused-do-bind -threaded -rtsopts -with-rtsopts=-N
+#     dependencies:
+#       - elf
+#       - binary
+#       - intervals
