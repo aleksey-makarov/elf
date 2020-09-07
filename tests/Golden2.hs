@@ -15,7 +15,8 @@ import Prelude as P
 import Control.Arrow
 import Control.Monad
 import Data.Binary
-import Data.ByteString.Lazy as BS
+import qualified Data.ByteString as BS
+import Data.ByteString.Lazy as BSL
 import Data.ByteString.Lazy.Char8 as BSC
 import Data.Foldable as F
 import Data.Functor.Identity
@@ -74,7 +75,7 @@ mkTest'' :: forall (a :: ElfClass) . Sing a -> HeaderXX a -> ByteString -> Asser
 mkTest'' classS hxx@HeaderXX{..} bs = do
 
     let
-        takeLen off len bs = BS.take len $ BS.drop off bs
+        takeLen off len bs = BSL.take len $ BSL.drop off bs
         bsSections = takeLen (wxxToIntegralS classS hShOff) (fromIntegral hShEntSize * fromIntegral hShNum) bs
         bsSegments = takeLen (wxxToIntegralS classS hPhOff) (fromIntegral hPhEntSize * fromIntegral hPhNum) bs
 
@@ -82,7 +83,7 @@ mkTest'' classS hxx@HeaderXX{..} bs = do
         ELFDATA2LSB -> second (fmap fromLe . fromBList) <$> (decodeOrFailAssertion bsSections)
         ELFDATA2MSB -> second (fmap fromBe . fromBList) <$> (decodeOrFailAssertion bsSections)
 
-    assertEqual "Not all section table could be parsed" (BS.length bsSections) off
+    assertEqual "Not all section table could be parsed" (BSL.length bsSections) off
     let
         encoded = withSingI classS $ case hData of
             ELFDATA2LSB -> encode $ BList $ Le <$> s
@@ -93,7 +94,7 @@ mkTest'' classS hxx@HeaderXX{..} bs = do
         ELFDATA2LSB -> second (fmap fromLe . fromBList) <$> (decodeOrFailAssertion bsSegments)
         ELFDATA2MSB -> second (fmap fromBe . fromBList) <$> (decodeOrFailAssertion bsSegments)
 
-    assertEqual "Not all ssgment table could be parsed" (BS.length bsSegments) offp
+    assertEqual "Not all ssgment table could be parsed" (BSL.length bsSegments) offp
     let
         encodedp = withSingI classS $ case hData of
             ELFDATA2LSB -> encode $ BList $ Le <$> p
@@ -107,13 +108,12 @@ mkTest' :: ByteString -> Assertion
 mkTest' bs = do
     (off, elfh@(classS :&: hxx) :: Header) <- decodeOrFailAssertion bs
     assertBool "Incorrect header size" ((headerSize ELFCLASS32 == fromIntegral off) || (headerSize ELFCLASS64 == fromIntegral off))
-    assertEqual "Header round trip does not work" (BS.take off bs) (encode elfh)
+    assertEqual "Header round trip does not work" (BSL.take off bs) (encode elfh)
 
     mkTest'' classS hxx bs
 
 mkTest :: FilePath -> TestTree
-mkTest p = testCase p $ withBinaryFile p ReadMode (BS.hGetContents >=> mkTest')
-
+mkTest p = testCase p $ withBinaryFile p ReadMode (BSL.hGetContents >=> mkTest')
 
 mkGoldenTest :: String -> (FilePath -> IO (Doc ())) -> FilePath -> TestTree
 mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
@@ -123,11 +123,23 @@ mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
 
         mkGoldenTestOutput :: IO ()
         mkGoldenTestOutput = do
-                    doc <- formatFunction file
-                    withFile o WriteMode (\ h -> hPutDoc h doc)
+            doc <- formatFunction file
+            withFile o WriteMode (\ h -> hPutDoc h doc)
+
+-- FIXME: how to get rid of this? (use some combinators for Sigma)
+newtype ElfHeadersXX a = ElfHeadersXXC (HeaderXX a, SectionXX a, SegmentXX a)
+-- type ElfHeadersXX a = (HeaderXX a, SectionXX a, SegmentXX a)
+
+parseHeaders :: ByteString -> Sigma ElfClass (TyCon1 ElfHeadersXX)
+parseHeaders = undefined
+
+printHeaders' :: Sigma ElfClass (TyCon1 ElfHeadersXX) -> Doc ()
+printHeaders' (classS :&: ElfHeadersXXC (hdr, ss, ps)) = undefined
 
 printHeaders :: FilePath -> IO (Doc ())
-printHeaders path = return $ pretty path
+printHeaders path = do
+    bs <- fromStrict <$> BS.readFile path
+    return $ printHeaders' $ parseHeaders bs
 
 main :: IO ()
 main = do
