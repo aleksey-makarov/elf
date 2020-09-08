@@ -49,6 +49,9 @@ module Data.Elf2 (
 
                 , splitBits
 
+                , HeadersXX (..)
+                , parseHeaders
+
                 , module Data.Elf.Generated) where
 
 -- import Control.Lens hiding (at)
@@ -60,7 +63,7 @@ import Data.Binary.Get
 import Data.Binary.Put
 import Data.Bits
 import Data.ByteString       as BS
--- import Data.ByteString.Lazy  as BSL
+import Data.ByteString.Lazy  as BSL
 -- import Data.ByteString.Char8 as BSC
 -- import Data.Kind
 import Data.List as L
@@ -484,3 +487,19 @@ instance forall (a :: ElfClass) . SingI a => Binary (Be (SegmentXX a)) where
 instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
     put = putSegment sing ELFDATA2LSB . fromLe
     get = Le <$> getSegment sing ELFDATA2LSB
+
+--------------------------------------------------------------------------
+-- parseHeaders
+--------------------------------------------------------------------------
+
+-- FIXME: how to get rid of this? (use some combinators for Sigma)
+newtype HeadersXX a = HeadersXX (HeaderXX a, SectionXX a, SegmentXX a)
+-- type ElfHeadersXX a = (HeaderXX a, SectionXX a, SegmentXX a)
+
+parseHeaders :: BSL.ByteString -> Sigma ElfClass (TyCon1 HeadersXX)
+parseHeaders bs = undefined
+
+-- decodeOrFailAssertion :: Binary a => ByteString -> IO (Int64, a)
+-- decodeOrFailAssertion bs = case decodeOrFail bs of
+--     Left (_, off, err) -> assertFailure (err ++ " @" ++ show off)
+--     Right (_, off, a) -> return (off, a)

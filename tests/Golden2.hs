@@ -126,15 +126,8 @@ mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
             doc <- formatFunction file
             withFile o WriteMode (\ h -> hPutDoc h doc)
 
--- FIXME: how to get rid of this? (use some combinators for Sigma)
-newtype ElfHeadersXX a = ElfHeadersXXC (HeaderXX a, SectionXX a, SegmentXX a)
--- type ElfHeadersXX a = (HeaderXX a, SectionXX a, SegmentXX a)
-
-parseHeaders :: ByteString -> Sigma ElfClass (TyCon1 ElfHeadersXX)
-parseHeaders = undefined
-
-printHeaders' :: Sigma ElfClass (TyCon1 ElfHeadersXX) -> Doc ()
-printHeaders' (classS :&: ElfHeadersXXC (hdr, ss, ps)) = undefined
+printHeaders' :: Sigma ElfClass (TyCon1 HeadersXX) -> Doc ()
+printHeaders' (classS :&: HeadersXX (hdr, ss, ps)) = undefined
 
 printHeaders :: FilePath -> IO (Doc ())
 printHeaders path = do
