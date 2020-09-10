@@ -132,7 +132,9 @@ printHeaders' (classS :&: HeadersXX (hdr, ss, ps)) = undefined
 printHeaders :: FilePath -> IO (Doc ())
 printHeaders path = do
     bs <- fromStrict <$> BS.readFile path
-    return $ printHeaders' $ parseHeaders bs
+    case parseHeaders bs of
+        Left err -> undefined
+        Right hs -> return $ printHeaders' hs
 
 main :: IO ()
 main = do

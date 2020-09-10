@@ -496,10 +496,17 @@ instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
 newtype HeadersXX a = HeadersXX (HeaderXX a, SectionXX a, SegmentXX a)
 -- type ElfHeadersXX a = (HeaderXX a, SectionXX a, SegmentXX a)
 
-parseHeaders :: BSL.ByteString -> Sigma ElfClass (TyCon1 HeadersXX)
-parseHeaders bs = undefined
+-- parseHeaders' :: forall (a :: ElfClass) . Sing a -> HeaderXX a -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 HeadersXX))
+parseHeaders' :: Sing a -> HeaderXX a -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 HeadersXX))
+parseHeaders' classS HeaderXX{..} bs =
+    let
+        takeLen off len bs = BSL.take len $ BSL.drop off bs
+        bsSections = takeLen (wxxToIntegralS classS hShOff) (fromIntegral hShEntSize * fromIntegral hShNum) bs
+        bsSegments = takeLen (wxxToIntegralS classS hPhOff) (fromIntegral hPhEntSize * fromIntegral hPhNum) bs
+    in
+        undefined
 
--- decodeOrFailAssertion :: Binary a => ByteString -> IO (Int64, a)
--- decodeOrFailAssertion bs = case decodeOrFail bs of
---     Left (_, off, err) -> assertFailure (err ++ " @" ++ show off)
---     Right (_, off, a) -> return (off, a)
+parseHeaders :: BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 HeadersXX))
+parseHeaders bs = case decodeOrFail bs of
+    Left (_, off, err) -> Left (err ++ " @" ++ show off)
+    Right (_, _, (classS :&: hxx) :: Header) -> parseHeaders' classS hxx bs
