@@ -55,6 +55,7 @@ module Data.Elf2 (
                 , module Data.Elf.Generated) where
 
 -- import Control.Lens hiding (at)
+-- import Control.Arrow
 import Control.Monad
 -- import Control.Monad.State hiding (get, put)
 -- import qualified Control.Monad.State as S
@@ -496,15 +497,30 @@ instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
 newtype HeadersXX a = HeadersXX (HeaderXX a, SectionXX a, SegmentXX a)
 -- type ElfHeadersXX a = (HeaderXX a, SectionXX a, SegmentXX a)
 
+parseA :: (Binary (Le a), Binary (Be a)) => ElfData -> BSL.ByteString -> Either String a
+parseA d bs =
+    let
+        failf (_, off, err) = Left (err ++ " @" ++ show off)
+        okf (_, off, a) = if off == (BSL.length bs) then Right a else Left $ ("leftover != 0 @" ++ show off)
+        mapDecodeResult f = either Left mapDecodeResultR
+            where
+                mapDecodeResultR (unconsumed, off, a) = Right (unconsumed, off, f a)
+    in
+        either failf okf $ case d of
+            ELFDATA2LSB -> mapDecodeResult fromLe $ decodeOrFail bs
+            ELFDATA2MSB -> mapDecodeResult fromBe $ decodeOrFail bs
+
 -- parseHeaders' :: forall (a :: ElfClass) . Sing a -> HeaderXX a -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 HeadersXX))
 parseHeaders' :: Sing a -> HeaderXX a -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 HeadersXX))
-parseHeaders' classS HeaderXX{..} bs =
+parseHeaders' classS hxx@HeaderXX{..} bs =
     let
-        takeLen off len bs = BSL.take len $ BSL.drop off bs
-        bsSections = takeLen (wxxToIntegralS classS hShOff) (fromIntegral hShEntSize * fromIntegral hShNum) bs
-        bsSegments = takeLen (wxxToIntegralS classS hPhOff) (fromIntegral hPhEntSize * fromIntegral hPhNum) bs
-    in
-        undefined
+        takeLen off len = BSL.take len $ BSL.drop off bs
+        bsSections = takeLen (wxxToIntegralS classS hShOff) (fromIntegral hShEntSize * fromIntegral hShNum)
+        bsSegments = takeLen (wxxToIntegralS classS hPhOff) (fromIntegral hPhEntSize * fromIntegral hPhNum)
+    in do
+        sxx <- withSingI classS $ parseA hData bsSections
+        pxx <- withSingI classS $ parseA hData bsSegments
+        return $ classS :&: HeadersXX (hxx, sxx, pxx)
 
 parseHeaders :: BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 HeadersXX))
 parseHeaders bs = case decodeOrFail bs of
