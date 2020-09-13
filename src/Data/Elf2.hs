@@ -494,11 +494,11 @@ instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
 --------------------------------------------------------------------------
 
 -- FIXME: how to get rid of this? (use some combinators for Sigma)
-newtype HeadersXX a = HeadersXX (HeaderXX a, SectionXX a, SegmentXX a)
+newtype HeadersXX a = HeadersXX (HeaderXX a, [SectionXX a], [SegmentXX a])
 -- type ElfHeadersXX a = (HeaderXX a, SectionXX a, SegmentXX a)
 
-parseA :: (Binary (Le a), Binary (Be a)) => ElfData -> BSL.ByteString -> Either String a
-parseA d bs =
+parseListA :: (Binary (Le a), Binary (Be a)) => ElfData -> BSL.ByteString -> Either String [a]
+parseListA d bs =
     let
         failf (_, off, err) = Left (err ++ " @" ++ show off)
         okf (_, off, a) = if off == (BSL.length bs) then Right a else Left $ ("leftover != 0 @" ++ show off)
@@ -507,10 +507,9 @@ parseA d bs =
                 mapDecodeResultR (unconsumed, off, a) = Right (unconsumed, off, f a)
     in
         either failf okf $ case d of
-            ELFDATA2LSB -> mapDecodeResult fromLe $ decodeOrFail bs
-            ELFDATA2MSB -> mapDecodeResult fromBe $ decodeOrFail bs
+            ELFDATA2LSB -> mapDecodeResult (fmap fromLe . fromBList) $ decodeOrFail bs
+            ELFDATA2MSB -> mapDecodeResult (fmap fromBe . fromBList) $ decodeOrFail bs
 
--- parseHeaders' :: forall (a :: ElfClass) . Sing a -> HeaderXX a -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 HeadersXX))
 parseHeaders' :: Sing a -> HeaderXX a -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 HeadersXX))
 parseHeaders' classS hxx@HeaderXX{..} bs =
     let
@@ -518,9 +517,9 @@ parseHeaders' classS hxx@HeaderXX{..} bs =
         bsSections = takeLen (wxxToIntegralS classS hShOff) (fromIntegral hShEntSize * fromIntegral hShNum)
         bsSegments = takeLen (wxxToIntegralS classS hPhOff) (fromIntegral hPhEntSize * fromIntegral hPhNum)
     in do
-        sxx <- withSingI classS $ parseA hData bsSections
-        pxx <- withSingI classS $ parseA hData bsSegments
-        return $ classS :&: HeadersXX (hxx, sxx, pxx)
+        ss <- withSingI classS $ parseListA hData bsSections
+        ps <- withSingI classS $ parseListA hData bsSegments
+        return $ classS :&: HeadersXX (hxx, ss, ps)
 
 parseHeaders :: BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 HeadersXX))
 parseHeaders bs = case decodeOrFail bs of

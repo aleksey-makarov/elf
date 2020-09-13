@@ -34,6 +34,7 @@ import Test.Tasty.Golden
 import Test.Tasty.HUnit
 
 import Data.Elf2
+import Data.ElfDoc
 
 workDir :: FilePath
 workDir = "testdata"
@@ -126,15 +127,12 @@ mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
             doc <- formatFunction file
             withFile o WriteMode (\ h -> hPutDoc h doc)
 
-printHeaders' :: Sigma ElfClass (TyCon1 HeadersXX) -> Doc ()
-printHeaders' (classS :&: HeadersXX (hdr, ss, ps)) = undefined
-
-printHeaders :: FilePath -> IO (Doc ())
-printHeaders path = do
+printHeadersFile :: FilePath -> IO (Doc ())
+printHeadersFile path = do
     bs <- fromStrict <$> BS.readFile path
     case parseHeaders bs of
         Left err -> undefined
-        Right hs -> return $ printHeaders' hs
+        Right hs -> return $ printHeaders hs
 
 main :: IO ()
 main = do
@@ -143,5 +141,5 @@ main = do
     elfs <- traverseDir workDir isElf
 
     defaultMain $ testGroup "elf" [ testGroup "headers round trip" (mkTest <$> elfs)
-                                  , testGroup "headers golden" (mkGoldenTest "header" printHeaders <$> elfs)
+                                  , testGroup "headers golden" (mkGoldenTest "header" printHeadersFile <$> elfs)
                                   ]
