@@ -5,11 +5,12 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Data.ElfDoc ( printHeader
-                   , printSection
-                   , printSegment
-                   , printHeaders
-                   ) where
+module Data.Elf.Doc
+    ( printHeader
+    , printSection
+    , printSegment
+    , printHeaders
+    ) where
 
 import Data.Singletons
 import Data.Singletons.Sigma
@@ -17,7 +18,7 @@ import Data.Text.Prettyprint.Doc as D
 import Data.Word
 import Numeric
 
-import Data.Elf2
+import Data.Elf.Headers
 
 formatPairs :: [(String, Doc a)] -> Doc a
 formatPairs ls = align $ vsep $ fmap f ls

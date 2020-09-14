@@ -39,22 +39,22 @@ library:
     - Data.Elf.Generated
   exposed-modules:
     - Data.Elf
-    - Data.Elf2
-    - Data.ElfDoc
+    - Data.Elf.Headers
+    - Data.Elf.Doc
 
 tests:
-  tests:
-    main: Spec.hs
-    source-dirs: tests
-    other-modules:
-      - Data.ElfSpec
-    dependencies:
-      - base
-      - binary
-      - bytestring
-      - hspec >= 2.4 && < 3
-      - containers >= 0.5.9.2
-      - elf
+#  tests:
+#    main: Spec.hs
+#    source-dirs: tests
+#    other-modules:
+#      - Data.ElfSpec
+#    dependencies:
+#      - base
+#      - binary
+#      - bytestring
+#      - hspec >= 2.4 && < 3
+#      - containers >= 0.5.9.2
+#      - elf
 # golden:
 #    main: Golden.hs
 #    source-dirs: tests
@@ -71,8 +71,8 @@ tests:
 #      - tasty
 #      - tasty-golden
 #      - tasty-hunit
-  golden2:
-    main: Golden2.hs
+  golden:
+    main: Golden.hs
     source-dirs: tests
     other-modules:
       - Paths_elf

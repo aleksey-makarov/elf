@@ -23,36 +23,35 @@
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 
 -- | Data.Elf is a module for parsing a ByteString of an ELF file into an Elf record.
-module Data.Elf2 (
+module Data.Elf.Headers
+    ( ElfClass(..)
+    , ElfData(..)
 
-                  ElfClass(..)
-                , ElfData(..)
+    , WXX
+    , wxxFromIntegralS
+    , wxxFromIntegral
+    , wxxToIntegralS
+    , wxxToIntegral
 
-                , WXX
-                , wxxFromIntegralS
-                , wxxFromIntegral
-                , wxxToIntegralS
-                , wxxToIntegral
+    , HeaderXX(..)
+    , Header
+    , headerSize
 
-                , HeaderXX(..)
-                , Header
-                , headerSize
+    , BList(..)
 
-                , BList(..)
+    , SectionXX(..)
+    , SegmentXX(..)
 
-                , SectionXX(..)
-                , SegmentXX(..)
+    ---------------------------------
 
-                ---------------------------------
+    , SElfClass (..)
 
-                , SElfClass (..)
+    , splitBits
 
-                , splitBits
+    , HeadersXX (..)
+    , parseHeaders
 
-                , HeadersXX (..)
-                , parseHeaders
-
-                , module Data.Elf.Generated) where
+    , module Data.Elf.Generated) where
 
 -- import Control.Lens hiding (at)
 -- import Control.Arrow

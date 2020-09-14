@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c208cfd851ca3417eaa9691d4eb96e19e74b02929dab4d8f496d7966937c5591
+-- hash: 8235cc12d7506b7d68654bf5a30495cdbc8b24b23fdb748898c72b076c3d5666
 
 name:           elf
 version:        0.31
@@ -35,8 +35,8 @@ source-repository head
 library
   exposed-modules:
       Data.Elf
-      Data.Elf2
-      Data.ElfDoc
+      Data.Elf.Headers
+      Data.Elf.Doc
   other-modules:
       Data.Elf.TH
       Data.Elf.Generated
@@ -55,9 +55,9 @@ library
     , template-haskell
   default-language: Haskell2010
 
-test-suite golden2
+test-suite golden
   type: exitcode-stdio-1.0
-  main-is: Golden2.hs
+  main-is: Golden.hs
   other-modules:
       Paths_elf
   hs-source-dirs:
@@ -76,21 +76,4 @@ test-suite golden2
     , tasty-golden
     , tasty-hunit
     , typed-process
-  default-language: Haskell2010
-
-test-suite tests
-  type: exitcode-stdio-1.0
-  main-is: Spec.hs
-  other-modules:
-      Data.ElfSpec
-  hs-source-dirs:
-      tests
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints
-  build-depends:
-      base
-    , binary
-    , bytestring
-    , containers >=0.5.9.2
-    , elf
-    , hspec >=2.4 && <3
   default-language: Haskell2010
