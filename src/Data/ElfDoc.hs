@@ -11,36 +11,40 @@ module Data.ElfDoc ( printHeader
                    , printHeaders
                    ) where
 
-import Numeric
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Text.Prettyprint.Doc as D
 import Data.Word
+import Numeric
 
 import Data.Elf2
 
-formatPairs :: [(Doc a, Doc a)] -> Doc a
+formatPairs :: [(String, Doc a)] -> Doc a
 formatPairs ls = align $ vsep $ fmap f ls
     where
-        f (n, v) = fill 10 (n <> ":") <+> v
+        f (n, v) = fill w (pretty n <> ":") <+> v
+        w = 1 + (maximum $ fmap (length . fst) ls)
 
--- printWordDoc :: (Integral a, Show a) => a -> Doc ()
--- printWordDoc n = pretty $ "0x" <> showHex n ""
+formatList :: [Doc ()] -> Doc ()
+formatList = align . vsep . fmap f
+    where
+        f x = pretty '-' <+> x
 
 padLeadingZeros :: Int -> String -> String
-padLeadingZeros = undefined
+padLeadingZeros n s | length s > n = error "padLeadingZeros args"
+padLeadingZeros n s | otherwise = "0x" ++ replicate (n - length s) '0' ++ s
 
 printWord8 :: Word8 -> Doc ()
-printWord8 n = undefined
+printWord8 n = pretty $ padLeadingZeros 2 $ showHex n ""
 
 printWord16 :: Word16 -> Doc ()
 printWord16 n = pretty $ padLeadingZeros 4 $ showHex n ""
 
 printWord32 :: Word32 -> Doc ()
-printWord32 n = undefined
+printWord32 n = pretty $ padLeadingZeros 8 $ showHex n ""
 
 printWord64 :: Word64 -> Doc ()
-printWord64 n = undefined
+printWord64 n = pretty $ padLeadingZeros 16 $ showHex n ""
 
 printWXX :: forall (a :: ElfClass) . Sing a -> WXX a -> Doc ()
 printWXX SELFCLASS32 = printWord32
@@ -49,20 +53,20 @@ printWXX SELFCLASS64 = printWord64
 printHeader :: Sing a -> HeaderXX a -> Doc ()
 printHeader classS HeaderXX{..} =
     formatPairs
-        [ ("hData",       viaShow hData          ) -- ElfData
-        , ("hOSABI",      viaShow hOSABI         ) -- ElfOSABI
-        , ("hABIVersion", viaShow hABIVersion    ) -- Word8
-        , ("hType",       viaShow hType          ) -- ElfType
-        , ("hMachine",    viaShow hMachine       ) -- ElfMachine
-        , ("hEntry",      printWXX classS hEntry ) -- WXX c
-        , ("hPhOff",      printWXX classS hPhOff ) -- WXX c
-        , ("hShOff",      printWXX classS hShOff ) -- WXX c
-        , ("hFlags",      viaShow hFlags         ) -- Word32
-        , ("hPhEntSize",  viaShow hPhEntSize     ) -- Word16
-        , ("hPhNum",      viaShow hPhNum         ) -- Word16
-        , ("hShEntSize",  viaShow hShEntSize     ) -- Word16
-        , ("hShNum",      viaShow hShNum         ) -- Word16
-        , ("hShStrNdx",   viaShow hShStrNdx      ) -- Word16
+        [ ("hData",       viaShow hData           ) -- ElfData
+        , ("hOSABI",      viaShow hOSABI          ) -- ElfOSABI
+        , ("hABIVersion", viaShow hABIVersion     ) -- Word8
+        , ("hType",       viaShow hType           ) -- ElfType
+        , ("hMachine",    viaShow hMachine        ) -- ElfMachine
+        , ("hEntry",      printWXX classS hEntry  ) -- WXX c
+        , ("hPhOff",      printWXX classS hPhOff  ) -- WXX c
+        , ("hShOff",      printWXX classS hShOff  ) -- WXX c
+        , ("hFlags",      printWord32 hFlags      ) -- Word32
+        , ("hPhEntSize",  printWord16 hPhEntSize  ) -- Word16
+        , ("hPhNum",      viaShow hPhNum          ) -- Word16
+        , ("hShEntSize",  printWord16  hShEntSize ) -- Word16
+        , ("hShNum",      viaShow hShNum          ) -- Word16
+        , ("hShStrNdx",   viaShow hShStrNdx       ) -- Word16
         ]
 
 printSection :: Sing a -> SectionXX a -> Doc ()
