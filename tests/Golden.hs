@@ -9,7 +9,7 @@
 
 module Main (main) where
 
-import Paths_elf
+-- import Paths_elf
 import Prelude as P
 
 import Control.Arrow
