@@ -70,13 +70,45 @@ printHeader classS HeaderXX{..} =
         ]
 
 printSection :: Sing a -> SectionXX a -> Doc ()
-printSection = undefined
+printSection classS SectionXX{..} =
+    formatPairs
+        [ ("sName",      viaShow sName              ) -- Word32
+        , ("sType",      viaShow sType              ) -- ElfSectionType
+        , ("sFlags",     printWXX classS sFlags     ) -- WXX c
+        , ("sAddr",      printWXX classS sAddr      ) -- WXX c
+        , ("sOffset",    printWXX classS sOffset    ) -- WXX c
+        , ("sSize",      printWXX classS sSize      ) -- WXX c
+        , ("sLink",      viaShow sLink              ) -- Word32
+        , ("sInfo",      viaShow sInfo              ) -- Word32
+        , ("sAddrAlign", printWXX classS sAddrAlign ) -- WXX c
+        , ("sEntSize",   printWXX classS sEntSize   ) -- WXX c
+        ]
 
 printSegment :: Sing a -> SegmentXX a -> Doc ()
-printSegment = undefined
+printSegment classS SegmentXX{..} =
+    formatPairs
+        [ ("pType",     viaShow pType             ) -- ElfSegmentType
+        , ("pFlags",    printWord32 pFlags        ) -- Word32
+        , ("pOffset",   printWXX classS pOffset   ) -- WXX c
+        , ("pVirtAddr", printWXX classS pVirtAddr ) -- WXX c
+        , ("pPhysAddr", printWXX classS pPhysAddr ) -- WXX c
+        , ("pFileSize", printWXX classS pFileSize ) -- WXX c
+        , ("pMemSize",  printWXX classS pMemSize  ) -- WXX c
+        , ("pAlign",    printWXX classS pAlign    ) -- WXX c
+        ]
 
 printHeaders' :: Sing a -> HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> Doc ()
-printHeaders' classS hdr ss ps = printHeader classS hdr
+printHeaders' classS hdr ss ps =
+    let
+        h = printHeader classS hdr
+        s = fmap (printSection classS) ss
+        p = fmap (printSegment classS) ps
+    in
+        formatPairs
+            [ ("Header",   h)
+            , ("Sections", formatList s)
+            , ("Segments", formatList p)
+            ]
 
 printHeaders :: Sigma ElfClass (TyCon1 HeadersXX) -> Doc ()
 printHeaders (classS :&: HeadersXX (hdr, ss, ps)) = printHeaders' classS hdr ss ps
