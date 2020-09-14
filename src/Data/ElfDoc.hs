@@ -34,8 +34,8 @@ padLeadingZeros :: Int -> String -> String
 padLeadingZeros n s | length s > n = error "padLeadingZeros args"
 padLeadingZeros n s | otherwise = "0x" ++ replicate (n - length s) '0' ++ s
 
-printWord8 :: Word8 -> Doc ()
-printWord8 n = pretty $ padLeadingZeros 2 $ showHex n ""
+-- printWord8 :: Word8 -> Doc ()
+-- printWord8 n = pretty $ padLeadingZeros 2 $ showHex n ""
 
 printWord16 :: Word16 -> Doc ()
 printWord16 n = pretty $ padLeadingZeros 4 $ showHex n ""
