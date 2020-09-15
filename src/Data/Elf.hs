@@ -26,7 +26,6 @@
 module Data.Elf
     ( module Data.Elf.Generated
     , ElfPart (..)
-    , ElfSegment (..)
     , Elf (..)
     ) where
 
@@ -36,29 +35,34 @@ import Data.Elf.Headers
 import Data.ByteString.Lazy as BSL
 import Data.Singletons
 import Data.Singletons.Sigma
+import Data.Word
+import Numeric.Interval as I
 
 data ElfPart (c :: ElfClass)
-    = Section
-        { esData   :: ByteString
-        , esHeader :: SectionXX c
-        }
-    | ElfHeader
+    = ElfHeader
         { ehHeader :: HeaderXX c
         }
+    | ElfSection
+        { esHeader :: SectionXX c
+        , esN      :: Word32
+        }
+    | ElfSegment
+        { epHeader :: SegmentXX c
+        , epData   :: [ElfPart c]
+        }
     | SectionTable
+        { estInterval :: Interval Word64
+        }
     | SegmentTable
-
-data ElfSegment (c :: ElfClass)
-    = ElfSegment
-        { ePheader :: SegmentXX c
-        , ePdata   :: Elf c
+        { espInterval :: Interval Word64
         }
 
+elfPartInterval :: forall (c :: ElfClass) . ElfPart c -> Interval Word64
+-- elfPartInterval ElfHeader{..} = 0 ... (fromIntegral $ headerSize $ fromSing sing)
+elfPartInterval _ = undefined
+
 -- It's just a list with two types of nodes
-data Elf (c :: ElfClass)
-    = ElfDataNull
-    | ElfDataSection (ElfPart c)    (Elf c)
-    | ElfDataSegment (ElfSegment c) (Elf c)
+newtype Elf c = Elf [ElfPart c]
 
 parseElf' :: Sing a -> HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
 parseElf' classS hdr ss ps bs = undefined
