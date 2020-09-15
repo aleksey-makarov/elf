@@ -33,26 +33,26 @@ module Data.Elf
 import Data.Elf.Generated
 import Data.Elf.Headers
 
-import Data.ByteString.Lazy  as BSL
+import Data.ByteString.Lazy as BSL
 import Data.Singletons
 import Data.Singletons.Sigma
 
 data ElfPart (c :: ElfClass)
     = Section
-        { hShOff      :: Word
-        , hFlags      :: Word
-        , hPhEntSize  :: Word
-        , hPhNum      :: Word
-        , hShEntSize  :: Word
-        , hShNum      :: Word
-        , hShStrNdx   :: Word
+        { esData   :: ByteString
+        , esHeader :: SectionXX c
         }
     | ElfHeader
+        { ehHeader :: HeaderXX c
+        }
     | SectionTable
     | SegmentTable
 
 data ElfSegment (c :: ElfClass)
     = ElfSegment
+        { ePheader :: SegmentXX c
+        , ePdata   :: Elf c
+        }
 
 -- It's just a list with two types of nodes
 data Elf (c :: ElfClass)
@@ -60,5 +60,10 @@ data Elf (c :: ElfClass)
     | ElfDataSection (ElfPart c)    (Elf c)
     | ElfDataSegment (ElfSegment c) (Elf c)
 
+parseElf' :: Sing a -> HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
+parseElf' classS hdr ss ps bs = undefined
+
 parseElf :: BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
-parseElf = undefined
+parseElf bs = do
+    classS :&: HeadersXX (hdr, ss, ps) <- parseHeaders bs
+    parseElf' classS hdr ss ps bs
