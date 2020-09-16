@@ -57,16 +57,24 @@ data ElfPart (c :: ElfClass)
         { espInterval :: Interval Word64
         }
 
-elfPartInterval :: forall (c :: ElfClass) . ElfPart c -> Interval Word64
--- elfPartInterval ElfHeader{..} = 0 ... (fromIntegral $ headerSize $ fromSing sing)
-elfPartInterval _ = undefined
+-- headerSize' :: forall (a :: ElfClass) . Sing a -> Word16
+-- headerSize' :: Sing a -> Word16
+-- headerSize' = headerSize . fromSing
+
+-- headerSize' :: forall (a :: ElfClass) . Sing a -> Word64
+-- headerSize' :: Sing a -> Word64
+-- headerSize' = undefined
+
+-- elfPartInterval :: SingI a => ElfPart a -> Interval Word64
+-- elfPartInterval ElfHeader{..} = 0 ... (withSing headerSize')
+-- elfPartInterval _ = undefined
 
 newtype Elf c = Elf [ElfPart c]
 
-parseElf' :: Sing a -> HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
-parseElf' classS hdr ss ps bs = undefined
+parseElf' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
+parseElf' hdr ss ps bs = undefined
 
 parseElf :: BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
 parseElf bs = do
     classS :&: HeadersXX (hdr, ss, ps) <- parseHeaders bs
-    parseElf' classS hdr ss ps bs
+    withSingI classS $ parseElf' hdr ss ps bs

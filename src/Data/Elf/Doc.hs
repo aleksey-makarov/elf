@@ -47,7 +47,7 @@ printWord32 n = pretty $ padLeadingZeros 8 $ showHex n ""
 printWord64 :: Word64 -> Doc ()
 printWord64 n = pretty $ padLeadingZeros 16 $ showHex n ""
 
-printWXXS :: forall (a :: ElfClass) . Sing a -> WXX a -> Doc ()
+printWXXS :: Sing a -> WXX a -> Doc ()
 printWXXS SELFCLASS32 = printWord32
 printWXXS SELFCLASS64 = printWord64
 
