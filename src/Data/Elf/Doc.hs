@@ -47,21 +47,24 @@ printWord32 n = pretty $ padLeadingZeros 8 $ showHex n ""
 printWord64 :: Word64 -> Doc ()
 printWord64 n = pretty $ padLeadingZeros 16 $ showHex n ""
 
-printWXX :: forall (a :: ElfClass) . Sing a -> WXX a -> Doc ()
-printWXX SELFCLASS32 = printWord32
-printWXX SELFCLASS64 = printWord64
+printWXXS :: forall (a :: ElfClass) . Sing a -> WXX a -> Doc ()
+printWXXS SELFCLASS32 = printWord32
+printWXXS SELFCLASS64 = printWord64
 
-printHeader :: Sing a -> HeaderXX a -> Doc ()
-printHeader classS HeaderXX{..} =
+printWXX :: SingI a => WXX a -> Doc ()
+printWXX = withSing printWXXS
+
+printHeader :: SingI a => HeaderXX a -> Doc ()
+printHeader HeaderXX{..} =
     formatPairs
         [ ("hData",       viaShow hData           ) -- ElfData
         , ("hOSABI",      viaShow hOSABI          ) -- ElfOSABI
         , ("hABIVersion", viaShow hABIVersion     ) -- Word8
         , ("hType",       viaShow hType           ) -- ElfType
         , ("hMachine",    viaShow hMachine        ) -- ElfMachine
-        , ("hEntry",      printWXX classS hEntry  ) -- WXX c
-        , ("hPhOff",      printWXX classS hPhOff  ) -- WXX c
-        , ("hShOff",      printWXX classS hShOff  ) -- WXX c
+        , ("hEntry",      printWXX hEntry         ) -- WXX c
+        , ("hPhOff",      printWXX hPhOff         ) -- WXX c
+        , ("hShOff",      printWXX hShOff         ) -- WXX c
         , ("hFlags",      printWord32 hFlags      ) -- Word32
         , ("hPhEntSize",  printWord16 hPhEntSize  ) -- Word16
         , ("hPhNum",      viaShow hPhNum          ) -- Word16
@@ -70,40 +73,40 @@ printHeader classS HeaderXX{..} =
         , ("hShStrNdx",   viaShow hShStrNdx       ) -- Word16
         ]
 
-printSection :: Sing a -> SectionXX a -> Doc ()
-printSection classS SectionXX{..} =
+printSection :: SingI a => SectionXX a -> Doc ()
+printSection SectionXX{..} =
     formatPairs
-        [ ("sName",      viaShow sName              ) -- Word32
-        , ("sType",      viaShow sType              ) -- ElfSectionType
-        , ("sFlags",     printWXX classS sFlags     ) -- WXX c
-        , ("sAddr",      printWXX classS sAddr      ) -- WXX c
-        , ("sOffset",    printWXX classS sOffset    ) -- WXX c
-        , ("sSize",      printWXX classS sSize      ) -- WXX c
-        , ("sLink",      viaShow sLink              ) -- Word32
-        , ("sInfo",      viaShow sInfo              ) -- Word32
-        , ("sAddrAlign", printWXX classS sAddrAlign ) -- WXX c
-        , ("sEntSize",   printWXX classS sEntSize   ) -- WXX c
+        [ ("sName",      viaShow sName       ) -- Word32
+        , ("sType",      viaShow sType       ) -- ElfSectionType
+        , ("sFlags",     printWXX sFlags     ) -- WXX c
+        , ("sAddr",      printWXX sAddr      ) -- WXX c
+        , ("sOffset",    printWXX sOffset    ) -- WXX c
+        , ("sSize",      printWXX sSize      ) -- WXX c
+        , ("sLink",      viaShow sLink       ) -- Word32
+        , ("sInfo",      viaShow sInfo       ) -- Word32
+        , ("sAddrAlign", printWXX sAddrAlign ) -- WXX c
+        , ("sEntSize",   printWXX sEntSize   ) -- WXX c
         ]
 
-printSegment :: Sing a -> SegmentXX a -> Doc ()
-printSegment classS SegmentXX{..} =
+printSegment :: SingI a => SegmentXX a -> Doc ()
+printSegment SegmentXX{..} =
     formatPairs
-        [ ("pType",     viaShow pType             ) -- ElfSegmentType
-        , ("pFlags",    printWord32 pFlags        ) -- Word32
-        , ("pOffset",   printWXX classS pOffset   ) -- WXX c
-        , ("pVirtAddr", printWXX classS pVirtAddr ) -- WXX c
-        , ("pPhysAddr", printWXX classS pPhysAddr ) -- WXX c
-        , ("pFileSize", printWXX classS pFileSize ) -- WXX c
-        , ("pMemSize",  printWXX classS pMemSize  ) -- WXX c
-        , ("pAlign",    printWXX classS pAlign    ) -- WXX c
+        [ ("pType",     viaShow pType      ) -- ElfSegmentType
+        , ("pFlags",    printWord32 pFlags ) -- Word32
+        , ("pOffset",   printWXX pOffset   ) -- WXX c
+        , ("pVirtAddr", printWXX pVirtAddr ) -- WXX c
+        , ("pPhysAddr", printWXX pPhysAddr ) -- WXX c
+        , ("pFileSize", printWXX pFileSize ) -- WXX c
+        , ("pMemSize",  printWXX pMemSize  ) -- WXX c
+        , ("pAlign",    printWXX pAlign    ) -- WXX c
         ]
 
-printHeaders' :: Sing a -> HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> Doc ()
-printHeaders' classS hdr ss ps =
+printHeaders' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> Doc ()
+printHeaders' hdr ss ps =
     let
-        h = printHeader classS hdr
-        s = fmap (printSection classS) ss
-        p = fmap (printSegment classS) ps
+        h = printHeader hdr
+        s = fmap printSection ss
+        p = fmap printSegment ps
     in
         formatPairs
             [ ("Header",   h)
@@ -112,4 +115,4 @@ printHeaders' classS hdr ss ps =
             ]
 
 printHeaders :: Sigma ElfClass (TyCon1 HeadersXX) -> Doc ()
-printHeaders (classS :&: HeadersXX (hdr, ss, ps)) = printHeaders' classS hdr ss ps
+printHeaders (classS :&: HeadersXX (hdr, ss, ps)) = withSingI classS $ printHeaders' hdr ss ps

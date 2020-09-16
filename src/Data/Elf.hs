@@ -61,7 +61,6 @@ elfPartInterval :: forall (c :: ElfClass) . ElfPart c -> Interval Word64
 -- elfPartInterval ElfHeader{..} = 0 ... (fromIntegral $ headerSize $ fromSing sing)
 elfPartInterval _ = undefined
 
--- It's just a list with two types of nodes
 newtype Elf c = Elf [ElfPart c]
 
 parseElf' :: Sing a -> HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
