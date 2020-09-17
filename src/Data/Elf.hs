@@ -58,9 +58,15 @@ data ElfPart (c :: ElfClass)
         }
 
 elfPartInterval :: forall a . SingI a => ElfPart a -> Interval Word64
-elfPartInterval eh@ElfHeader{..} = 0 ... (fromIntegral $ headerSize $ fromSing $ sing @a) - 1
-elfPartInterval ElfSection{esHeader = SectionXX{..}} = undefined
-elfPartInterval ElfSegment{epHeader = SegmentXX{..}} = undefined
+elfPartInterval ElfHeader{..} = 0 ... (fromIntegral $ headerSize $ fromSing $ sing @a) - 1
+elfPartInterval ElfSection{esHeader = SectionXX{..}} = if (sType == SHT_NOBITS) || (s == 0) then I.empty else o ... o + s - 1
+    where
+        o = wxxToIntegral sOffset
+        s = wxxToIntegral sSize
+elfPartInterval ElfSegment{epHeader = SegmentXX{..}} = if s == 0 then I.empty else o ... o + s - 1
+    where
+        o = wxxToIntegral pOffset
+        s = wxxToIntegral pFileSize
 elfPartInterval ElfSectionTable{..} = estInterval
 elfPartInterval ElfSegmentTable{..} = eptInterval
 
