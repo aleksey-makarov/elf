@@ -33,6 +33,7 @@ import Data.Elf.Generated
 import Data.Elf.Headers
 
 import Data.ByteString.Lazy as BSL
+import Data.Either
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Word
@@ -49,6 +50,7 @@ data ElfPart (c :: ElfClass)
         }
     | ElfSegment
         { epHeader :: SegmentXX c
+        , epN      :: Word32
         , epData   :: [ElfPart c]
         }
     | ElfSectionTable
@@ -100,14 +102,28 @@ findInterval e list = findInterval' [] list
 
 newtype Elf c = Elf [ElfPart c]
 
+toNonEmpty :: Ord a => I.Interval a -> Maybe (INE.Interval a)
+toNonEmpty i | I.null i  = Nothing
+toNonEmpty i | otherwise = Just (I.inf i INE.... I.sup i)
+
+sortIntervals :: Ord b => [a] -> (a -> I.Interval b) -> ([a], [(INE.Interval b, a)])
+sortIntervals l f = partitionEithers $ fmap ff l
+    where
+        ff x = case toNonEmpty $ f x of
+            Nothing -> Left x
+            Just i -> Right (i, x)
+
 parseElf' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
 parseElf' hdr ss ps bs =
---    let
---        hi = elfPartInterval $ ElfHeader hdr
---        -- hi = elfPartInterval $ ElfHeader hdr
---        -- hi = elfPartInterval hdr
---        -- hi = f sing
---    in
+    let
+        (emptySections, isections) = sortIntervals ss sectionInterval
+        (emptySegments, isegments) = sortIntervals ps segmentInterval
+        -- iheader = [(headerInterval hdr, hdr)]
+        -- -- hi = elfPartInterval $ ElfHeader hdr
+        -- -- hi = elfPartInterval hdr
+        -- -- hi = f sing
+        -- iall = second iheader ++ isections ++ isegments
+    in
         undefined
 
 parseElf :: BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
