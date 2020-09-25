@@ -35,6 +35,7 @@ import Data.Elf.Headers
 import Data.Bifunctor
 import Data.ByteString.Lazy as BSL
 import Data.Either
+import Data.List as L
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Word
@@ -55,11 +56,7 @@ data ElfRBuilder (c :: ElfClass)
         , erbpData   :: [ElfRBuilder c]
         }
     | ElfRBuilderSectionTable
---        { estInterval :: Interval Word64
---        }
     | ElfRBuilderSegmentTable
---        { eptInterval :: Interval Word64
---        }
 
 -- Header can not be empty
 headerInterval :: forall a . SingI a => HeaderXX a -> INE.Interval Word64
@@ -114,8 +111,73 @@ factorOutEmptyIntervals l f = partitionEithers $ fmap ff l
             Nothing -> Left x
             Just i -> Right (i, x)
 
+-- sort by inf of the intervals
+newtype S a b = S { unS :: (INE.Interval a, b) }
+
+instance Eq a => Eq (S a b) where
+    (==) (S (x, _)) (S (y, _ )) = INE.inf x == INE.inf y
+
+instance Ord a => Ord (S a b) where
+    compare (S (x, _)) (S (y, _ )) = compare (INE.inf x) (INE.inf y)
+
+-- https://gitlab.haskell.org/ghc/ghc/-/issues/11815
+zipConsecutives :: [a] -> [(a,a)]
+zipConsecutives []  = []
+zipConsecutives [_] = []
+zipConsecutives xs  = L.zip xs (L.tail xs)
+
+checkIntervalsDontIntersectPair :: (Show a, Ord a) => ((INE.Interval a, ElfRBuilder b), (INE.Interval a, ElfRBuilder b)) -> Either String ()
+checkIntervalsDontIntersectPair (x@(ix, _), y@(iy, _)) = case INE.intersection ix iy of
+    Nothing -> Right ()
+    Just _ -> Left $ showItem x ++ " and " ++ showItem y ++ " intersect"
+    where
+        showItem (i, x) = showERB x ++ " (" ++ show i ++ ")"
+        showERB ElfRBuilderHeader{..}   = "header"
+        showERB ElfRBuilderSection{..}  = "section " ++ show erbsN
+        showERB ElfRBuilderSegment{..}  = "segment " ++ show erbpN
+        showERB ElfRBuilderSectionTable = "section table"
+        showERB ElfRBuilderSegmentTable = "segment table"
+
+checkIntervalsDontIntersect :: (Show a, Ord a) => [(INE.Interval a, ElfRBuilder b)] -> Either String ()
+checkIntervalsDontIntersect l = mapM_ checkIntervalsDontIntersectPair $ zipConsecutives l
+
+-- addSegment :: ElfRBuilder a -> [ElfRBuilder a] -> [ElfRBuilder a]
+-- addSegment (ti, t@ElfRBuilderSegment{..}) ts =
+--     let
+--         i = INE.inf ti
+--         s = INE.sup ti
+--         (LZip l  c  r ) = findInterval i ts
+--         (LZip l2 c2 r2) = findInterval s r
+--     in
+--         undefined
+
+--        case (c, c2) of
+--            (Just c', _)  ->
+--                let
+--                    c'i = getInterval c'
+--                in
+--                    if c'i `INE.contains` ti then
+--                        foldInterval $ LZip l (Just $ addTs [t] c') r
+--                    else  if ti `INE.contains` c'i then
+--                        case c2 of
+--                            Nothing -> foldInterval $ LZip l (Just $ addTs (c' : l2) t) r2
+--                            Just c2' -> error $ "@1 " ++ intersectMessage t c2'
+--                    else
+--                        error $ "@2 " ++ intersectMessage t c'
+--            (Nothing, Nothing)  -> foldInterval $ LZip l (Just $ addTs l2 t) r2
+--            (Nothing, Just c2') ->
+--                let
+--                    c2'i = getInterval c2'
+--                in
+--                    if ti `INE.contains` c2'i then
+--                        foldInterval $ LZip l (Just $ addTs (l2 ++ [c2']) t) r2
+--                    else
+--                        error $ "@3 " ++ intersectMessage t c2'
+addSegment _ _ = error "can add only segment"
+
 parseElf' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
-parseElf' hdr ss ps bs =
+parseElf' hdr ss ps _bs = do
+
     let
         (_emptySections,  isections) = factorOutEmptyIntervals (Prelude.zip [0 .. ] ss) (sectionInterval . snd)
         (_emptySegments, _isegments) = factorOutEmptyIntervals (Prelude.zip [0 .. ] ps) (segmentInterval . snd)
@@ -130,9 +192,11 @@ parseElf' hdr ss ps bs =
         segmentTable = case (toNonEmpty $ segmentTableInterval hdr) of
             Nothing -> []
             Just i -> [(i, ElfRBuilderSegmentTable)]
-        all = header ++ sections ++ sectionTable ++ segmentTable
-    in
-        undefined
+        all = fmap unS $ sort $ fmap S $ header ++ sections ++ sectionTable ++ segmentTable
+
+    checkIntervalsDontIntersect all
+
+    undefined
 
 parseElf :: BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
 parseElf bs = do
