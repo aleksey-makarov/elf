@@ -17,6 +17,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
+{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE UndecidableInstances #-}
 
@@ -32,6 +33,7 @@ module Data.Elf
 import Data.Elf.Generated
 import Data.Elf.Headers
 
+import Data.Bifunctor
 import Data.ByteString.Lazy as BSL
 import Data.Either
 import Data.Singletons
@@ -60,7 +62,7 @@ data ElfPart (c :: ElfClass)
 --        { eptInterval :: Interval Word64
 --        }
 
--- This can not be empty
+-- Header can not be empty
 headerInterval :: forall a . SingI a => HeaderXX a -> INE.Interval Word64
 headerInterval _ = 0 INE.... (fromIntegral $ headerSize $ fromSing $ sing @a) - 1
 
@@ -116,13 +118,18 @@ sortIntervals l f = partitionEithers $ fmap ff l
 parseElf' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
 parseElf' hdr ss ps bs =
     let
-        (emptySections, isections) = sortIntervals ss sectionInterval
-        (emptySegments, isegments) = sortIntervals ps segmentInterval
-        -- iheader = [(headerInterval hdr, hdr)]
+        (_emptySections,  isections) = sortIntervals (Prelude.zip [0 .. ] ss) (sectionInterval . snd)
+        (_emptySegments, _isegments) = sortIntervals (Prelude.zip [0 .. ] ps) (segmentInterval . snd)
+
+        mkSectionBuilder (n, s) = ElfSection s n
+        -- mkSegmentBuilder (n, p) = ElfSegment p n
+        sections = fmap (second mkSectionBuilder) isections
+        header = [(headerInterval hdr, ElfHeader hdr)]
+        -- sectionTable = let i = toNonEmpty $ sectionTableInterval hdr in maybe [] (, ElfSectionTable) i
         -- -- hi = elfPartInterval $ ElfHeader hdr
         -- -- hi = elfPartInterval hdr
         -- -- hi = f sing
-        -- iall = second iheader ++ isections ++ isegments
+        all = header ++ sections -- ++ sectionTable -- ++ isegments
     in
         undefined
 
