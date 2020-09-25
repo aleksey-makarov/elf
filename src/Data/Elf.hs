@@ -26,7 +26,6 @@
 -- | Data.Elf is a module for parsing a ByteString of an ELF file into an Elf record.
 module Data.Elf
     ( module Data.Elf.Generated
-    , ElfPart (..)
     , Elf (..)
     ) where
 
@@ -42,23 +41,23 @@ import Data.Word
 import Numeric.Interval as I
 import Numeric.Interval.NonEmpty as INE
 
-data ElfPart (c :: ElfClass)
-    = ElfHeader
-        { ehHeader :: HeaderXX c
+data ElfRBuilder (c :: ElfClass)
+    = ElfRBuilderHeader
+        { erbhHeader :: HeaderXX c
         }
-    | ElfSection
-        { esHeader :: SectionXX c
-        , esN      :: Word32
+    | ElfRBuilderSection
+        { erbsHeader :: SectionXX c
+        , erbsN      :: Word32
         }
-    | ElfSegment
-        { epHeader :: SegmentXX c
-        , epN      :: Word32
-        , epData   :: [ElfPart c]
+    | ElfRBuilderSegment
+        { erbpHeader :: SegmentXX c
+        , erbpN      :: Word32
+        , erbpData   :: [ElfRBuilder c]
         }
-    | ElfSectionTable
+    | ElfRBuilderSectionTable
 --        { estInterval :: Interval Word64
 --        }
-    | ElfSegmentTable
+    | ElfRBuilderSegmentTable
 --        { eptInterval :: Interval Word64
 --        }
 
@@ -102,14 +101,14 @@ findInterval e list = findInterval' [] list
         findInterval' l (x : xs) | e < INE.inf (fst x)  = LZip l Nothing (x : xs)
         findInterval' l (x : xs) | otherwise            = findInterval' xs (x : l)
 
-newtype Elf c = Elf [ElfPart c]
+newtype Elf c = Elf [ElfRBuilder c]
 
 toNonEmpty :: Ord a => I.Interval a -> Maybe (INE.Interval a)
 toNonEmpty i | I.null i  = Nothing
 toNonEmpty i | otherwise = Just (I.inf i INE.... I.sup i)
 
-sortIntervals :: Ord b => [a] -> (a -> I.Interval b) -> ([a], [(INE.Interval b, a)])
-sortIntervals l f = partitionEithers $ fmap ff l
+factorOutEmptyIntervals :: Ord b => [a] -> (a -> I.Interval b) -> ([a], [(INE.Interval b, a)])
+factorOutEmptyIntervals l f = partitionEithers $ fmap ff l
     where
         ff x = case toNonEmpty $ f x of
             Nothing -> Left x
@@ -118,18 +117,20 @@ sortIntervals l f = partitionEithers $ fmap ff l
 parseElf' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
 parseElf' hdr ss ps bs =
     let
-        (_emptySections,  isections) = sortIntervals (Prelude.zip [0 .. ] ss) (sectionInterval . snd)
-        (_emptySegments, _isegments) = sortIntervals (Prelude.zip [0 .. ] ps) (segmentInterval . snd)
+        (_emptySections,  isections) = factorOutEmptyIntervals (Prelude.zip [0 .. ] ss) (sectionInterval . snd)
+        (_emptySegments, _isegments) = factorOutEmptyIntervals (Prelude.zip [0 .. ] ps) (segmentInterval . snd)
 
-        mkSectionBuilder (n, s) = ElfSection s n
+        mkSectionBuilder (n, s) = ElfRBuilderSection s n
         -- mkSegmentBuilder (n, p) = ElfSegment p n
         sections = fmap (second mkSectionBuilder) isections
-        header = [(headerInterval hdr, ElfHeader hdr)]
-        -- sectionTable = let i = toNonEmpty $ sectionTableInterval hdr in maybe [] (, ElfSectionTable) i
-        -- -- hi = elfPartInterval $ ElfHeader hdr
-        -- -- hi = elfPartInterval hdr
-        -- -- hi = f sing
-        all = header ++ sections -- ++ sectionTable -- ++ isegments
+        header = [(headerInterval hdr, ElfRBuilderHeader hdr)]
+        sectionTable = case (toNonEmpty $ sectionTableInterval hdr) of
+            Nothing -> []
+            Just i -> [(i, ElfRBuilderSectionTable)]
+        segmentTable = case (toNonEmpty $ segmentTableInterval hdr) of
+            Nothing -> []
+            Just i -> [(i, ElfRBuilderSegmentTable)]
+        all = header ++ sections ++ sectionTable ++ segmentTable
     in
         undefined
 
