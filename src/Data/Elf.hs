@@ -145,7 +145,7 @@ checkIntervalsDontIntersectPair (x@(ix, _), y@(iy, _)) = case INE.intersection i
 checkIntervalsDontIntersect :: (Show a, Ord a) => [(INE.Interval a, ElfRBuilder b)] -> Either String ()
 checkIntervalsDontIntersect l = mapM_ checkIntervalsDontIntersectPair $ zipConsecutives l
 
-addSegments :: Ord a => [(INE.Interval a, ElfRBuilder b)] -> (INE.Interval a, ElfRBuilder b) -> (INE.Interval a, ElfRBuilder b)
+addSegments :: Ord a => [(INE.Interval a, ElfRBuilder b)] -> (INE.Interval a, ElfRBuilder b) -> Either String (INE.Interval a, ElfRBuilder b)
 addSegments = undefined
 -- addSegments t@(ti, ElfRBuilderSegment{..}) ts =
 
@@ -157,19 +157,57 @@ addSegment t@(ti, ElfRBuilderSegment{..}) ts =
     in
         case (c', c2') of
             (Just c@(ci, _), _)  ->
-                if ci `INE.contains` ti then
-                    Right $ foldInterval $ LZip l (Just $ addSegments [t] c) r
-                else  if ti `INE.contains` ci then
+
+                if ci `INE.contains` ti then do
+
+                    -- add this:     .........[t____].................................
+                    -- to this list: .....[c___________]......[___]......[________]...
+                    c'' <- addSegments [t] c
+                    return $ foldInterval $ LZip l (Just c'') r
+
+                else if ti `INE.contains` ci then
                     case c2' of
-                        Nothing -> Right $ foldInterval $ LZip l (Just $ addSegments (c : l2) t) r2
-                        Just c2 -> Left $ "@1 " -- ++ intersectMessage t c2
+
+                        Nothing -> do
+
+                            -- add this:     ....  [t_______]......................................
+                            -- or this:      ....  [t__________________________]...................
+                            -- to this list: ......[c__]......[l2__]...[l2__].....[________].......
+                            c'' <- addSegments (c : l2) t
+                            return $ foldInterval $ LZip l (Just c'') r2
+
+                        Just c2 ->
+
+                            -- add this:     ........[t_________________]...........................
+                            -- to this list: ......[c_________]......[c2___]......[________]........
+                            Left $ "@1 " -- ++ intersectMessage t c2
                 else
+
+                    -- add this:     ....[t________]...................................
+                    -- or this:      ..........[t________].............................
+                    -- to this list: ......[c_________]......[_____]......[________]...
                     Left $ "@2 " -- ++ intersectMessage t c
-            (Nothing, Nothing)  -> Right $ foldInterval $ LZip l (Just $ addSegments l2 t) r2
+
+            (Nothing, Nothing) -> do
+
+                -- add this:     ....[t___].........................................
+                -- or this:      ....[t_________________________]...................
+                -- to this list: .............[l2__]...[l2__].....[________]........
+                c'' <- addSegments l2 t
+                return $ foldInterval $ LZip l (Just c'') r2
+
             (Nothing, Just c2@(c2i, _)) ->
-                if ti `INE.contains` c2i then
-                    Right $ foldInterval $ LZip l (Just $ addSegments (l2 ++ [c2]) t) r2
+                if ti `INE.contains` c2i then do
+
+                    -- add this:     ....[t_________________________________]........
+                    -- to this list: ..........[l2__]..[l2__].....[c2_______]........
+                    c'' <- addSegments (l2 ++ [c2]) t
+                    return $ foldInterval $ LZip l (Just c'') r2
+
                 else
+
+                    -- add this:     ....[t_______________________________]..........
+                    -- to this list: ..........[l2__]..[l2__].....[c2_______]........
                     Left $ "@3 " -- ++ intersectMessage t c2
 
 addSegment _ _ = error "can add only segment"
