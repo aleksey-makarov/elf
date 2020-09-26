@@ -53,7 +53,7 @@ data ElfRBuilder (c :: ElfClass)
     | ElfRBuilderSegment
         { erbpHeader :: SegmentXX c
         , erbpN      :: Word32
-        , erbpData   :: [ElfRBuilder c]
+        , erbpData   :: [(INE.Interval Word16, ElfRBuilder c)]
         }
     | ElfRBuilderSectionTable
     | ElfRBuilderSegmentTable
@@ -145,35 +145,32 @@ checkIntervalsDontIntersectPair (x@(ix, _), y@(iy, _)) = case INE.intersection i
 checkIntervalsDontIntersect :: (Show a, Ord a) => [(INE.Interval a, ElfRBuilder b)] -> Either String ()
 checkIntervalsDontIntersect l = mapM_ checkIntervalsDontIntersectPair $ zipConsecutives l
 
+addSegments :: Ord a => [(INE.Interval a, ElfRBuilder b)] -> (INE.Interval a, ElfRBuilder b) -> (INE.Interval a, ElfRBuilder b)
+addSegments = undefined
+-- addSegments t@(ti, ElfRBuilderSegment{..}) ts =
+
 addSegment :: Ord a => (INE.Interval a, ElfRBuilder b) -> [(INE.Interval a, ElfRBuilder b)] -> Either String [(INE.Interval a, ElfRBuilder b)]
-addSegment (ti, t@ElfRBuilderSegment{..}) ts =
+addSegment t@(ti, ElfRBuilderSegment{..}) ts =
     let
-        (LZip l  c  r ) = findInterval (INE.inf ti) ts
-        (LZip l2 c2 r2) = findInterval (INE.sup ti) r
+        (LZip l  c'  r ) = findInterval (INE.inf ti) ts
+        (LZip l2 c2' r2) = findInterval (INE.sup ti) r
     in
-        case (c, c2) of
-            (Just c', _)  -> undefined
-                -- let
-                --     c'i = getInterval c'
-                -- in
-                --     if c'i `INE.contains` ti then
-                --         foldInterval $ LZip l (Just $ addTs [t] c') r
-                --     else  if ti `INE.contains` c'i then
-                --         case c2 of
-                --             Nothing -> foldInterval $ LZip l (Just $ addTs (c' : l2) t) r2
-                --             Just c2' -> error $ "@1 " ++ intersectMessage t c2'
-                --     else
-                --         error $ "@2 " ++ intersectMessage t c'
-            (Nothing, Nothing)  -> undefined
-                -- foldInterval $ LZip l (Just $ addTs l2 t) r2
-            (Nothing, Just c2') -> undefined
-                -- let
-                --     c2'i = getInterval c2'
-                -- in
-                --     if ti `INE.contains` c2'i then
-                --         foldInterval $ LZip l (Just $ addTs (l2 ++ [c2']) t) r2
-                --     else
-                --         error $ "@3 " ++ intersectMessage t c2'
+        case (c', c2') of
+            (Just c@(ci, _), _)  ->
+                if ci `INE.contains` ti then
+                    Right $ foldInterval $ LZip l (Just $ addSegments [t] c) r
+                else  if ti `INE.contains` ci then
+                    case c2' of
+                        Nothing -> Right $ foldInterval $ LZip l (Just $ addSegments (c : l2) t) r2
+                        Just c2 -> Left $ "@1 " -- ++ intersectMessage t c2
+                else
+                    Left $ "@2 " -- ++ intersectMessage t c
+            (Nothing, Nothing)  -> Right $ foldInterval $ LZip l (Just $ addSegments l2 t) r2
+            (Nothing, Just c2@(c2i, _)) ->
+                if ti `INE.contains` c2i then
+                    Right $ foldInterval $ LZip l (Just $ addSegments (l2 ++ [c2]) t) r2
+                else
+                    Left $ "@3 " -- ++ intersectMessage t c2
 
 addSegment _ _ = error "can add only segment"
 
