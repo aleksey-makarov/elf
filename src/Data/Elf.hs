@@ -32,6 +32,7 @@ module Data.Elf
 import Data.Elf.Generated
 import Data.Elf.Headers
 
+import Control.Monad
 import Data.Bifunctor
 import Data.ByteString.Lazy as BSL
 import Data.Either
@@ -130,26 +131,32 @@ zipConsecutives :: [a] -> [(a,a)]
 zipConsecutives [] = []
 zipConsecutives xs = L.zip xs (L.tail xs)
 
-checkIntervalsDontIntersectPair :: (Show a, Ord a) => ((INE.Interval a, ElfRBuilder b), (INE.Interval a, ElfRBuilder b)) -> Either String ()
-checkIntervalsDontIntersectPair (x@(ix, _), y@(iy, _)) = case INE.intersection ix iy of
-    Nothing -> Right ()
-    Just _ -> Left $ showItem x ++ " and " ++ showItem y ++ " intersect"
+intersectMessage :: Show a => (INE.Interval a, ElfRBuilder b) -> (INE.Interval a, ElfRBuilder b) -> String
+intersectMessage x y = showItem x ++ " and " ++ showItem y ++ " intersect"
     where
-        showItem (i, x) = showERB x ++ " (" ++ show i ++ ")"
+        showItem (i, v) = showERB v ++ " (" ++ show i ++ ")"
         showERB ElfRBuilderHeader{..}   = "header"
         showERB ElfRBuilderSection{..}  = "section " ++ show erbsN
         showERB ElfRBuilderSegment{..}  = "segment " ++ show erbpN
         showERB ElfRBuilderSectionTable = "section table"
         showERB ElfRBuilderSegmentTable = "segment table"
 
+checkIntervalsDontIntersectPair :: (Show a, Ord a) => ((INE.Interval a, ElfRBuilder b), (INE.Interval a, ElfRBuilder b)) -> Either String ()
+checkIntervalsDontIntersectPair (x@(ix, _), y@(iy, _)) = case INE.intersection ix iy of
+    Nothing -> Right ()
+    Just _ -> Left $ intersectMessage x y ++ " @5"
+
 checkIntervalsDontIntersect :: (Show a, Ord a) => [(INE.Interval a, ElfRBuilder b)] -> Either String ()
 checkIntervalsDontIntersect l = mapM_ checkIntervalsDontIntersectPair $ zipConsecutives l
 
-addSegments :: Ord a => [(INE.Interval a, ElfRBuilder b)] -> (INE.Interval a, ElfRBuilder b) -> Either String (INE.Interval a, ElfRBuilder b)
-addSegments = undefined
--- addSegments t@(ti, ElfRBuilderSegment{..}) ts =
+addSegments :: [(INE.Interval Word16, ElfRBuilder b)] -> (INE.Interval Word16, ElfRBuilder b) -> Either String (INE.Interval Word16, ElfRBuilder b)
+addSegments [] x = Right x
+addSegments ts (it, t@ElfRBuilderSegment{..}) = do
+    d <- foldM (flip addSegment) ts erbpData
+    return (it, t{ erbpData = d })
+addSegments (x:_) y = Left $ intersectMessage x y ++ " @1"
 
-addSegment :: Ord a => (INE.Interval a, ElfRBuilder b) -> [(INE.Interval a, ElfRBuilder b)] -> Either String [(INE.Interval a, ElfRBuilder b)]
+addSegment :: (INE.Interval Word16, ElfRBuilder b) -> [(INE.Interval Word16, ElfRBuilder b)] -> Either String [(INE.Interval Word16, ElfRBuilder b)]
 addSegment t@(ti, ElfRBuilderSegment{..}) ts =
     let
         (LZip l  c'  r ) = findInterval (INE.inf ti) ts
@@ -170,23 +177,22 @@ addSegment t@(ti, ElfRBuilderSegment{..}) ts =
 
                         Nothing -> do
 
-                            -- add this:     ....  [t_______]......................................
-                            -- or this:      ....  [t__________________________]...................
+                            -- add this:     ......[t_______]......................................
+                            -- or this:      ......[t__________________________]...................
                             -- to this list: ......[c__]......[l2__]...[l2__].....[________].......
                             c'' <- addSegments (c : l2) t
                             return $ foldInterval $ LZip l (Just c'') r2
 
                         Just c2 ->
 
-                            -- add this:     ........[t_________________]...........................
+                            -- add this:     ......[t_________________].............................
                             -- to this list: ......[c_________]......[c2___]......[________]........
-                            Left $ "@1 " -- ++ intersectMessage t c2
+                            Left $ intersectMessage t c2 ++ " @2"
                 else
 
-                    -- add this:     ....[t________]...................................
-                    -- or this:      ..........[t________].............................
+                    -- add this:     ..........[t________].............................
                     -- to this list: ......[c_________]......[_____]......[________]...
-                    Left $ "@2 " -- ++ intersectMessage t c
+                    Left $ intersectMessage t c ++ " @3"
 
             (Nothing, Nothing) -> do
 
@@ -208,7 +214,7 @@ addSegment t@(ti, ElfRBuilderSegment{..}) ts =
 
                     -- add this:     ....[t_______________________________]..........
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
-                    Left $ "@3 " -- ++ intersectMessage t c2
+                    Left $ intersectMessage t c2 ++ " @4"
 
 addSegment _ _ = error "can add only segment"
 
