@@ -49,10 +49,11 @@ data Elf (c :: ElfClass)
         { eHeader :: HeaderXX c
         }
     | ElfSection
-        { eN      :: Word32
+        { esN      :: Word32
         }
     | ElfSegment
-        { eN      :: Word32
+        { epN      :: Word32
+        , epData   :: [Elf c]
         }
     | ElfSectionTable
     | ElfSegmentTable
@@ -232,7 +233,7 @@ mapRBuilderToElf bs l = fmap f l
     where
         f ElfRBuilderHeader{..}       = ElfHeader erbhHeader
         f ElfRBuilderSection{..}      = ElfSection erbsN
-        f ElfRBuilderSegment{..}      = ElfSegment erbpN
+        f ElfRBuilderSegment{..}      = ElfSegment erbpN $ mapRBuilderToElf bs erbpData
         f ElfRBuilderSectionTable{..} = ElfSectionTable
         f ElfRBuilderSegmentTable{..} = ElfSegmentTable
 

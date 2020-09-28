@@ -10,6 +10,7 @@ module Data.Elf.Doc
     , printSection
     , printSegment
     , printHeaders
+    , printElf
     ) where
 
 import Data.Singletons
@@ -18,6 +19,7 @@ import Data.Text.Prettyprint.Doc as D
 import Data.Word
 import Numeric
 
+import Data.Elf
 import Data.Elf.Headers
 
 formatPairs :: [(String, Doc a)] -> Doc a
@@ -116,3 +118,19 @@ printHeaders' hdr ss ps =
 
 printHeaders :: Sigma ElfClass (TyCon1 HeadersXX) -> Doc ()
 printHeaders (classS :&: HeadersXX (hdr, ss, ps)) = withSingI classS $ printHeaders' hdr ss ps
+
+printElf'' :: SingI a => Elf a -> Doc ()
+printElf'' ElfHeader{..}   = printHeader eHeader
+printElf'' ElfSection{..}  = pretty esN
+printElf'' ElfSegment{..}  = formatPairs
+    [ ("n",    pretty epN)
+    , ("data", printElf' epData)
+    ]
+printElf'' ElfSectionTable = "Section table"
+printElf'' ElfSegmentTable = "Segment table"
+
+printElf' :: SingI a => [Elf a] -> Doc ()
+printElf' l = formatList $ fmap printElf'' l
+
+printElf :: Sigma ElfClass (TyCon1 ElfList) -> Doc ()
+printElf (classS :&: ElfList ls) = withSingI classS $ printElf' ls
