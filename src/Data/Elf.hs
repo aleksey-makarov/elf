@@ -233,15 +233,13 @@ parseElf' hdr ss ps _bs = do
         sections = fmap (second mkSectionBuilder) isections
         header = (headerInterval hdr, ElfRBuilderHeader hdr)
 
-        sectionTable = (, ElfRBuilderSectionTable) <$> (toNonEmpty $ sectionTableInterval hdr)
-        segmentTable = (, ElfRBuilderSegmentTable) <$> (toNonEmpty $ segmentTableInterval hdr)
+        maybeSectionTable = (, ElfRBuilderSectionTable) <$> (toNonEmpty $ sectionTableInterval hdr)
+        maybeSegmentTable = (, ElfRBuilderSegmentTable) <$> (toNonEmpty $ segmentTableInterval hdr)
 
-        -- all = fmap unS $ sort $ fmap S $ header ++ sections ++ sectionTable ++ segmentTable
-
-    all <- addSegmentsToList sections [] >>= addSegment header >>= maybe return addSegment sectionTable >>= maybe return addSegment segmentTable
-        -- , sectionTable, segmentTable]
-
-    -- checkIntervalsDontIntersect all
+    all  <- addSegment header
+        =<< maybe return addSegment maybeSectionTable
+        =<< maybe return addSegment maybeSegmentTable
+        =<< addSegmentsToList sections []
 
     undefined
 
