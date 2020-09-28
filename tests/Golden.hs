@@ -150,5 +150,6 @@ main = do
 
     defaultMain $ testGroup "elf" [ testGroup "headers round trip" (mkTest <$> elfs)
                                   , testGroup "headers golden" (mkGoldenTest "header" printHeadersFile <$> elfs)
-                                  , testGroup "elf golden" (mkGoldenTest "elf" printElfFile <$> (P.take 1 elfs {-- FIXME: take --} ))
+                                  -- , testGroup "elf golden" (mkGoldenTest "elf" printElfFile <$> (P.take 1 elfs {-- FIXME: take --} ))
+                                  , testGroup "elf golden" (mkGoldenTest "elf" printElfFile <$> elfs)
                                   ]

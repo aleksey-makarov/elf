@@ -120,7 +120,9 @@ printHeaders :: Sigma ElfClass (TyCon1 HeadersXX) -> Doc ()
 printHeaders (classS :&: HeadersXX (hdr, ss, ps)) = withSingI classS $ printHeaders' hdr ss ps
 
 printElf'' :: SingI a => Elf a -> Doc ()
-printElf'' ElfHeader{..}   = printHeader eHeader
+printElf'' ElfHeader{..}   = formatPairs
+    [ ("header", printHeader eHeader)
+    ]
 printElf'' ElfSection{..}  = pretty esN
 printElf'' ElfSegment{..}  = formatPairs
     [ ("n",    pretty epN)

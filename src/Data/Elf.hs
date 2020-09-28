@@ -38,7 +38,7 @@ import Control.Monad
 -- import Data.Bifunctor
 import Data.ByteString.Lazy as BSL
 import Data.Either
--- import Data.List as L
+import Data.List as L
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Word
@@ -133,28 +133,34 @@ toNonEmpty :: Ord a => I.Interval a -> Maybe (INE.Interval a)
 toNonEmpty i | I.null i  = Nothing
 toNonEmpty i | otherwise = Just (I.inf i INE.... I.sup i)
 
+showElfRBuilber' :: ElfRBuilder a -> String
+showElfRBuilber' ElfRBuilderHeader{..}       = "header"
+showElfRBuilber' ElfRBuilderSection{..}      = "section " ++ show erbsN
+showElfRBuilber' ElfRBuilderSegment{..}      = "segment " ++ show erbpN
+showElfRBuilber' ElfRBuilderSectionTable{..} = "section table"
+showElfRBuilber' ElfRBuilderSegmentTable{..} = "segment table"
+
+showElfRBuilber :: ElfRBuilder a -> String
+showElfRBuilber v = showElfRBuilber' v ++ " (" ++ (show $ Data.Elf.interval v) ++ ")"
+
+showERBList :: [ElfRBuilder a] -> String
+showERBList l = "[" ++ (L.concat $ L.intersperse ", " $ fmap showElfRBuilber l) ++ "]"
+
 intersectMessage :: ElfRBuilder b -> ElfRBuilder b -> String
-intersectMessage x y = showItem x ++ " and " ++ showItem y ++ " intersect"
-    where
-        showItem v = showERB v ++ " (" ++ (show $ Data.Elf.interval v) ++ ")"
-        showERB ElfRBuilderHeader{..}       = "header"
-        showERB ElfRBuilderSection{..}      = "section " ++ show erbsN
-        showERB ElfRBuilderSegment{..}      = "segment " ++ show erbpN
-        showERB ElfRBuilderSectionTable{..} = "section table"
-        showERB ElfRBuilderSegmentTable{..} = "segment table"
+intersectMessage x y = showElfRBuilber x ++ " and " ++ showElfRBuilber y ++ " intersect"
 
-addSegmentsToList :: [ElfRBuilder b] -> [ElfRBuilder b] -> Either String [ElfRBuilder b]
-addSegmentsToList newts l = foldM (flip addSegment) l newts
+addRBuildersToList :: [ElfRBuilder b] -> [ElfRBuilder b] -> Either String [ElfRBuilder b]
+addRBuildersToList newts l = foldM (flip addRBuilder) l newts
 
-addSegments :: [ElfRBuilder b] -> ElfRBuilder b -> Either String (ElfRBuilder b)
-addSegments [] x = Right x
-addSegments ts t@ElfRBuilderSegment{..} = do
-    d <- addSegmentsToList ts erbpData
+addRBuilders :: [ElfRBuilder b] -> ElfRBuilder b -> Either String (ElfRBuilder b)
+addRBuilders [] x = Right x
+addRBuilders ts t@ElfRBuilderSegment{..} = do
+    d <- addRBuildersToList ts erbpData
     return $ t{ erbpData = d }
-addSegments (x:_) y = Left $ intersectMessage x y ++ " @1"
+addRBuilders (x:_) y = Left $ intersectMessage x y ++ " @1"
 
-addSegment :: ElfRBuilder b -> [ElfRBuilder b] -> Either String [ElfRBuilder b]
-addSegment t@ElfRBuilderSegment{..} ts =
+addRBuilder :: ElfRBuilder b -> [ElfRBuilder b] -> Either String [ElfRBuilder b]
+addRBuilder t ts =
     let
         (LZip l  c'  r ) = findInterval Data.Elf.interval (INE.inf ti) ts
         (LZip l2 c2' r2) = findInterval Data.Elf.interval (INE.sup ti) r
@@ -168,7 +174,7 @@ addSegment t@ElfRBuilderSegment{..} ts =
 
                     -- add this:     .........[t____].................................
                     -- to this list: .....[c___________]......[___]......[________]...
-                    c'' <- addSegments [t] c
+                    c'' <- addRBuilders [t] c
                     return $ foldInterval $ LZip l (Just c'') r
 
                 else if ti `INE.contains` ci then
@@ -179,7 +185,7 @@ addSegment t@ElfRBuilderSegment{..} ts =
                             -- add this:     ......[t_______]......................................
                             -- or this:      ......[t__________________________]...................
                             -- to this list: ......[c__]......[l2__]...[l2__].....[________].......
-                            c'' <- addSegments (c : l2) t
+                            c'' <- addRBuilders (c : l2) t
                             return $ foldInterval $ LZip l (Just c'') r2
 
                         Just c2 ->
@@ -198,7 +204,7 @@ addSegment t@ElfRBuilderSegment{..} ts =
                 -- add this:     ....[t___].........................................
                 -- or this:      ....[t_________________________]...................
                 -- to this list: .............[l2__]...[l2__].....[________]........
-                c'' <- addSegments l2 t
+                c'' <- addRBuilders l2 t
                 return $ foldInterval $ LZip l (Just c'') r2
 
             (Nothing, Just c2) ->
@@ -208,7 +214,7 @@ addSegment t@ElfRBuilderSegment{..} ts =
 
                     -- add this:     ....[t_________________________________]........
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
-                    c'' <- addSegments (l2 ++ [c2]) t
+                    c'' <- addRBuilders (l2 ++ [c2]) t
                     return $ foldInterval $ LZip l (Just c'') r2
 
                 else
@@ -216,8 +222,6 @@ addSegment t@ElfRBuilderSegment{..} ts =
                     -- add this:     ....[t_______________________________]..........
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
                     Left $ intersectMessage t c2 ++ " @4"
-
-addSegment _ _ = error "can add only segment"
 
 dsection :: SingI a => (Word32, SectionXX a) -> Either (Word32, SectionXX a) (ElfRBuilder a)
 dsection (n, s) = case toNonEmpty $ sectionInterval s of
@@ -250,11 +254,11 @@ parseElf' hdr ss ps bs = do
         maybeSectionTable = ElfRBuilderSectionTable <$> (toNonEmpty $ sectionTableInterval hdr)
         maybeSegmentTable = ElfRBuilderSegmentTable <$> (toNonEmpty $ segmentTableInterval hdr)
 
-    all  <- addSegment header
-        =<< maybe return addSegment maybeSectionTable
-        =<< maybe return addSegment maybeSegmentTable
-        =<< addSegmentsToList segments
-        =<< addSegmentsToList sections []
+    all  <- addRBuilder header
+        =<< maybe return addRBuilder maybeSectionTable
+        =<< maybe return addRBuilder maybeSegmentTable []
+        -- =<< addRBuildersToList segments
+        -- =<< addRBuildersToList sections []
 
     -- FIXME: _emptySections, _emptySegments
 
