@@ -54,7 +54,7 @@ data ElfRBuilder (c :: ElfClass)
     | ElfRBuilderSegment
         { erbpHeader :: SegmentXX c
         , erbpN      :: Word32
-        , erbpData   :: [(INE.Interval Word16, ElfRBuilder c)]
+        , erbpData   :: [(INE.Interval Word64, ElfRBuilder c)]
         }
     | ElfRBuilderSectionTable
     | ElfRBuilderSegmentTable
@@ -149,14 +149,17 @@ checkIntervalsDontIntersectPair (x@(ix, _), y@(iy, _)) = case INE.intersection i
 checkIntervalsDontIntersect :: (Show a, Ord a) => [(INE.Interval a, ElfRBuilder b)] -> Either String ()
 checkIntervalsDontIntersect l = mapM_ checkIntervalsDontIntersectPair $ zipConsecutives l
 
-addSegments :: [(INE.Interval Word16, ElfRBuilder b)] -> (INE.Interval Word16, ElfRBuilder b) -> Either String (INE.Interval Word16, ElfRBuilder b)
+addSegmentsToList :: [(INE.Interval Word64, ElfRBuilder b)] -> [(INE.Interval Word64, ElfRBuilder b)] -> Either String [(INE.Interval Word64, ElfRBuilder b)]
+addSegmentsToList newts l = foldM (flip addSegment) l newts
+
+addSegments :: [(INE.Interval Word64, ElfRBuilder b)] -> (INE.Interval Word64, ElfRBuilder b) -> Either String (INE.Interval Word64, ElfRBuilder b)
 addSegments [] x = Right x
 addSegments ts (it, t@ElfRBuilderSegment{..}) = do
-    d <- foldM (flip addSegment) ts erbpData
+    d <- addSegmentsToList ts erbpData
     return (it, t{ erbpData = d })
 addSegments (x:_) y = Left $ intersectMessage x y ++ " @1"
 
-addSegment :: (INE.Interval Word16, ElfRBuilder b) -> [(INE.Interval Word16, ElfRBuilder b)] -> Either String [(INE.Interval Word16, ElfRBuilder b)]
+addSegment :: (INE.Interval Word64, ElfRBuilder b) -> [(INE.Interval Word64, ElfRBuilder b)] -> Either String [(INE.Interval Word64, ElfRBuilder b)]
 addSegment t@(ti, ElfRBuilderSegment{..}) ts =
     let
         (LZip l  c'  r ) = findInterval (INE.inf ti) ts
@@ -228,16 +231,17 @@ parseElf' hdr ss ps _bs = do
         mkSectionBuilder (n, s) = ElfRBuilderSection s n
         -- mkSegmentBuilder (n, p) = ElfSegment p n
         sections = fmap (second mkSectionBuilder) isections
-        header = [(headerInterval hdr, ElfRBuilderHeader hdr)]
-        sectionTable = case (toNonEmpty $ sectionTableInterval hdr) of
-            Nothing -> []
-            Just i -> [(i, ElfRBuilderSectionTable)]
-        segmentTable = case (toNonEmpty $ segmentTableInterval hdr) of
-            Nothing -> []
-            Just i -> [(i, ElfRBuilderSegmentTable)]
-        all = fmap unS $ sort $ fmap S $ header ++ sections ++ sectionTable ++ segmentTable
+        header = (headerInterval hdr, ElfRBuilderHeader hdr)
 
-    checkIntervalsDontIntersect all
+        sectionTable = (, ElfRBuilderSectionTable) <$> (toNonEmpty $ sectionTableInterval hdr)
+        segmentTable = (, ElfRBuilderSegmentTable) <$> (toNonEmpty $ segmentTableInterval hdr)
+
+        -- all = fmap unS $ sort $ fmap S $ header ++ sections ++ sectionTable ++ segmentTable
+
+    all <- addSegmentsToList sections [] >>= addSegment header >>= maybe return addSegment sectionTable >>= maybe return addSegment segmentTable
+        -- , sectionTable, segmentTable]
+
+    -- checkIntervalsDontIntersect all
 
     undefined
 
