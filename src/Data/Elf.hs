@@ -33,7 +33,7 @@ import Data.Elf.Generated
 import Data.Elf.Headers
 
 import Control.Monad
-import Data.Bifunctor
+-- import Data.Bifunctor
 import Data.ByteString.Lazy as BSL
 import Data.Either
 import Data.List as L
@@ -109,22 +109,6 @@ newtype Elf c = Elf [ElfRBuilder c]
 toNonEmpty :: Ord a => I.Interval a -> Maybe (INE.Interval a)
 toNonEmpty i | I.null i  = Nothing
 toNonEmpty i | otherwise = Just (I.inf i INE.... I.sup i)
-
-factorOutEmptyIntervals :: Ord b => [a] -> (a -> I.Interval b) -> ([a], [(INE.Interval b, a)])
-factorOutEmptyIntervals l f = partitionEithers $ fmap ff l
-    where
-        ff x = case toNonEmpty $ f x of
-            Nothing -> Left x
-            Just i -> Right (i, x)
-
--- sort by inf of the intervals
-newtype S a b = S { unS :: (INE.Interval a, b) }
-
-instance Eq a => Eq (S a b) where
-    (==) (S (x, _)) (S (y, _ )) = INE.inf x == INE.inf y
-
-instance Ord a => Ord (S a b) where
-    compare (S (x, _)) (S (y, _ )) = compare (INE.inf x) (INE.inf y)
 
 -- https://gitlab.haskell.org/ghc/ghc/-/issues/11815
 zipConsecutives :: [a] -> [(a,a)]
@@ -221,16 +205,23 @@ addSegment t@(ti, ElfRBuilderSegment{..}) ts =
 
 addSegment _ _ = error "can add only segment"
 
+dsection :: SingI a => (Word32, SectionXX a) -> Either (Word32, SectionXX a) (INE.Interval Word64, ElfRBuilder a)
+dsection (n, s) = case toNonEmpty $ sectionInterval s of
+    Nothing -> Left (n, s)
+    Just i -> Right (i, ElfRBuilderSection s n)
+
+dsegment :: SingI a => (Word32, SegmentXX a) -> Either (Word32, SegmentXX a) (INE.Interval Word64, ElfRBuilder a)
+dsegment (n, s) = case toNonEmpty $ segmentInterval s of
+    Nothing -> Left (n, s)
+    Just i -> Right (i, ElfRBuilderSegment s n [])
+
 parseElf' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
 parseElf' hdr ss ps _bs = do
 
     let
-        (_emptySections,  isections) = factorOutEmptyIntervals (Prelude.zip [0 .. ] ss) (sectionInterval . snd)
-        (_emptySegments, _isegments) = factorOutEmptyIntervals (Prelude.zip [0 .. ] ps) (segmentInterval . snd)
+        (_emptySections, sections) = partitionEithers $ fmap dsection (Prelude.zip [0 .. ] ss)
+        (_emptySegments, segments) = partitionEithers $ fmap dsegment (Prelude.zip [0 .. ] ps)
 
-        mkSectionBuilder (n, s) = ElfRBuilderSection s n
-        -- mkSegmentBuilder (n, p) = ElfSegment p n
-        sections = fmap (second mkSectionBuilder) isections
         header = (headerInterval hdr, ElfRBuilderHeader hdr)
 
         maybeSectionTable = (, ElfRBuilderSectionTable) <$> (toNonEmpty $ sectionTableInterval hdr)
@@ -239,7 +230,10 @@ parseElf' hdr ss ps _bs = do
     all  <- addSegment header
         =<< maybe return addSegment maybeSectionTable
         =<< maybe return addSegment maybeSegmentTable
+        =<< addSegmentsToList segments
         =<< addSegmentsToList sections []
+
+    -- FIXME: _emptySections, _emptySegments
 
     undefined
 
