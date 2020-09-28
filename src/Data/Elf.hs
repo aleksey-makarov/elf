@@ -46,18 +46,25 @@ import Numeric.Interval.NonEmpty as INE
 data ElfRBuilder (c :: ElfClass)
     = ElfRBuilderHeader
         { erbhHeader :: HeaderXX c
+        , interval   :: INE.Interval Word64
         }
     | ElfRBuilderSection
         { erbsHeader :: SectionXX c
         , erbsN      :: Word32
+        , interval   :: INE.Interval Word64
         }
     | ElfRBuilderSegment
         { erbpHeader :: SegmentXX c
         , erbpN      :: Word32
-        , erbpData   :: [(INE.Interval Word64, ElfRBuilder c)]
+        , erbpData   :: [ElfRBuilder c]
+        , interval   :: INE.Interval Word64
         }
     | ElfRBuilderSectionTable
+        { interval   :: INE.Interval Word64
+        }
     | ElfRBuilderSegmentTable
+        { interval   :: INE.Interval Word64
+        }
 
 -- Header can not be empty
 headerInterval :: forall a . SingI a => HeaderXX a -> INE.Interval Word64
@@ -96,13 +103,13 @@ foldInterval (LZip l         (Just c) r) = foldInterval $ LZip l  Nothing (c : r
 foldInterval (LZip (l : ls)  Nothing  r) = foldInterval $ LZip ls Nothing (l : r)
 foldInterval (LZip []        Nothing  r) = r
 
-findInterval :: Ord t => t -> [(INE.Interval t, a)] -> LZip (INE.Interval t, a)
-findInterval e list = findInterval' [] list
+findInterval :: Ord t => (a -> INE.Interval t) -> t -> [a] -> LZip a
+findInterval f e list = findInterval' [] list
     where
-        findInterval' l []                              = LZip l Nothing []
-        findInterval' l (x : xs) | INE.member e (fst x) = LZip l (Just x) xs
-        findInterval' l (x : xs) | e < INE.inf (fst x)  = LZip l Nothing (x : xs)
-        findInterval' l (x : xs) | otherwise            = findInterval' xs (x : l)
+        findInterval' l []                            = LZip l Nothing []
+        findInterval' l (x : xs) | INE.member e (f x) = LZip l (Just x) xs
+        findInterval' l (x : xs) | e < INE.inf (f x)  = LZip l Nothing (x : xs)
+        findInterval' l (x : xs) | otherwise          = findInterval' xs (x : l)
 
 newtype Elf c = Elf [ElfRBuilder c]
 
@@ -110,49 +117,38 @@ toNonEmpty :: Ord a => I.Interval a -> Maybe (INE.Interval a)
 toNonEmpty i | I.null i  = Nothing
 toNonEmpty i | otherwise = Just (I.inf i INE.... I.sup i)
 
--- https://gitlab.haskell.org/ghc/ghc/-/issues/11815
-zipConsecutives :: [a] -> [(a,a)]
-zipConsecutives [] = []
-zipConsecutives xs = L.zip xs (L.tail xs)
-
-intersectMessage :: Show a => (INE.Interval a, ElfRBuilder b) -> (INE.Interval a, ElfRBuilder b) -> String
+intersectMessage :: ElfRBuilder b -> ElfRBuilder b -> String
 intersectMessage x y = showItem x ++ " and " ++ showItem y ++ " intersect"
     where
-        showItem (i, v) = showERB v ++ " (" ++ show i ++ ")"
-        showERB ElfRBuilderHeader{..}   = "header"
-        showERB ElfRBuilderSection{..}  = "section " ++ show erbsN
-        showERB ElfRBuilderSegment{..}  = "segment " ++ show erbpN
-        showERB ElfRBuilderSectionTable = "section table"
-        showERB ElfRBuilderSegmentTable = "segment table"
+        showItem v = showERB v ++ " (" ++ (show $ Data.Elf.interval v) ++ ")"
+        showERB ElfRBuilderHeader{..}       = "header"
+        showERB ElfRBuilderSection{..}      = "section " ++ show erbsN
+        showERB ElfRBuilderSegment{..}      = "segment " ++ show erbpN
+        showERB ElfRBuilderSectionTable{..} = "section table"
+        showERB ElfRBuilderSegmentTable{..} = "segment table"
 
-checkIntervalsDontIntersectPair :: (Show a, Ord a) => ((INE.Interval a, ElfRBuilder b), (INE.Interval a, ElfRBuilder b)) -> Either String ()
-checkIntervalsDontIntersectPair (x@(ix, _), y@(iy, _)) = case INE.intersection ix iy of
-    Nothing -> Right ()
-    Just _ -> Left $ intersectMessage x y ++ " @5"
-
-checkIntervalsDontIntersect :: (Show a, Ord a) => [(INE.Interval a, ElfRBuilder b)] -> Either String ()
-checkIntervalsDontIntersect l = mapM_ checkIntervalsDontIntersectPair $ zipConsecutives l
-
-addSegmentsToList :: [(INE.Interval Word64, ElfRBuilder b)] -> [(INE.Interval Word64, ElfRBuilder b)] -> Either String [(INE.Interval Word64, ElfRBuilder b)]
+addSegmentsToList :: [ElfRBuilder b] -> [ElfRBuilder b] -> Either String [ElfRBuilder b]
 addSegmentsToList newts l = foldM (flip addSegment) l newts
 
-addSegments :: [(INE.Interval Word64, ElfRBuilder b)] -> (INE.Interval Word64, ElfRBuilder b) -> Either String (INE.Interval Word64, ElfRBuilder b)
+addSegments :: [ElfRBuilder b] -> ElfRBuilder b -> Either String (ElfRBuilder b)
 addSegments [] x = Right x
-addSegments ts (it, t@ElfRBuilderSegment{..}) = do
+addSegments ts t@ElfRBuilderSegment{..} = do
     d <- addSegmentsToList ts erbpData
-    return (it, t{ erbpData = d })
+    return $ t{ erbpData = d }
 addSegments (x:_) y = Left $ intersectMessage x y ++ " @1"
 
-addSegment :: (INE.Interval Word64, ElfRBuilder b) -> [(INE.Interval Word64, ElfRBuilder b)] -> Either String [(INE.Interval Word64, ElfRBuilder b)]
-addSegment t@(ti, ElfRBuilderSegment{..}) ts =
+addSegment :: ElfRBuilder b -> [ElfRBuilder b] -> Either String [ElfRBuilder b]
+addSegment t@ElfRBuilderSegment{..} ts =
     let
-        (LZip l  c'  r ) = findInterval (INE.inf ti) ts
-        (LZip l2 c2' r2) = findInterval (INE.sup ti) r
+        (LZip l  c'  r ) = findInterval Data.Elf.interval (INE.inf ti) ts
+        (LZip l2 c2' r2) = findInterval Data.Elf.interval (INE.sup ti) r
+        ti = Data.Elf.interval t
     in
         case (c', c2') of
-            (Just c@(ci, _), _)  ->
-
-                if ci `INE.contains` ti then do
+            (Just c, _)  ->
+                let
+                    ci = Data.Elf.interval c
+                in if ci `INE.contains` ti then do
 
                     -- add this:     .........[t____].................................
                     -- to this list: .....[c___________]......[___]......[________]...
@@ -189,8 +185,10 @@ addSegment t@(ti, ElfRBuilderSegment{..}) ts =
                 c'' <- addSegments l2 t
                 return $ foldInterval $ LZip l (Just c'') r2
 
-            (Nothing, Just c2@(c2i, _)) ->
-                if ti `INE.contains` c2i then do
+            (Nothing, Just c2) ->
+                let
+                    c2i = Data.Elf.interval c2
+                in if ti `INE.contains` c2i then do
 
                     -- add this:     ....[t_________________________________]........
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
@@ -205,15 +203,15 @@ addSegment t@(ti, ElfRBuilderSegment{..}) ts =
 
 addSegment _ _ = error "can add only segment"
 
-dsection :: SingI a => (Word32, SectionXX a) -> Either (Word32, SectionXX a) (INE.Interval Word64, ElfRBuilder a)
+dsection :: SingI a => (Word32, SectionXX a) -> Either (Word32, SectionXX a) (ElfRBuilder a)
 dsection (n, s) = case toNonEmpty $ sectionInterval s of
     Nothing -> Left (n, s)
-    Just i -> Right (i, ElfRBuilderSection s n)
+    Just i -> Right $ ElfRBuilderSection s n i
 
-dsegment :: SingI a => (Word32, SegmentXX a) -> Either (Word32, SegmentXX a) (INE.Interval Word64, ElfRBuilder a)
+dsegment :: SingI a => (Word32, SegmentXX a) -> Either (Word32, SegmentXX a) (ElfRBuilder a)
 dsegment (n, s) = case toNonEmpty $ segmentInterval s of
     Nothing -> Left (n, s)
-    Just i -> Right (i, ElfRBuilderSegment s n [])
+    Just i -> Right $ ElfRBuilderSegment s n [] i
 
 parseElf' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
 parseElf' hdr ss ps _bs = do
@@ -222,10 +220,10 @@ parseElf' hdr ss ps _bs = do
         (_emptySections, sections) = partitionEithers $ fmap dsection (Prelude.zip [0 .. ] ss)
         (_emptySegments, segments) = partitionEithers $ fmap dsegment (Prelude.zip [0 .. ] ps)
 
-        header = (headerInterval hdr, ElfRBuilderHeader hdr)
+        header = ElfRBuilderHeader hdr $ headerInterval hdr
 
-        maybeSectionTable = (, ElfRBuilderSectionTable) <$> (toNonEmpty $ sectionTableInterval hdr)
-        maybeSegmentTable = (, ElfRBuilderSegmentTable) <$> (toNonEmpty $ segmentTableInterval hdr)
+        maybeSectionTable = ElfRBuilderSectionTable <$> (toNonEmpty $ sectionTableInterval hdr)
+        maybeSegmentTable = ElfRBuilderSegmentTable <$> (toNonEmpty $ segmentTableInterval hdr)
 
     all  <- addSegment header
         =<< maybe return addSegment maybeSectionTable
