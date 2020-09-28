@@ -27,6 +27,7 @@
 module Data.Elf
     ( module Data.Elf.Generated
     , Elf (..)
+    , ElfList (..)
     ) where
 
 import Data.Elf.Generated
@@ -36,12 +37,27 @@ import Control.Monad
 -- import Data.Bifunctor
 import Data.ByteString.Lazy as BSL
 import Data.Either
-import Data.List as L
+-- import Data.List as L
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Word
 import Numeric.Interval as I
 import Numeric.Interval.NonEmpty as INE
+
+data Elf (c :: ElfClass)
+    = ElfHeader
+        { eHeader :: HeaderXX c
+        }
+    | ElfSection
+        { eN      :: Word32
+        }
+    | ElfSegment
+        { eN      :: Word32
+        }
+    | ElfSectionTable
+    | ElfSegmentTable
+
+newtype ElfList c = ElfList [Elf c]
 
 data ElfRBuilder (c :: ElfClass)
     = ElfRBuilderHeader
@@ -110,8 +126,6 @@ findInterval f e list = findInterval' [] list
         findInterval' l (x : xs) | INE.member e (f x) = LZip l (Just x) xs
         findInterval' l (x : xs) | e < INE.inf (f x)  = LZip l Nothing (x : xs)
         findInterval' l (x : xs) | otherwise          = findInterval' xs (x : l)
-
-newtype Elf c = Elf [ElfRBuilder c]
 
 toNonEmpty :: Ord a => I.Interval a -> Maybe (INE.Interval a)
 toNonEmpty i | I.null i  = Nothing
@@ -213,8 +227,17 @@ dsegment (n, s) = case toNonEmpty $ segmentInterval s of
     Nothing -> Left (n, s)
     Just i -> Right $ ElfRBuilderSegment s n [] i
 
-parseElf' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
-parseElf' hdr ss ps _bs = do
+mapRBuilderToElf :: SingI a => BSL.ByteString -> [ElfRBuilder a] -> [Elf a]
+mapRBuilderToElf bs l = fmap f l
+    where
+        f ElfRBuilderHeader{..}       = ElfHeader erbhHeader
+        f ElfRBuilderSection{..}      = ElfSection erbsN
+        f ElfRBuilderSegment{..}      = ElfSegment erbpN
+        f ElfRBuilderSectionTable{..} = ElfSectionTable
+        f ElfRBuilderSegmentTable{..} = ElfSegmentTable
+
+parseElf' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 ElfList))
+parseElf' hdr ss ps bs = do
 
     let
         (_emptySections, sections) = partitionEithers $ fmap dsection (Prelude.zip [0 .. ] ss)
@@ -233,9 +256,9 @@ parseElf' hdr ss ps _bs = do
 
     -- FIXME: _emptySections, _emptySegments
 
-    undefined
+    return $ sing :&: ElfList (mapRBuilderToElf bs all)
 
-parseElf :: BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 Elf))
+parseElf :: BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 ElfList))
 parseElf bs = do
     classS :&: HeadersXX (hdr, ss, ps) <- parseHeaders bs
     withSingI classS $ parseElf' hdr ss ps bs
