@@ -33,6 +33,7 @@ import Test.Tasty
 import Test.Tasty.Golden
 import Test.Tasty.HUnit
 
+import Data.Elf
 import Data.Elf.Headers
 import Data.Elf.Doc
 
@@ -134,6 +135,13 @@ printHeadersFile path = do
         Left _err -> undefined
         Right hs -> return $ printHeaders hs
 
+printElfFile :: FilePath -> IO (Doc ())
+printElfFile path = do
+    bs <- fromStrict <$> BS.readFile path
+    case parseElf bs of
+        Left _err -> undefined
+        Right e -> return $ printElf e
+
 main :: IO ()
 main = do
 
@@ -142,4 +150,5 @@ main = do
 
     defaultMain $ testGroup "elf" [ testGroup "headers round trip" (mkTest <$> elfs)
                                   , testGroup "headers golden" (mkGoldenTest "header" printHeadersFile <$> elfs)
+                                  , testGroup "elf golden" (mkGoldenTest "elf" printElfFile <$> (P.take 1 elfs {-- FIXME: take --} ))
                                   ]

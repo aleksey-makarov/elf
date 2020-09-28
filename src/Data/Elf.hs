@@ -28,6 +28,7 @@ module Data.Elf
     ( module Data.Elf.Generated
     , Elf (..)
     , ElfList (..)
+    , parseElf
     ) where
 
 import Data.Elf.Generated
