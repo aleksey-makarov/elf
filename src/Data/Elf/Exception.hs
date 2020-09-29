@@ -16,7 +16,7 @@ import Control.Monad.Catch
 import Language.Haskell.TH
 
 data ElfException = ElfException
-    { s     :: String
+    { err   :: String
     , ctxt  :: String
     , stack :: Maybe SomeException
     }
@@ -24,8 +24,8 @@ data ElfException = ElfException
 instance Show ElfException where
     show ElfException{..} = maybe showThis f stack
         where
-            showThis = (if null s then [] else s ++ " ") ++ showCtxt
-            showCtxt = "(@" ++ ctxt ++ ")"
+            showThis = (if null err then [] else err ++ " ") ++ showCtxt
+            showCtxt = "(" ++ ctxt ++ ")"
             f st = show st ++ " // " ++ showThis
 
 instance Exception ElfException
