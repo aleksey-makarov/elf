@@ -1,4 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Data.Elf.Exception
     ( ElfException
@@ -12,6 +13,7 @@ module Data.Elf.Exception
 
 import Control.Exception hiding (try, catch)
 import Control.Monad.Catch
+import Language.Haskell.TH
 
 data ElfException = ElfException
     { s     :: String
@@ -28,16 +30,35 @@ instance Show ElfException where
 
 instance Exception ElfException
 
-elfError :: MonadThrow m => String -> m a
-elfError s = throwM $ ElfException s "#" Nothing
+withFileLine :: Q Exp -> Q Exp
+withFileLine f = let loc = fileLine =<< location in appE f loc
 
-elfError' :: MonadThrow m => m a
-elfError' = elfError []
+fileLine :: Loc -> Q Exp
+fileLine loc = let floc = formatLoc loc in [| $(litE $ stringL floc) |]
 
-addContext :: MonadCatch m => String -> m a -> m a
-addContext s m = m `catch` f
+formatLoc :: Loc -> String
+formatLoc loc =
+    let
+        file = loc_filename loc
+        (line, _) = loc_start loc
+    in concat [file, ":", show line]
+
+elfErrorX :: MonadThrow m => String -> String -> m a
+elfErrorX loc s = throwM $ ElfException s loc Nothing
+
+elfError' :: Q Exp
+elfError' = withFileLine [| \ x -> elfErrorX x [] |]
+
+elfError :: Q Exp
+elfError = withFileLine [| elfErrorX |]
+
+addContextX :: MonadCatch m => String -> String -> m a -> m a
+addContextX loc s m = m `catch` f
     where
-        f e = throwM $ ElfException s "#" $ Just e
+        f e = throwM $ ElfException s loc $ Just e
 
-addContext' :: MonadCatch m => m a -> m a
-addContext' = addContext []
+addContext :: Q Exp
+addContext = withFileLine [| addContextX |]
+
+addContext' :: Q Exp
+addContext' = withFileLine [| \ x -> addContextX x [] |]

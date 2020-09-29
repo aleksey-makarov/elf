@@ -500,7 +500,7 @@ newtype HeadersXX a = HeadersXX (HeaderXX a, [SectionXX a], [SegmentXX a])
 
 elfDecodeOrFail' :: (Binary a, MonadCatch m) => BSL.ByteString -> m (ByteOffset, a)
 elfDecodeOrFail' bs = case decodeOrFail bs of
-    Left (_, off, err) -> elfError (err ++ " @" ++ show off)
+    Left (_, off, err) -> $elfError $ err ++ " @" ++ show off
     Right (_, off, a) -> return (off, a)
 
 elfDecodeOrFail :: (Binary a, MonadCatch m) => BSL.ByteString -> m a
@@ -509,7 +509,7 @@ elfDecodeOrFail bs = snd <$> elfDecodeOrFail' bs
 elfDecodeAllOrFail :: (Binary a, MonadCatch m) => BSL.ByteString -> m a
 elfDecodeAllOrFail bs = do
     (off, a) <- elfDecodeOrFail' bs
-    if off == (BSL.length bs) then return a else elfError ("leftover != 0 @" ++ show off)
+    if off == (BSL.length bs) then return a else $elfError $ "leftover != 0 @" ++ show off
 
 parseListA :: (MonadCatch m, Binary (Le a), Binary (Be a)) => ElfData -> BSL.ByteString -> m [a]
 parseListA d bs = case d of

@@ -159,7 +159,7 @@ addRBuilders [] x = return x
 addRBuilders ts t@ElfRBuilderSegment{..} = do
     d <- addRBuildersToList ts erbpData
     return $ t{ erbpData = d }
-addRBuilders (x:_) y = elfError $ intersectMessage x y
+addRBuilders (x:_) y = $elfError $ intersectMessage x y
 
 addOneRBuilder :: MonadCatch m => ElfRBuilder b -> ElfRBuilder b -> m (ElfRBuilder b)
 addOneRBuilder c t = addRBuilders [c] t
@@ -180,7 +180,7 @@ addRBuilder t ts =
                     -- add this:     .........[t____].................................
                     -- or this:      .....[t___________]..............................
                     -- to this list: .....[c___________]......[___]......[________]...
-                    c'' <- addContext' $ addOneRBuilder t c
+                    c'' <- $addContext' $ addOneRBuilder t c
                     return $ foldInterval $ LZip l (Just c'') r
 
                 else if ti `INE.contains` ci then
@@ -191,7 +191,7 @@ addRBuilder t ts =
                             -- add this:     ......[t_______]......................................
                             -- or this:      ......[t__________________________]...................
                             -- to this list: ......[c__]......[l2__]...[l2__].....[________].......
-                            c'' <- addContext' $ addRBuilders (c : l2) t
+                            c'' <- $addContext' $ addRBuilders (c : l2) t
                             return $ foldInterval $ LZip l (Just c'') r2
 
                         Just c2 ->
@@ -201,25 +201,25 @@ addRBuilder t ts =
 
                                 -- add this:     ......[t______________________]........................
                                 -- to this list: ......[c_________]......[c2___]......[________]........
-                                c'' <- addContext' $ addRBuilders (c : l2 ++ [c2]) t
+                                c'' <- $addContext' $ addRBuilders (c : l2 ++ [c2]) t
                                 return $ foldInterval $ LZip l (Just c'') r2
                             else
 
                                 -- add this:     ......[t_________________].............................
                                 -- to this list: ......[c_________]......[c2___]......[________]........
-                                elfError $ intersectMessage t c2
+                                $elfError $ intersectMessage t c2
                 else
 
                     -- add this:     ..........[t________].............................
                     -- to this list: ......[c_________]......[_____]......[________]...
-                    elfError $ intersectMessage t c
+                    $elfError $ intersectMessage t c
 
             (Nothing, Nothing) -> do
 
                 -- add this:     ....[t___].........................................
                 -- or this:      ....[t_________________________]...................
                 -- to this list: .............[l2__]...[l2__].....[________]........
-                c'' <- addContext' $ addRBuilders l2 t
+                c'' <- $addContext' $ addRBuilders l2 t
                 return $ foldInterval $ LZip l (Just c'') r2
 
             (Nothing, Just c2) ->
@@ -229,14 +229,14 @@ addRBuilder t ts =
 
                     -- add this:     ....[t_________________________________]........
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
-                    c'' <- addContext' $ addRBuilders (l2 ++ [c2]) t
+                    c'' <- $addContext' $ addRBuilders (l2 ++ [c2]) t
                     return $ foldInterval $ LZip l (Just c'') r2
 
                 else
 
                     -- add this:     ....[t_______________________________]..........
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
-                    elfError $ intersectMessage t c2
+                    $elfError $ intersectMessage t c2
 
 dsection :: SingI a => (Word32, SectionXX a) -> Either (Word32, SectionXX a) (ElfRBuilder a)
 dsection (n, s) = case toNonEmpty $ sectionInterval s of
