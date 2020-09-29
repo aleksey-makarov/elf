@@ -127,7 +127,7 @@ findInterval f e list = findInterval' [] list
         findInterval' l []                            = LZip l Nothing []
         findInterval' l (x : xs) | INE.member e (f x) = LZip l (Just x) xs
         findInterval' l (x : xs) | e < INE.inf (f x)  = LZip l Nothing (x : xs)
-        findInterval' l (x : xs) | otherwise          = findInterval' xs (x : l)
+        findInterval' l (x : xs) | otherwise          = findInterval' (x : l) xs
 
 toNonEmpty :: Ord a => I.Interval a -> Maybe (INE.Interval a)
 toNonEmpty i | I.null i  = Nothing
