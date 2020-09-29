@@ -31,10 +31,12 @@ module Data.Elf
     , parseElf
     ) where
 
+import Data.Elf.Exception
 import Data.Elf.Generated
 import Data.Elf.Headers
 
 import Control.Monad
+import Control.Monad.Catch
 -- import Data.Bifunctor
 import Data.ByteString.Lazy as BSL
 import Data.Either
@@ -149,23 +151,20 @@ showERBList l = "[" ++ (L.concat $ L.intersperse ", " $ fmap showElfRBuilber l) 
 intersectMessage :: ElfRBuilder b -> ElfRBuilder b -> String
 intersectMessage x y = showElfRBuilber x ++ " and " ++ showElfRBuilber y ++ " intersect"
 
-addRBuildersToList :: [ElfRBuilder b] -> [ElfRBuilder b] -> Either String [ElfRBuilder b]
+addRBuildersToList :: MonadCatch m => [ElfRBuilder b] -> [ElfRBuilder b] -> m [ElfRBuilder b]
 addRBuildersToList newts l = foldM (flip addRBuilder) l newts
 
-addRBuilders :: [ElfRBuilder b] -> ElfRBuilder b -> Either String (ElfRBuilder b)
-addRBuilders [] x = Right x
+addRBuilders :: MonadCatch m => [ElfRBuilder b] -> ElfRBuilder b -> m (ElfRBuilder b)
+addRBuilders [] x = return x
 addRBuilders ts t@ElfRBuilderSegment{..} = do
     d <- addRBuildersToList ts erbpData
     return $ t{ erbpData = d }
-addRBuilders (x:_) y = Left $ intersectMessage x y ++ " @1"
+addRBuilders (x:_) y = elfError $ intersectMessage x y
 
-addOneRBuilder :: ElfRBuilder b -> ElfRBuilder b -> Either String (ElfRBuilder b)
+addOneRBuilder :: MonadCatch m => ElfRBuilder b -> ElfRBuilder b -> m (ElfRBuilder b)
 addOneRBuilder c t = addRBuilders [c] t
 
-addErrorContext :: String -> Either String a -> Either String a
-addErrorContext c = let f s = Left $ s ++ " / " ++ c in either f Right
-
-addRBuilder :: ElfRBuilder b -> [ElfRBuilder b] -> Either String [ElfRBuilder b]
+addRBuilder :: MonadCatch m => ElfRBuilder b -> [ElfRBuilder b] -> m [ElfRBuilder b]
 addRBuilder t ts =
     let
         (LZip l  c'  r ) = findInterval Data.Elf.interval (INE.inf ti) ts
@@ -181,7 +180,7 @@ addRBuilder t ts =
                     -- add this:     .........[t____].................................
                     -- or this:      .....[t___________]..............................
                     -- to this list: .....[c___________]......[___]......[________]...
-                    c'' <- addErrorContext "@2" $ addOneRBuilder t c
+                    c'' <- addContext' $ addOneRBuilder t c
                     return $ foldInterval $ LZip l (Just c'') r
 
                 else if ti `INE.contains` ci then
@@ -192,7 +191,7 @@ addRBuilder t ts =
                             -- add this:     ......[t_______]......................................
                             -- or this:      ......[t__________________________]...................
                             -- to this list: ......[c__]......[l2__]...[l2__].....[________].......
-                            c'' <- addErrorContext "@3" $ addRBuilders (c : l2) t
+                            c'' <- addContext' $ addRBuilders (c : l2) t
                             return $ foldInterval $ LZip l (Just c'') r2
 
                         Just c2 ->
@@ -202,25 +201,25 @@ addRBuilder t ts =
 
                                 -- add this:     ......[t______________________]........................
                                 -- to this list: ......[c_________]......[c2___]......[________]........
-                                c'' <- addErrorContext "@4'" $ addRBuilders (c : l2 ++ [c2]) t
+                                c'' <- addContext' $ addRBuilders (c : l2 ++ [c2]) t
                                 return $ foldInterval $ LZip l (Just c'') r2
                             else
 
                                 -- add this:     ......[t_________________].............................
                                 -- to this list: ......[c_________]......[c2___]......[________]........
-                                Left $ intersectMessage t c2 ++ " @4"
+                                elfError $ intersectMessage t c2
                 else
 
                     -- add this:     ..........[t________].............................
                     -- to this list: ......[c_________]......[_____]......[________]...
-                    Left $ intersectMessage t c ++ " @5"
+                    elfError $ intersectMessage t c
 
             (Nothing, Nothing) -> do
 
                 -- add this:     ....[t___].........................................
                 -- or this:      ....[t_________________________]...................
                 -- to this list: .............[l2__]...[l2__].....[________]........
-                c'' <- addErrorContext "@6" $ addRBuilders l2 t
+                c'' <- addContext' $ addRBuilders l2 t
                 return $ foldInterval $ LZip l (Just c'') r2
 
             (Nothing, Just c2) ->
@@ -230,14 +229,14 @@ addRBuilder t ts =
 
                     -- add this:     ....[t_________________________________]........
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
-                    c'' <- addErrorContext "@7" $ addRBuilders (l2 ++ [c2]) t
+                    c'' <- addContext' $ addRBuilders (l2 ++ [c2]) t
                     return $ foldInterval $ LZip l (Just c'') r2
 
                 else
 
                     -- add this:     ....[t_______________________________]..........
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
-                    Left $ intersectMessage t c2 ++ " @8"
+                    elfError $ intersectMessage t c2
 
 dsection :: SingI a => (Word32, SectionXX a) -> Either (Word32, SectionXX a) (ElfRBuilder a)
 dsection (n, s) = case toNonEmpty $ sectionInterval s of
@@ -258,7 +257,7 @@ mapRBuilderToElf bs l = fmap f l
         f ElfRBuilderSectionTable{..} = ElfSectionTable
         f ElfRBuilderSegmentTable{..} = ElfSegmentTable
 
-parseElf' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 ElfList))
+parseElf' :: (MonadCatch m, SingI a) => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
 parseElf' hdr ss ps bs = do
 
     let
@@ -280,7 +279,7 @@ parseElf' hdr ss ps bs = do
 
     return $ sing :&: ElfList (mapRBuilderToElf bs all)
 
-parseElf :: BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 ElfList))
+parseElf :: MonadCatch m => BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
 parseElf bs = do
     classS :&: HeadersXX (hdr, ss, ps) <- parseHeaders bs
     withSingI classS $ parseElf' hdr ss ps bs

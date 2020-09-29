@@ -132,14 +132,14 @@ printHeadersFile :: FilePath -> IO (Doc ())
 printHeadersFile path = do
     bs <- fromStrict <$> BS.readFile path
     case parseHeaders bs of
-        Left err -> assertFailure err
+        Left err -> assertFailure $ show err
         Right hs -> return $ printHeaders hs
 
 printElfFile :: FilePath -> IO (Doc ())
 printElfFile path = do
     bs <- fromStrict <$> BS.readFile path
     case parseElf bs of
-        Left err -> assertFailure err
+        Left err -> assertFailure $ show err
         Right e -> return $ printElf e
 
 main :: IO ()

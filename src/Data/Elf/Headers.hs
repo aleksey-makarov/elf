@@ -56,6 +56,7 @@ module Data.Elf.Headers
 -- import Control.Lens hiding (at)
 -- import Control.Arrow
 import Control.Monad
+import Control.Monad.Catch
 -- import Control.Monad.State hiding (get, put)
 -- import qualified Control.Monad.State as S
 import Data.Binary
@@ -74,6 +75,7 @@ import Data.Singletons.TH
 
 -- https://stackoverflow.com/questions/10672981/export-template-haskell-generated-definitions
 
+import Data.Elf.Exception
 import Data.Elf.Generated
 
 $(singletons [d|
@@ -496,20 +498,17 @@ instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
 newtype HeadersXX a = HeadersXX (HeaderXX a, [SectionXX a], [SegmentXX a])
 -- type ElfHeadersXX a = (HeaderXX a, SectionXX a, SegmentXX a)
 
-parseListA :: (Binary (Le a), Binary (Be a)) => ElfData -> BSL.ByteString -> Either String [a]
-parseListA d bs =
-    let
-        failf (_, off, err) = Left (err ++ " @" ++ show off)
-        okf (_, off, a) = if off == (BSL.length bs) then Right a else Left $ ("leftover != 0 @" ++ show off)
-        mapDecodeResult f = either Left mapDecodeResultR
-            where
-                mapDecodeResultR (unconsumed, off, a) = Right (unconsumed, off, f a)
-    in
-        either failf okf $ case d of
-            ELFDATA2LSB -> mapDecodeResult (fmap fromLe . fromBList) $ decodeOrFail bs
-            ELFDATA2MSB -> mapDecodeResult (fmap fromBe . fromBList) $ decodeOrFail bs
+elfDecodeOrFail :: (Binary a, MonadCatch m) => BSL.ByteString -> m a
+elfDecodeOrFail bs = case decodeOrFail bs of
+    Left (_, off, err) -> elfError (err ++ " @" ++ show off)
+    Right (_, off, a) -> if off == (BSL.length bs) then return a else elfError ("leftover != 0 @" ++ show off)
 
-parseHeaders' :: Sing a -> HeaderXX a -> BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 HeadersXX))
+parseListA :: (MonadCatch m, Binary (Le a), Binary (Be a)) => ElfData -> BSL.ByteString -> m [a]
+parseListA d bs = case d of
+    ELFDATA2LSB -> fmap fromLe <$> fromBList <$> elfDecodeOrFail bs
+    ELFDATA2MSB -> fmap fromBe <$> fromBList <$> elfDecodeOrFail bs
+
+parseHeaders' :: MonadCatch m => Sing a -> HeaderXX a -> BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
 parseHeaders' classS hxx@HeaderXX{..} bs =
     let
         takeLen off len = BSL.take len $ BSL.drop off bs
@@ -520,7 +519,7 @@ parseHeaders' classS hxx@HeaderXX{..} bs =
         ps <- withSingI classS $ parseListA hData bsSegments
         return $ classS :&: HeadersXX (hxx, ss, ps)
 
-parseHeaders :: BSL.ByteString -> Either String (Sigma ElfClass (TyCon1 HeadersXX))
+parseHeaders :: MonadCatch m => BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
 parseHeaders bs = case decodeOrFail bs of
-    Left (_, off, err) -> Left (err ++ " @" ++ show off)
+    Left (_, off, err) -> elfError (err ++ " @" ++ show off)
     Right (_, _, (classS :&: hxx) :: Header) -> parseHeaders' classS hxx bs
