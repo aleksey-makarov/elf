@@ -159,6 +159,12 @@ addRBuilders ts t@ElfRBuilderSegment{..} = do
     return $ t{ erbpData = d }
 addRBuilders (x:_) y = Left $ intersectMessage x y ++ " @1"
 
+addOneRBuilder :: ElfRBuilder b -> ElfRBuilder b -> Either String (ElfRBuilder b)
+addOneRBuilder c t = addRBuilders [c] t
+
+addErrorContext :: String -> Either String a -> Either String a
+addErrorContext c = let f s = Left $ s ++ " / " ++ c in either f Right
+
 addRBuilder :: ElfRBuilder b -> [ElfRBuilder b] -> Either String [ElfRBuilder b]
 addRBuilder t ts =
     let
@@ -173,8 +179,9 @@ addRBuilder t ts =
                 in if ci `INE.contains` ti then do
 
                     -- add this:     .........[t____].................................
+                    -- or this:      .....[t___________]..............................
                     -- to this list: .....[c___________]......[___]......[________]...
-                    c'' <- addRBuilders [t] c
+                    c'' <- addErrorContext "@2" $ addOneRBuilder t c
                     return $ foldInterval $ LZip l (Just c'') r
 
                 else if ti `INE.contains` ci then
@@ -185,26 +192,35 @@ addRBuilder t ts =
                             -- add this:     ......[t_______]......................................
                             -- or this:      ......[t__________________________]...................
                             -- to this list: ......[c__]......[l2__]...[l2__].....[________].......
-                            c'' <- addRBuilders (c : l2) t
+                            c'' <- addErrorContext "@3" $ addRBuilders (c : l2) t
                             return $ foldInterval $ LZip l (Just c'') r2
 
                         Just c2 ->
+                            let
+                                c2i = Data.Elf.interval c2
+                            in if ti `INE.contains` c2i then do
 
-                            -- add this:     ......[t_________________].............................
-                            -- to this list: ......[c_________]......[c2___]......[________]........
-                            Left $ intersectMessage t c2 ++ " @2"
+                                -- add this:     ......[t______________________]........................
+                                -- to this list: ......[c_________]......[c2___]......[________]........
+                                c'' <- addErrorContext "@4'" $ addRBuilders (c : l2 ++ [c2]) t
+                                return $ foldInterval $ LZip l (Just c'') r2
+                            else
+
+                                -- add this:     ......[t_________________].............................
+                                -- to this list: ......[c_________]......[c2___]......[________]........
+                                Left $ intersectMessage t c2 ++ " @4"
                 else
 
                     -- add this:     ..........[t________].............................
                     -- to this list: ......[c_________]......[_____]......[________]...
-                    Left $ intersectMessage t c ++ " @3"
+                    Left $ intersectMessage t c ++ " @5"
 
             (Nothing, Nothing) -> do
 
                 -- add this:     ....[t___].........................................
                 -- or this:      ....[t_________________________]...................
                 -- to this list: .............[l2__]...[l2__].....[________]........
-                c'' <- addRBuilders l2 t
+                c'' <- addErrorContext "@6" $ addRBuilders l2 t
                 return $ foldInterval $ LZip l (Just c'') r2
 
             (Nothing, Just c2) ->
@@ -214,14 +230,14 @@ addRBuilder t ts =
 
                     -- add this:     ....[t_________________________________]........
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
-                    c'' <- addRBuilders (l2 ++ [c2]) t
+                    c'' <- addErrorContext "@7" $ addRBuilders (l2 ++ [c2]) t
                     return $ foldInterval $ LZip l (Just c'') r2
 
                 else
 
                     -- add this:     ....[t_______________________________]..........
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
-                    Left $ intersectMessage t c2 ++ " @4"
+                    Left $ intersectMessage t c2 ++ " @8"
 
 dsection :: SingI a => (Word32, SectionXX a) -> Either (Word32, SectionXX a) (ElfRBuilder a)
 dsection (n, s) = case toNonEmpty $ sectionInterval s of
@@ -256,9 +272,9 @@ parseElf' hdr ss ps bs = do
 
     all  <- addRBuilder header
         =<< maybe return addRBuilder maybeSectionTable
-        =<< maybe return addRBuilder maybeSegmentTable []
-        -- =<< addRBuildersToList segments
-        -- =<< addRBuildersToList sections []
+        =<< maybe return addRBuilder maybeSegmentTable
+        =<< addRBuildersToList segments
+        =<< addRBuildersToList sections []
 
     -- FIXME: _emptySections, _emptySegments
 
