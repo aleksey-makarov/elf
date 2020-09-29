@@ -162,7 +162,13 @@ addRBuilders ts t@ElfRBuilderSegment{..} = do
 addRBuilders (x:_) y = $elfError $ intersectMessage x y
 
 addOneRBuilder :: MonadCatch m => ElfRBuilder b -> ElfRBuilder b -> m (ElfRBuilder b)
-addOneRBuilder c t = addRBuilders [c] t
+addOneRBuilder t@ElfRBuilderSegment{..} c | Data.Elf.interval t == Data.Elf.interval c = do
+    d <- addRBuilder c erbpData
+    return $ t{ erbpData = d }
+addOneRBuilder t c@ElfRBuilderSegment{..} = do
+    d <- addRBuilder t erbpData
+    return $ c{ erbpData = d }
+addOneRBuilder t c = $elfError $ intersectMessage t c
 
 addRBuilder :: MonadCatch m => ElfRBuilder b -> [ElfRBuilder b] -> m [ElfRBuilder b]
 addRBuilder t ts =
@@ -188,8 +194,7 @@ addRBuilder t ts =
 
                         Nothing -> do
 
-                            -- add this:     ......[t_______]......................................
-                            -- or this:      ......[t__________________________]...................
+                            -- add this:     ......[t__________________________]...................
                             -- to this list: ......[c__]......[l2__]...[l2__].....[________].......
                             c'' <- $addContext' $ addRBuilders (c : l2) t
                             return $ foldInterval $ LZip l (Just c'') r2
