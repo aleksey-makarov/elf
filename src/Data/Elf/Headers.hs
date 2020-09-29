@@ -498,28 +498,36 @@ instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
 newtype HeadersXX a = HeadersXX (HeaderXX a, [SectionXX a], [SegmentXX a])
 -- type ElfHeadersXX a = (HeaderXX a, SectionXX a, SegmentXX a)
 
-elfDecodeOrFail :: (Binary a, MonadCatch m) => BSL.ByteString -> m a
-elfDecodeOrFail bs = case decodeOrFail bs of
+elfDecodeOrFail' :: (Binary a, MonadCatch m) => BSL.ByteString -> m (ByteOffset, a)
+elfDecodeOrFail' bs = case decodeOrFail bs of
     Left (_, off, err) -> elfError (err ++ " @" ++ show off)
-    Right (_, off, a) -> if off == (BSL.length bs) then return a else elfError ("leftover != 0 @" ++ show off)
+    Right (_, off, a) -> return (off, a)
+
+elfDecodeOrFail :: (Binary a, MonadCatch m) => BSL.ByteString -> m a
+elfDecodeOrFail bs = snd <$> elfDecodeOrFail' bs
+
+elfDecodeAllOrFail :: (Binary a, MonadCatch m) => BSL.ByteString -> m a
+elfDecodeAllOrFail bs = do
+    (off, a) <- elfDecodeOrFail' bs
+    if off == (BSL.length bs) then return a else elfError ("leftover != 0 @" ++ show off)
 
 parseListA :: (MonadCatch m, Binary (Le a), Binary (Be a)) => ElfData -> BSL.ByteString -> m [a]
 parseListA d bs = case d of
-    ELFDATA2LSB -> fmap fromLe <$> fromBList <$> elfDecodeOrFail bs
-    ELFDATA2MSB -> fmap fromBe <$> fromBList <$> elfDecodeOrFail bs
+    ELFDATA2LSB -> fmap fromLe <$> fromBList <$> elfDecodeAllOrFail bs
+    ELFDATA2MSB -> fmap fromBe <$> fromBList <$> elfDecodeAllOrFail bs
 
-parseHeaders' :: MonadCatch m => Sing a -> HeaderXX a -> BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
-parseHeaders' classS hxx@HeaderXX{..} bs =
+parseHeaders' :: (SingI a, MonadCatch m) => HeaderXX a -> BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
+parseHeaders' hxx@HeaderXX{..} bs =
     let
         takeLen off len = BSL.take len $ BSL.drop off bs
-        bsSections = takeLen (wxxToIntegralS classS hShOff) (fromIntegral hShEntSize * fromIntegral hShNum)
-        bsSegments = takeLen (wxxToIntegralS classS hPhOff) (fromIntegral hPhEntSize * fromIntegral hPhNum)
+        bsSections = takeLen (wxxToIntegral hShOff) (fromIntegral hShEntSize * fromIntegral hShNum)
+        bsSegments = takeLen (wxxToIntegral hPhOff) (fromIntegral hPhEntSize * fromIntegral hPhNum)
     in do
-        ss <- withSingI classS $ parseListA hData bsSections
-        ps <- withSingI classS $ parseListA hData bsSegments
-        return $ classS :&: HeadersXX (hxx, ss, ps)
+        ss <- parseListA hData bsSections
+        ps <- parseListA hData bsSegments
+        return $ sing :&: HeadersXX (hxx, ss, ps)
 
 parseHeaders :: MonadCatch m => BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
-parseHeaders bs = case decodeOrFail bs of
-    Left (_, off, err) -> elfError (err ++ " @" ++ show off)
-    Right (_, _, (classS :&: hxx) :: Header) -> parseHeaders' classS hxx bs
+parseHeaders bs = do
+    ((classS :&: hxx) :: Header) <- elfDecodeOrFail bs
+    withSingI classS $ parseHeaders' hxx bs
