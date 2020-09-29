@@ -47,22 +47,6 @@ import Data.Word
 import Numeric.Interval as I
 import Numeric.Interval.NonEmpty as INE
 
-data Elf (c :: ElfClass)
-    = ElfHeader
-        { eHeader :: HeaderXX c
-        }
-    | ElfSection
-        { esN      :: Word32
-        }
-    | ElfSegment
-        { epN      :: Word32
-        , epData   :: [Elf c]
-        }
-    | ElfSectionTable
-    | ElfSegmentTable
-
-newtype ElfList c = ElfList [Elf c]
-
 data ElfRBuilder (c :: ElfClass)
     = ElfRBuilderHeader
         { erbhHeader :: HeaderXX c
@@ -253,10 +237,66 @@ dsegment (n, s) = case toNonEmpty $ segmentInterval s of
     Nothing -> Left (n, s)
     Just i -> Right $ ElfRBuilderSegment s n [] i
 
+
+--    = ElfRBuilderHeader
+--        { erbhHeader :: HeaderXX c
+--        , interval   :: INE.Interval Word64
+--        }
+
+-- data HeaderXX (c :: ElfClass) =
+--     HeaderXX
+--         { hData       :: ElfData
+--         , hOSABI      :: ElfOSABI
+--         , hABIVersion :: Word8
+--         , hType       :: ElfType
+--         , hMachine    :: ElfMachine
+--         , hEntry      :: WXX c
+--         , hFlags      :: Word32
+--                      , hPhOff      :: WXX c
+--                      , hShOff      :: WXX c
+--                      , hPhEntSize  :: Word16
+--                      , hPhNum      :: Word16
+--                      , hShEntSize  :: Word16
+--                      , hShNum      :: Word16
+--                      , hShStrNdx   :: Word16 -- FIXME
+--         }
+
+data Elf (c :: ElfClass)
+    = ElfHeader
+        { ehData       :: ElfData
+        , ehOSABI      :: ElfOSABI
+        , ehABIVersion :: Word8
+        , ehType       :: ElfType
+        , ehMachine    :: ElfMachine
+        , ehEntry      :: WXX c
+        , ehFlags      :: Word32
+        }
+    | ElfSection
+        { esN      :: Word32
+        }
+    | ElfSegment
+        { epN      :: Word32
+        , epData   :: [Elf c]
+        }
+    | ElfSectionTable
+    | ElfSegmentTable
+
+newtype ElfList c = ElfList [Elf c]
+
 mapRBuilderToElf :: SingI a => BSL.ByteString -> [ElfRBuilder a] -> [Elf a]
 mapRBuilderToElf bs l = fmap f l
     where
-        f ElfRBuilderHeader{..}       = ElfHeader erbhHeader
+        f ElfRBuilderHeader{ erbhHeader = HeaderXX{..}, .. } =
+            let
+                ehData       = hData
+                ehOSABI      = hOSABI
+                ehABIVersion = hABIVersion
+                ehType       = hType
+                ehMachine    = hMachine
+                ehEntry      = hEntry
+                ehFlags      = hFlags
+            in
+                ElfHeader{..}
         f ElfRBuilderSection{..}      = ElfSection erbsN
         f ElfRBuilderSegment{..}      = ElfSegment erbpN $ mapRBuilderToElf bs erbpData
         f ElfRBuilderSectionTable{..} = ElfSectionTable
