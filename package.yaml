@@ -27,6 +27,7 @@ library:
     - base >= 2 && < 5
     - bytestring
     - binary
+    - exceptions
     - intervals
     - lens
     - prettyprinter
@@ -41,6 +42,7 @@ library:
     - Data.Elf
     - Data.Elf.Headers
     - Data.Elf.Doc
+    - Data.Elf.Exception
 
 tests:
 #  tests:
