@@ -34,6 +34,8 @@ module Data.Elf
 import Data.Elf.Generated
 import Data.Elf.Headers
 
+import System.IO.Unsafe -- FIXME
+
 import Control.Monad
 -- import Data.Bifunctor
 import Data.ByteString.Lazy as BSL
@@ -161,16 +163,18 @@ addRBuilders (x:_) y = Left $ intersectMessage x y ++ " @1"
 
 addRBuilder :: ElfRBuilder b -> [ElfRBuilder b] -> Either String [ElfRBuilder b]
 addRBuilder t ts =
+    (unsafePerformIO $ Prelude.putStrLn $ "t: " ++ showElfRBuilber t ++ "; ts: " ++ showERBList ts) `seq`
     let
         (LZip l  c'  r ) = findInterval Data.Elf.interval (INE.inf ti) ts
         (LZip l2 c2' r2) = findInterval Data.Elf.interval (INE.sup ti) r
         ti = Data.Elf.interval t
     in
+        (unsafePerformIO $ Prelude.putStrLn $ "t: " ++ showElfRBuilber t ++ "; ts: " ++ showERBList ts) `seq`
         case (c', c2') of
             (Just c, _)  ->
                 let
                     ci = Data.Elf.interval c
-                in if ci `INE.contains` ti then do
+                in if ci `INE.contains` ti then (unsafePerformIO $ Prelude.putStrLn $ "@1 " ++ showElfRBuilber t) `seq` do
 
                     -- add this:     .........[t____].................................
                     -- to this list: .....[c___________]......[___]......[________]...
@@ -180,7 +184,7 @@ addRBuilder t ts =
                 else if ti `INE.contains` ci then
                     case c2' of
 
-                        Nothing -> do
+                        Nothing -> (unsafePerformIO $ Prelude.putStrLn $ "@2 " ++ showElfRBuilber t) `seq` do
 
                             -- add this:     ......[t_______]......................................
                             -- or this:      ......[t__________________________]...................
@@ -199,7 +203,7 @@ addRBuilder t ts =
                     -- to this list: ......[c_________]......[_____]......[________]...
                     Left $ intersectMessage t c ++ " @3"
 
-            (Nothing, Nothing) -> do
+            (Nothing, Nothing) -> (unsafePerformIO $ Prelude.putStrLn $ "@3 " ++ showElfRBuilber t) `seq` do
 
                 -- add this:     ....[t___].........................................
                 -- or this:      ....[t_________________________]...................
@@ -210,7 +214,7 @@ addRBuilder t ts =
             (Nothing, Just c2) ->
                 let
                     c2i = Data.Elf.interval c2
-                in if ti `INE.contains` c2i then do
+                in if ti `INE.contains` c2i then (unsafePerformIO $ Prelude.putStrLn $ "@4 " ++ showElfRBuilber t) `seq` do
 
                     -- add this:     ....[t_________________________________]........
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
