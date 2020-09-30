@@ -153,13 +153,13 @@ printElf'' ElfSegment{..} =
         , ("PhysAddr",   printWXX epPhysAddr  )
         , ("MemSize",    printWXX epMemSize   )
         , ("Align",      printWXX epAlign     )
-        , ("Data",       printElf' epData     )
+        , ("Data",       line <> (indent 4 $ printElf' epData) )
     ]
 printElf'' ElfSectionTable = "section table"
 printElf'' ElfSegmentTable = "segment table"
 
 printElf' :: SingI a => [Elf a] -> Doc ()
-printElf' l = formatList $ fmap printElf'' l
+printElf' l = align . vsep $ fmap printElf'' l
 
 printElf :: Sigma ElfClass (TyCon1 ElfList) -> Doc ()
 printElf (classS :&: ElfList ls) = withSingI classS $ printElf' ls
