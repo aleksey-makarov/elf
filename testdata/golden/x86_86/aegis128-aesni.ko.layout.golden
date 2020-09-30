@@ -1,0 +1,78 @@
+sections:
+	- 0  
+	- 1  .note.gnu.build-id
+	- 2  .note.Linux
+	- 3  .text
+	- 4  .rela.text
+	- 5  .init.text
+	- 6  .rela.init.text
+	- 7  .exit.text
+	- 8  .rela.exit.text
+	- 9  .rodata
+	- 10 .rela.rodata
+	- 11 .rodata.cst16.aegis128_const
+	- 12 .rodata.cst16.aegis128_counter
+	- 13 __mcount_loc
+	- 14 .rela__mcount_loc
+	- 15 .modinfo
+	- 16 .data
+	- 17 .rela.data
+	- 18 .gnu.linkonce.this_module
+	- 19 .rela.gnu.linkonce.this_module
+	- 20 .bss
+	- 21 .comment
+	- 22 .note.GNU-stack
+	- 23 .symtab
+	- 24 .strtab
+	- 25 .shstrtab
+segments:
+┎ 0000000000000000 H ELF Header
+┖ 000000000000003f H
+┌ 0000000000000040 S 1 name: ".note.gnu.build-id"; type: SHT_NOTE; flags: [SHF_ALLOC]
+└ 0000000000000063 S 1
+┌ 0000000000000064 S 2 name: ".note.Linux"; type: SHT_NOTE; flags: [SHF_ALLOC]
+└ 000000000000007b S 2
+┌ 0000000000000080 S 3 name: ".text"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
+└ 00000000000016cf S 3
+┌ 00000000000016d0 S 5 name: ".init.text"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
+└ 000000000000170f S 5
+┌ 0000000000001710 S 7 name: ".exit.text"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
+└ 0000000000001727 S 7
+┌ 0000000000001730 S 9 name: ".rodata"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+└ 0000000000001777 S 9
+┌ 0000000000001780 S 11 name: ".rodata.cst16.aegis128_const"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXT 16]
+└ 000000000000179f S 11
+┌ 00000000000017a0 S 12 name: ".rodata.cst16.aegis128_counter"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXT 16]
+└ 00000000000017af S 12
+┌ 00000000000017b0 S 13 name: "__mcount_loc"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+└ 00000000000017ef S 13
+┌ 00000000000017f0 S 15 name: ".modinfo"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+└ 0000000000001950 S 15
+┌ 0000000000001960 S 16 name: ".data"; type: SHT_PROGBITS; flags: [SHF_WRITE,SHF_ALLOC]
+└ 0000000000001b1f S 16
+┌ 0000000000001b40 S 18 name: ".gnu.linkonce.this_module"; type: SHT_PROGBITS; flags: [SHF_WRITE,SHF_ALLOC]
+└ 0000000000001ebf S 18
+┌ 0000000000001ec0 S 21 name: ".comment"; type: SHT_PROGBITS; flags: [SHF_EXT 16,SHF_EXT 32]
+└ 0000000000001ee5 S 21
+┌ 0000000000001ee8 S 23 name: ".symtab"; type: SHT_SYMTAB; flags: []
+└ 000000000000267f S 23
+┌ 0000000000002680 S 24 name: ".strtab"; type: SHT_STRTAB; flags: []
+└ 0000000000002c09 S 24
+┌ 0000000000002c10 S 4 name: ".rela.text"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 0000000000002fb7 S 4
+┌ 0000000000002fb8 S 6 name: ".rela.init.text"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 0000000000003047 S 6
+┌ 0000000000003048 S 8 name: ".rela.exit.text"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 000000000000308f S 8
+┌ 0000000000003090 S 10 name: ".rela.rodata"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 000000000000311f S 10
+┌ 0000000000003120 S 14 name: ".rela__mcount_loc"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 00000000000031df S 14
+┌ 00000000000031e0 S 17 name: ".rela.data"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 0000000000003287 S 17
+┌ 0000000000003288 S 19 name: ".rela.gnu.linkonce.this_module"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 00000000000032b7 S 19
+┌ 00000000000032b8 S 25 name: ".shstrtab"; type: SHT_STRTAB; flags: []
+└ 00000000000033c8 S 25
+┎ 00000000000033d0 H Section table
+┖ 0000000000003a4f H

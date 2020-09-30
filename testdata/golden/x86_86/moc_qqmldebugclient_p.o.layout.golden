@@ -1,0 +1,76 @@
+sections:
+	- 0  
+	- 1  .group
+	- 2  .group
+	- 3  .group
+	- 4  .group
+	- 5  .text
+	- 6  .rela.text
+	- 7  .data
+	- 8  .bss
+	- 9  .qtversion
+	- 10 .rela.qtversion
+	- 11 .rodata._ZTS15QQmlDebugClient
+	- 12 .data.rel.ro._ZTI15QQmlDebugClient
+	- 13 .rela.data.rel.ro._ZTI15QQmlDebugClient
+	- 14 .data.rel.ro._ZTV15QQmlDebugClient
+	- 15 .rela.data.rel.ro._ZTV15QQmlDebugClient
+	- 16 .data.rel.ro
+	- 17 .rela.data.rel.ro
+	- 18 .rodata
+	- 19 .comment
+	- 20 .note.GNU-stack
+	- 21 .eh_frame
+	- 22 .rela.eh_frame
+	- 23 .symtab
+	- 24 .strtab
+	- 25 .shstrtab
+segments:
+┎ 0000000000000000 H ELF Header
+┖ 000000000000003f H
+┌ 0000000000000040 S 1 name: ".group"; type: SHT_EXT 17; flags: []
+└ 000000000000004b S 1
+┌ 000000000000004c S 2 name: ".group"; type: SHT_EXT 17; flags: []
+└ 0000000000000053 S 2
+┌ 0000000000000054 S 3 name: ".group"; type: SHT_EXT 17; flags: []
+└ 000000000000005f S 3
+┌ 0000000000000060 S 4 name: ".group"; type: SHT_EXT 17; flags: []
+└ 000000000000006b S 4
+┌ 0000000000000070 S 5 name: ".text"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
+└ 000000000000025c S 5
+┌ 0000000000000260 S 9 name: ".qtversion"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXT 512]
+└ 000000000000026f S 9
+┌ 0000000000000270 S 11 name: ".rodata._ZTS15QQmlDebugClient"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXT 512]
+└ 0000000000000281 S 11
+┌ 0000000000000288 S 12 name: ".data.rel.ro._ZTI15QQmlDebugClient"; type: SHT_PROGBITS; flags: [SHF_WRITE,SHF_ALLOC,SHF_EXT 512]
+└ 000000000000029f S 12
+┌ 00000000000002a0 S 14 name: ".data.rel.ro._ZTV15QQmlDebugClient"; type: SHT_PROGBITS; flags: [SHF_WRITE,SHF_ALLOC,SHF_EXT 512]
+└ 0000000000000317 S 14
+┌ 0000000000000320 S 16 name: ".data.rel.ro"; type: SHT_PROGBITS; flags: [SHF_WRITE,SHF_ALLOC]
+└ 000000000000034f S 16
+┌ 0000000000000360 S 18 name: ".rodata"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+└ 0000000000000467 S 18
+┌ 0000000000000468 S 19 name: ".comment"; type: SHT_PROGBITS; flags: [SHF_EXT 16,SHF_EXT 32]
+└ 0000000000000488 S 19
+┌ 0000000000000490 S 21 name: ".eh_frame"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+└ 0000000000000577 S 21
+┌ 0000000000000578 S 23 name: ".symtab"; type: SHT_SYMTAB; flags: []
+└ 0000000000000a27 S 23
+┌ 0000000000000a28 S 24 name: ".strtab"; type: SHT_STRTAB; flags: []
+└ 0000000000000ed0 S 24
+┌ 0000000000000ed8 S 6 name: ".rela.text"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 000000000000100f S 6
+┌ 0000000000001010 S 10 name: ".rela.qtversion"; type: SHT_RELA; flags: [SHF_EXT 64,SHF_EXT 512]
+└ 0000000000001027 S 10
+┌ 0000000000001028 S 13 name: ".rela.data.rel.ro._ZTI15QQmlDebugClient"; type: SHT_RELA; flags: [SHF_EXT 64,SHF_EXT 512]
+└ 000000000000106f S 13
+┌ 0000000000001070 S 15 name: ".rela.data.rel.ro._ZTV15QQmlDebugClient"; type: SHT_RELA; flags: [SHF_EXT 64,SHF_EXT 512]
+└ 00000000000011bf S 15
+┌ 00000000000011c0 S 17 name: ".rela.data.rel.ro"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 000000000000121f S 17
+┌ 0000000000001220 S 22 name: ".rela.eh_frame"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 00000000000012af S 22
+┌ 00000000000012b0 S 25 name: ".shstrtab"; type: SHT_STRTAB; flags: []
+└ 00000000000013a7 S 25
+┎ 00000000000013a8 H Section table
+┖ 0000000000001a27 H

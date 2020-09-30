@@ -1,0 +1,926 @@
+Class:     ELFCLASS64
+Data:      ELFDATA2LSB
+Version:   1
+OSABI:     ELFOSABI_SYSV
+ABIVersion: 0
+Type:      ET_REL
+Machine:   EM_X86_64
+Entry:     0x0
+Sections:  - Name:      ""
+             Type:      SHT_NULL
+             Flags:     
+             Addr:      0x0
+             Size:      0
+             Link:      0
+             Info:      0
+             AddrAlign: 0
+             EntSize:   0
+             Data:      
+           - Name:      ".group"
+             Type:      SHT_EXT 17
+             Flags:     
+             Addr:      0x0
+             Size:      12
+             Link:      23
+             Info:      21
+             AddrAlign: 4
+             EntSize:   4
+             Data:      01 00 00 00 09 00 00 00 0a 00 00 00             # ............
+           - Name:      ".group"
+             Type:      SHT_EXT 17
+             Flags:     
+             Addr:      0x0
+             Size:      8
+             Link:      23
+             Info:      34
+             AddrAlign: 4
+             EntSize:   4
+             Data:      01 00 00 00 0b 00 00 00                         # ........
+           - Name:      ".group"
+             Type:      SHT_EXT 17
+             Flags:     
+             Addr:      0x0
+             Size:      12
+             Link:      23
+             Info:      35
+             AddrAlign: 4
+             EntSize:   4
+             Data:      01 00 00 00 0c 00 00 00 0d 00 00 00             # ............
+           - Name:      ".group"
+             Type:      SHT_EXT 17
+             Flags:     
+             Addr:      0x0
+             Size:      12
+             Link:      23
+             Info:      38
+             AddrAlign: 4
+             EntSize:   4
+             Data:      01 00 00 00 0e 00 00 00 0f 00 00 00             # ............
+           - Name:      ".text"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_ALLOC
+                        - SHF_EXECINSTR
+             Addr:      0x0
+             Size:      493
+             Link:      0
+             Info:      0
+             AddrAlign: 16
+             EntSize:   0
+             Data:      48 8b 7f 08 48 83 7f 28 00 74 0d ff 25 00 00 00 # H...H..(.t..%...
+                        00 0f 1f 80 00 00 00 00 48 8d 05 00 00 00 00 c3 # ........H.......
+                        48 83 ec 38 31 d2 89 74 24 0c 48 8d 4c 24 10 48 # H..81..t$.H.L$.H
+                        8d 35 00 00 00 00 64 48 8b 04 25 28 00 00 00 48 # .5....dH..%(...H
+                        89 44 24 28 31 c0 48 8d 44 24 0c 48 c7 44 24 10 # .D$(1.H.D$.H.D$.
+                        00 00 00 00 48 89 44 24 18 ff 15 00 00 00 00 48 # ....H.D$.......H
+                        8b 44 24 28 64 48 33 04 25 28 00 00 00 75 05 48 # .D$(dH3.%(...u.H
+                        83 c4 38 c3 ff 15 00 00 00 00 66 0f 1f 44 00 00 # ..8.......f..D..
+                        48 83 ec 38 31 d2 64 48 8b 04 25 28 00 00 00 48 # H..81.dH..%(...H
+                        89 44 24 28 31 c0 48 8b 46 08 48 8d 4c 24 10 48 # .D$(1.H.F.H.L$.H
+                        8d 35 00 00 00 00 8b 00 48 c7 44 24 10 00 00 00 # .5......H.D$....
+                        00 89 44 24 0c 48 8d 44 24 0c 48 89 44 24 18 ff # ..D$.H.D$.H.D$..
+                        15 00 00 00 00 48 8b 44 24 28 64 48 33 04 25 28 # .....H.D$(dH3.%(
+                        00 00 00 75 05 48 83 c4 38 c3 ff 15 00 00 00 00 # ...u.H..8.......
+                        85 f6 75 0c 85 d2 74 38 c3 0f 1f 80 00 00 00 00 # ..u...t8........
+                        83 fe 0a 75 f3 48 8b 41 08 48 8d 15 00 00 00 00 # ...u.H.A.H......
+                        48 39 10 75 e3 48 83 78 08 00 75 dc 48 8b 01 c7 # H9.u.H.x..u.H...
+                        00 00 00 00 00 c3 66 2e 0f 1f 84 00 00 00 00 00 # ......f.........
+                        48 89 ce e9 58 ff ff ff 0f 1f 84 00 00 00 00 00 # H...X...........
+                        48 85 f6 74 4b 41 54 49 89 fc 55 48 89 f5 48 8d # H..tKATI..UH..H.
+                        35 00 00 00 00 48 89 ef 48 83 ec 08 ff 15 00 00 # 5....H..H.......
+                        00 00 85 c0 75 12 48 83 c4 08 4c 89 e0 5d 41 5c # ....u.H...L..]A\
+                        c3 0f 1f 80 00 00 00 00 48 83 c4 08 48 89 ee 4c # ........H...H..L
+                        89 e7 5d 41 5c ff 25 00 00 00 00 0f 1f 44 00 00 # ..]A\.%......D..
+                        45 31 c0 4c 89 c0 c3 90 0f 1f 84 00 00 00 00 00 # E1.L............
+                        41 54 49 89 fc 55 48 89 cd 53 89 f3 48 83 ec 10 # ATI..UH..S..H...
+                        ff 15 00 00 00 00 85 c0 78 0b 85 db 75 12 85 c0 # ........x...u...
+                        74 26 83 e8 01 48 83 c4 10 5b 5d 41 5c c3 66 90 # t&...H...[]A\.f.
+                        83 fb 0c 75 f0 85 c0 75 e9 48 8b 55 00 c7 02 ff # ...u...u.H.U....
+                        ff ff ff eb dd 0f 1f 00 48 89 ee 4c 89 e7 89 44 # ........H..L...D
+                        24 0c e8 99 fe ff ff 8b 44 24 0c eb c5          # $.......D$...
+           - Name:      ".rela.text"
+             Type:      SHT_RELA
+             Flags:     - SHF_EXT 64
+             Addr:      0x0
+             Size:      312
+             Link:      23
+             Info:      5
+             AddrAlign: 8
+             EntSize:   24
+             Data:      0d 00 00 00 00 00 00 00 29 00 00 00 17 00 00 00 # ........).......
+                        fc ff ff ff ff ff ff ff 1b 00 00 00 00 00 00 00 # ................
+                        02 00 00 00 18 00 00 00 fc ff ff ff ff ff ff ff # ................
+                        32 00 00 00 00 00 00 00 02 00 00 00 18 00 00 00 # 2...............
+                        fc ff ff ff ff ff ff ff 5b 00 00 00 00 00 00 00 # ........[.......
+                        29 00 00 00 1a 00 00 00 fc ff ff ff ff ff ff ff # )...............
+                        76 00 00 00 00 00 00 00 29 00 00 00 1b 00 00 00 # v.......).......
+                        fc ff ff ff ff ff ff ff a2 00 00 00 00 00 00 00 # ................
+                        02 00 00 00 18 00 00 00 fc ff ff ff ff ff ff ff # ................
+                        c1 00 00 00 00 00 00 00 29 00 00 00 1a 00 00 00 # ........).......
+                        fc ff ff ff ff ff ff ff dc 00 00 00 00 00 00 00 # ................
+                        29 00 00 00 1b 00 00 00 fc ff ff ff ff ff ff ff # )...............
+                        fc 00 00 00 00 00 00 00 02 00 00 00 19 00 00 00 # ................
+                        fc ff ff ff ff ff ff ff 41 01 00 00 00 00 00 00 # ........A.......
+                        02 00 00 00 05 00 00 00 d4 00 00 00 00 00 00 00 # ................
+                        4e 01 00 00 00 00 00 00 29 00 00 00 1e 00 00 00 # N.......).......
+                        fc ff ff ff ff ff ff ff 77 01 00 00 00 00 00 00 # ........w.......
+                        29 00 00 00 1f 00 00 00 fc ff ff ff ff ff ff ff # )...............
+                        a2 01 00 00 00 00 00 00 29 00 00 00 21 00 00 00 # ........)...!...
+                        fc ff ff ff ff ff ff ff                         # ........
+           - Name:      ".data"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
+             Addr:      0x0
+             Size:      0
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      
+           - Name:      ".bss"
+             Type:      SHT_NOBITS
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
+             Addr:      0x0
+             Size:      0
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      
+           - Name:      ".qtversion"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_ALLOC
+                        - SHF_EXT 512
+             Addr:      0x0
+             Size:      16
+             Link:      0
+             Info:      0
+             AddrAlign: 8
+             EntSize:   0
+             Data:      00 00 00 00 00 00 00 00 02 0e 05 00 00 00 00 00 # ................
+           - Name:      ".rela.qtversion"
+             Type:      SHT_RELA
+             Flags:     - SHF_EXT 64
+                        - SHF_EXT 512
+             Addr:      0x0
+             Size:      24
+             Link:      23
+             Info:      9
+             AddrAlign: 8
+             EntSize:   24
+             Data:      00 00 00 00 00 00 00 00 1b 00 00 00 15 00 00 00 # ................
+                        00 00 00 00 00 00 00 00                         # ........
+           - Name:      ".rodata._ZTS15QQmlDebugClient"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_ALLOC
+                        - SHF_EXT 512
+             Addr:      0x0
+             Size:      18
+             Link:      0
+             Info:      0
+             AddrAlign: 16
+             EntSize:   0
+             Data:      31 35 51 51 6d 6c 44 65 62 75 67 43 6c 69 65 6e # 15QQmlDebugClien
+                        74 00                                           # t.
+           - Name:      ".data.rel.ro._ZTI15QQmlDebugClient"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
+                        - SHF_EXT 512
+             Addr:      0x0
+             Size:      24
+             Link:      0
+             Info:      0
+             AddrAlign: 8
+             EntSize:   0
+             Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00                         # ........
+           - Name:      ".rela.data.rel.ro._ZTI15QQmlDebugClient"
+             Type:      SHT_RELA
+             Flags:     - SHF_EXT 64
+                        - SHF_EXT 512
+             Addr:      0x0
+             Size:      72
+             Link:      23
+             Info:      12
+             AddrAlign: 8
+             EntSize:   24
+             Data:      00 00 00 00 00 00 00 00 01 00 00 00 24 00 00 00 # ............$...
+                        10 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 # ................
+                        01 00 00 00 22 00 00 00 00 00 00 00 00 00 00 00 # ...."...........
+                        10 00 00 00 00 00 00 00 01 00 00 00 25 00 00 00 # ............%...
+                        00 00 00 00 00 00 00 00                         # ........
+           - Name:      ".data.rel.ro._ZTV15QQmlDebugClient"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
+                        - SHF_EXT 512
+             Addr:      0x0
+             Size:      120
+             Link:      0
+             Info:      0
+             AddrAlign: 8
+             EntSize:   0
+             Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00                         # ........
+           - Name:      ".rela.data.rel.ro._ZTV15QQmlDebugClient"
+             Type:      SHT_RELA
+             Flags:     - SHF_EXT 64
+                        - SHF_EXT 512
+             Addr:      0x0
+             Size:      336
+             Link:      23
+             Info:      14
+             AddrAlign: 8
+             EntSize:   24
+             Data:      08 00 00 00 00 00 00 00 01 00 00 00 23 00 00 00 # ............#...
+                        00 00 00 00 00 00 00 00 10 00 00 00 00 00 00 00 # ................
+                        01 00 00 00 16 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        18 00 00 00 00 00 00 00 01 00 00 00 1d 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 20 00 00 00 00 00 00 00 # ........ .......
+                        01 00 00 00 20 00 00 00 00 00 00 00 00 00 00 00 # .... ...........
+                        28 00 00 00 00 00 00 00 01 00 00 00 27 00 00 00 # (...........'...
+                        00 00 00 00 00 00 00 00 30 00 00 00 00 00 00 00 # ........0.......
+                        01 00 00 00 28 00 00 00 00 00 00 00 00 00 00 00 # ....(...........
+                        38 00 00 00 00 00 00 00 01 00 00 00 29 00 00 00 # 8...........)...
+                        00 00 00 00 00 00 00 00 40 00 00 00 00 00 00 00 # ........@.......
+                        01 00 00 00 2a 00 00 00 00 00 00 00 00 00 00 00 # ....*...........
+                        48 00 00 00 00 00 00 00 01 00 00 00 2b 00 00 00 # H...........+...
+                        00 00 00 00 00 00 00 00 50 00 00 00 00 00 00 00 # ........P.......
+                        01 00 00 00 2c 00 00 00 00 00 00 00 00 00 00 00 # ....,...........
+                        58 00 00 00 00 00 00 00 01 00 00 00 2d 00 00 00 # X...........-...
+                        00 00 00 00 00 00 00 00 60 00 00 00 00 00 00 00 # ........`.......
+                        01 00 00 00 2e 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        68 00 00 00 00 00 00 00 01 00 00 00 2f 00 00 00 # h.........../...
+                        00 00 00 00 00 00 00 00 70 00 00 00 00 00 00 00 # ........p.......
+                        01 00 00 00 30 00 00 00 00 00 00 00 00 00 00 00 # ....0...........
+           - Name:      ".data.rel.ro"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
+             Addr:      0x0
+             Size:      48
+             Link:      0
+             Info:      0
+             AddrAlign: 32
+             EntSize:   0
+             Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+           - Name:      ".rela.data.rel.ro"
+             Type:      SHT_RELA
+             Flags:     - SHF_EXT 64
+             Addr:      0x0
+             Size:      96
+             Link:      23
+             Info:      16
+             AddrAlign: 8
+             EntSize:   24
+             Data:      00 00 00 00 00 00 00 00 01 00 00 00 31 00 00 00 # ............1...
+                        00 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 # ................
+                        01 00 00 00 05 00 00 00 60 00 00 00 00 00 00 00 # ........`.......
+                        10 00 00 00 00 00 00 00 01 00 00 00 05 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 18 00 00 00 00 00 00 00 # ................
+                        01 00 00 00 1c 00 00 00 00 00 00 00 00 00 00 00 # ................
+           - Name:      ".rodata"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_ALLOC
+             Addr:      0x0
+             Size:      264
+             Link:      0
+             Info:      0
+             AddrAlign: 32
+             EntSize:   0
+             Data:      08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        01 00 00 00 0e 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 01 00 00 00 01 00 00 00 01 00 00 00 # ................
+                        13 00 00 00 02 00 00 00 06 00 00 00 2b 00 00 00 # ............+...
+                        03 00 00 80 04 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        ff ff ff ff 0f 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        78 00 00 00 00 00 00 00 ff ff ff ff 0c 00 00 00 # x...............
+                        00 00 00 00 00 00 00 00 70 00 00 00 00 00 00 00 # ........p.......
+                        ff ff ff ff 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        65 00 00 00 00 00 00 00 ff ff ff ff 05 00 00 00 # e...............
+                        00 00 00 00 00 00 00 00 4e 00 00 00 00 00 00 00 # ........N.......
+                        ff ff ff ff 05 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        3c 00 00 00 00 00 00 00 51 51 6d 6c 44 65 62 75 # <.......QQmlDebu
+                        67 43 6c 69 65 6e 74 00 73 74 61 74 65 43 68 61 # gClient.stateCha
+                        6e 67 65 64 00 00 53 74 61 74 65 00 73 74 61 74 # nged..State.stat
+                        65 00 00 00 00 00 00 00                         # e.......
+           - Name:      ".comment"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_EXT 16
+                        - SHF_EXT 32
+             Addr:      0x0
+             Size:      33
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   1
+             Data:      00 47 43 43 3a 20 28 41 72 63 68 20 4c 69 6e 75 # .GCC: (Arch Linu
+                        78 20 39 2e 33 2e 30 2d 31 29 20 39 2e 33 2e 30 # x 9.3.0-1) 9.3.0
+                        00                                              # .
+           - Name:      ".note.GNU-stack"
+             Type:      SHT_PROGBITS
+             Flags:     
+             Addr:      0x0
+             Size:      0
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      
+           - Name:      ".eh_frame"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_ALLOC
+             Addr:      0x0
+             Size:      232
+             Link:      0
+             Info:      0
+             AddrAlign: 8
+             EntSize:   0
+             Data:      14 00 00 00 00 00 00 00 01 7a 52 00 01 78 10 01 # .........zR..x..
+                        1b 0c 07 08 90 01 00 00 10 00 00 00 1c 00 00 00 # ................
+                        00 00 00 00 20 00 00 00 00 00 00 00 18 00 00 00 # .... ...........
+                        30 00 00 00 00 00 00 00 5a 00 00 00 00 44 0e 40 # 0.......Z....D.@
+                        02 4f 0a 0e 08 41 0b 00 18 00 00 00 4c 00 00 00 # .O...A......L...
+                        00 00 00 00 60 00 00 00 00 44 0e 40 02 55 0a 0e # ....`....D.@.U..
+                        08 41 0b 00 10 00 00 00 68 00 00 00 00 00 00 00 # .A......h.......
+                        48 00 00 00 00 00 00 00 34 00 00 00 7c 00 00 00 # H.......4...|...
+                        00 00 00 00 57 00 00 00 00 47 0e 10 8c 02 44 0e # ....W....G....D.
+                        18 86 03 51 0e 20 4e 0a 0e 18 44 0e 10 42 0e 08 # ...Q. N...D..B..
+                        48 0b 44 0e 18 47 c6 0e 10 42 cc 0e 08 00 00 00 # H.D..G...B......
+                        34 00 00 00 b4 00 00 00 00 00 00 00 5d 00 00 00 # 4...........]...
+                        00 42 0e 10 8c 02 44 0e 18 86 03 44 0e 20 83 04 # .B....D....D. ..
+                        46 0e 30 59 0a 0e 20 41 0e 18 41 0e 10 42 0e 08 # F.0Y.. A..A..B..
+                        43 0b 00 00 00 00 00 00                         # C.......
+           - Name:      ".rela.eh_frame"
+             Type:      SHT_RELA
+             Flags:     - SHF_EXT 64
+             Addr:      0x0
+             Size:      144
+             Link:      23
+             Info:      21
+             AddrAlign: 8
+             EntSize:   24
+             Data:      20 00 00 00 00 00 00 00 02 00 00 00 01 00 00 00 #  ...............
+                        00 00 00 00 00 00 00 00 34 00 00 00 00 00 00 00 # ........4.......
+                        02 00 00 00 01 00 00 00 20 00 00 00 00 00 00 00 # ........ .......
+                        50 00 00 00 00 00 00 00 02 00 00 00 01 00 00 00 # P...............
+                        80 00 00 00 00 00 00 00 6c 00 00 00 00 00 00 00 # ........l.......
+                        02 00 00 00 01 00 00 00 e0 00 00 00 00 00 00 00 # ................
+                        80 00 00 00 00 00 00 00 02 00 00 00 01 00 00 00 # ................
+                        30 01 00 00 00 00 00 00 b8 00 00 00 00 00 00 00 # 0...............
+                        02 00 00 00 01 00 00 00 90 01 00 00 00 00 00 00 # ................
+           - Name:      ".symtab"
+             Type:      SHT_SYMTAB
+             Flags:     
+             Addr:      0x0
+             Size:      1200
+             Link:      24
+             Info:      20
+             AddrAlign: 8
+             EntSize:   24
+             Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 05 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        01 00 00 00 02 00 05 00 80 00 00 00 00 00 00 00 # ................
+                        60 00 00 00 00 00 00 00 53 00 00 00 01 00 12 00 # `.......S.......
+                        60 00 00 00 00 00 00 00 a8 00 00 00 00 00 00 00 # `...............
+                        7b 00 00 00 01 00 12 00 00 00 00 00 00 00 00 00 # {...............
+                        5c 00 00 00 00 00 00 00 00 00 00 00 03 00 12 00 # \...............
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 01 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 02 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 03 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 04 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 07 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 08 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 09 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 0b 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 0c 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 0e 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 10 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 13 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 14 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 15 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        9d 00 00 00 10 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 b3 00 00 00 10 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        c2 00 00 00 12 02 05 00 00 00 00 00 00 00 00 00 # ................
+                        20 00 00 00 00 00 00 00 e6 00 00 00 10 00 00 00 #  ...............
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        0d 01 00 00 11 02 10 00 00 00 00 00 00 00 00 00 # ................
+                        30 00 00 00 00 00 00 00 35 01 00 00 12 02 05 00 # 0.......5.......
+                        20 00 00 00 00 00 00 00 5a 00 00 00 00 00 00 00 #  .......Z.......
+                        63 01 00 00 10 00 00 00 00 00 00 00 00 00 00 00 # c...............
+                        00 00 00 00 00 00 00 00 8f 01 00 00 10 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        a0 01 00 00 12 02 05 00 e0 00 00 00 00 00 00 00 # ................
+                        48 00 00 00 00 00 00 00 eb 01 00 00 12 02 05 00 # H...............
+                        30 01 00 00 00 00 00 00 57 00 00 00 00 00 00 00 # 0.......W.......
+                        11 02 00 00 10 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 18 02 00 00 10 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        35 02 00 00 12 02 05 00 90 01 00 00 00 00 00 00 # 5...............
+                        5d 00 00 00 00 00 00 00 70 02 00 00 10 00 00 00 # ].......p.......
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        a2 02 00 00 21 02 0b 00 00 00 00 00 00 00 00 00 # ....!...........
+                        12 00 00 00 00 00 00 00 b8 02 00 00 21 02 0c 00 # ............!...
+                        00 00 00 00 00 00 00 00 18 00 00 00 00 00 00 00 # ................
+                        ce 02 00 00 10 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 f7 02 00 00 10 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        04 03 00 00 21 02 0e 00 00 00 00 00 00 00 00 00 # ....!...........
+                        78 00 00 00 00 00 00 00 1a 03 00 00 10 00 00 00 # x...............
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        33 03 00 00 10 00 00 00 00 00 00 00 00 00 00 00 # 3...............
+                        00 00 00 00 00 00 00 00 4c 03 00 00 10 00 00 00 # ........L.......
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        67 03 00 00 10 00 00 00 00 00 00 00 00 00 00 00 # g...............
+                        00 00 00 00 00 00 00 00 8c 03 00 00 10 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        b3 03 00 00 10 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 da 03 00 00 10 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        fc 03 00 00 10 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 27 04 00 00 10 00 00 00 # ........'.......
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        55 04 00 00 10 00 00 00 00 00 00 00 00 00 00 00 # U...............
+                        00 00 00 00 00 00 00 00 8a 04 00 00 10 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+             Symbols:   - Name:      ""
+                          Type:      STT_NoType
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 5
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN15QQmlDebugClient18qt_static_metacallEP7QObjectN11QMetaObject4CallEiPPv.part.0"
+                          Type:      STT_Func
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 5
+                          Value:     0x80
+                          Size:      0x60
+                        - Name:      "_ZL34qt_meta_stringdata_QQmlDebugClient"
+                          Type:      STT_Object
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 18
+                          Value:     0x60
+                          Size:      0xa8
+                        - Name:      "_ZL28qt_meta_data_QQmlDebugClient"
+                          Type:      STT_Object
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 18
+                          Value:     0x0
+                          Size:      0x5c
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 18
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 1
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 2
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 3
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 4
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 7
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 8
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 9
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 11
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 12
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 14
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 16
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 19
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 20
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 21
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_GLOBAL_OFFSET_TABLE_"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "qt_version_tag"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZNK15QQmlDebugClient10metaObjectEv"
+                          Type:      STT_Func
+                          Binding:   STB_Global
+                          Other:     0x2
+                          SectionIndex: SHN_EXT 5
+                          Value:     0x0
+                          Size:      0x20
+                        - Name:      "_ZNK11QObjectData17dynamicMetaObjectEv"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN15QQmlDebugClient16staticMetaObjectE"
+                          Type:      STT_Object
+                          Binding:   STB_Global
+                          Other:     0x2
+                          SectionIndex: SHN_EXT 16
+                          Value:     0x0
+                          Size:      0x30
+                        - Name:      "_ZN15QQmlDebugClient12stateChangedENS_5StateE"
+                          Type:      STT_Func
+                          Binding:   STB_Global
+                          Other:     0x2
+                          SectionIndex: SHN_EXT 5
+                          Value:     0x20
+                          Size:      0x5a
+                        - Name:      "_ZN11QMetaObject8activateEP7QObjectPKS_iPPv"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "__stack_chk_fail"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN15QQmlDebugClient18qt_static_metacallEP7QObjectN11QMetaObject4CallEiPPv"
+                          Type:      STT_Func
+                          Binding:   STB_Global
+                          Other:     0x2
+                          SectionIndex: SHN_EXT 5
+                          Value:     0xe0
+                          Size:      0x48
+                        - Name:      "_ZN15QQmlDebugClient11qt_metacastEPKc"
+                          Type:      STT_Func
+                          Binding:   STB_Global
+                          Other:     0x2
+                          SectionIndex: SHN_EXT 5
+                          Value:     0x130
+                          Size:      0x57
+                        - Name:      "strcmp"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN7QObject11qt_metacastEPKc"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN15QQmlDebugClient11qt_metacallEN11QMetaObject4CallEiPPv"
+                          Type:      STT_Func
+                          Binding:   STB_Global
+                          Other:     0x2
+                          SectionIndex: SHN_EXT 5
+                          Value:     0x190
+                          Size:      0x5d
+                        - Name:      "_ZN7QObject11qt_metacallEN11QMetaObject4CallEiPPv"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZTS15QQmlDebugClient"
+                          Type:      STT_Object
+                          Binding:   STB_Weak
+                          Other:     0x2
+                          SectionIndex: SHN_EXT 11
+                          Value:     0x0
+                          Size:      0x12
+                        - Name:      "_ZTI15QQmlDebugClient"
+                          Type:      STT_Object
+                          Binding:   STB_Weak
+                          Other:     0x2
+                          SectionIndex: SHN_EXT 12
+                          Value:     0x0
+                          Size:      0x18
+                        - Name:      "_ZTVN10__cxxabiv120__si_class_type_infoE"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZTI7QObject"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZTV15QQmlDebugClient"
+                          Type:      STT_Object
+                          Binding:   STB_Weak
+                          Other:     0x2
+                          SectionIndex: SHN_EXT 14
+                          Value:     0x0
+                          Size:      0x78
+                        - Name:      "_ZN15QQmlDebugClientD1Ev"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN15QQmlDebugClientD0Ev"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN7QObject5eventEP6QEvent"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN7QObject11eventFilterEPS_P6QEvent"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN7QObject10timerEventEP11QTimerEvent"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN7QObject10childEventEP11QChildEvent"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN7QObject11customEventEP6QEvent"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN7QObject13connectNotifyERK11QMetaMethod"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN7QObject16disconnectNotifyERK11QMetaMethod"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN15QQmlDebugClient15messageReceivedERK10QByteArray"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_ZN7QObject16staticMetaObjectE"
+                          Type:      STT_NoType
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+           - Name:      ".strtab"
+             Type:      SHT_STRTAB
+             Flags:     
+             Addr:      0x0
+             Size:      1193
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      00 5f 5a 4e 31 35 51 51 6d 6c 44 65 62 75 67 43 # ._ZN15QQmlDebugC
+                        6c 69 65 6e 74 31 38 71 74 5f 73 74 61 74 69 63 # lient18qt_static
+                        5f 6d 65 74 61 63 61 6c 6c 45 50 37 51 4f 62 6a # _metacallEP7QObj
+                        65 63 74 4e 31 31 51 4d 65 74 61 4f 62 6a 65 63 # ectN11QMetaObjec
+                        74 34 43 61 6c 6c 45 69 50 50 76 2e 70 61 72 74 # t4CallEiPPv.part
+                        2e 30 00 5f 5a 4c 33 34 71 74 5f 6d 65 74 61 5f # .0._ZL34qt_meta_
+                        73 74 72 69 6e 67 64 61 74 61 5f 51 51 6d 6c 44 # stringdata_QQmlD
+                        65 62 75 67 43 6c 69 65 6e 74 00 5f 5a 4c 32 38 # ebugClient._ZL28
+                        71 74 5f 6d 65 74 61 5f 64 61 74 61 5f 51 51 6d # qt_meta_data_QQm
+                        6c 44 65 62 75 67 43 6c 69 65 6e 74 00 5f 47 4c # lDebugClient._GL
+                        4f 42 41 4c 5f 4f 46 46 53 45 54 5f 54 41 42 4c # OBAL_OFFSET_TABL
+                        45 5f 00 71 74 5f 76 65 72 73 69 6f 6e 5f 74 61 # E_.qt_version_ta
+                        67 00 5f 5a 4e 4b 31 35 51 51 6d 6c 44 65 62 75 # g._ZNK15QQmlDebu
+                        67 43 6c 69 65 6e 74 31 30 6d 65 74 61 4f 62 6a # gClient10metaObj
+                        65 63 74 45 76 00 5f 5a 4e 4b 31 31 51 4f 62 6a # ectEv._ZNK11QObj
+                        65 63 74 44 61 74 61 31 37 64 79 6e 61 6d 69 63 # ectData17dynamic
+                        4d 65 74 61 4f 62 6a 65 63 74 45 76 00 5f 5a 4e # MetaObjectEv._ZN
+                        31 35 51 51 6d 6c 44 65 62 75 67 43 6c 69 65 6e # 15QQmlDebugClien
+                        74 31 36 73 74 61 74 69 63 4d 65 74 61 4f 62 6a # t16staticMetaObj
+                        65 63 74 45 00 5f 5a 4e 31 35 51 51 6d 6c 44 65 # ectE._ZN15QQmlDe
+                        62 75 67 43 6c 69 65 6e 74 31 32 73 74 61 74 65 # bugClient12state
+                        43 68 61 6e 67 65 64 45 4e 53 5f 35 53 74 61 74 # ChangedENS_5Stat
+                        65 45 00 5f 5a 4e 31 31 51 4d 65 74 61 4f 62 6a # eE._ZN11QMetaObj
+                        65 63 74 38 61 63 74 69 76 61 74 65 45 50 37 51 # ect8activateEP7Q
+                        4f 62 6a 65 63 74 50 4b 53 5f 69 50 50 76 00 5f # ObjectPKS_iPPv._
+                        5f 73 74 61 63 6b 5f 63 68 6b 5f 66 61 69 6c 00 # _stack_chk_fail.
+                        5f 5a 4e 31 35 51 51 6d 6c 44 65 62 75 67 43 6c # _ZN15QQmlDebugCl
+                        69 65 6e 74 31 38 71 74 5f 73 74 61 74 69 63 5f # ient18qt_static_
+                        6d 65 74 61 63 61 6c 6c 45 50 37 51 4f 62 6a 65 # metacallEP7QObje
+                        63 74 4e 31 31 51 4d 65 74 61 4f 62 6a 65 63 74 # ctN11QMetaObject
+                        34 43 61 6c 6c 45 69 50 50 76 00 5f 5a 4e 31 35 # 4CallEiPPv._ZN15
+                        51 51 6d 6c 44 65 62 75 67 43 6c 69 65 6e 74 31 # QQmlDebugClient1
+                        31 71 74 5f 6d 65 74 61 63 61 73 74 45 50 4b 63 # 1qt_metacastEPKc
+                        00 73 74 72 63 6d 70 00 5f 5a 4e 37 51 4f 62 6a # .strcmp._ZN7QObj
+                        65 63 74 31 31 71 74 5f 6d 65 74 61 63 61 73 74 # ect11qt_metacast
+                        45 50 4b 63 00 5f 5a 4e 31 35 51 51 6d 6c 44 65 # EPKc._ZN15QQmlDe
+                        62 75 67 43 6c 69 65 6e 74 31 31 71 74 5f 6d 65 # bugClient11qt_me
+                        74 61 63 61 6c 6c 45 4e 31 31 51 4d 65 74 61 4f # tacallEN11QMetaO
+                        62 6a 65 63 74 34 43 61 6c 6c 45 69 50 50 76 00 # bject4CallEiPPv.
+                        5f 5a 4e 37 51 4f 62 6a 65 63 74 31 31 71 74 5f # _ZN7QObject11qt_
+                        6d 65 74 61 63 61 6c 6c 45 4e 31 31 51 4d 65 74 # metacallEN11QMet
+                        61 4f 62 6a 65 63 74 34 43 61 6c 6c 45 69 50 50 # aObject4CallEiPP
+                        76 00 5f 5a 54 53 31 35 51 51 6d 6c 44 65 62 75 # v._ZTS15QQmlDebu
+                        67 43 6c 69 65 6e 74 00 5f 5a 54 49 31 35 51 51 # gClient._ZTI15QQ
+                        6d 6c 44 65 62 75 67 43 6c 69 65 6e 74 00 5f 5a # mlDebugClient._Z
+                        54 56 4e 31 30 5f 5f 63 78 78 61 62 69 76 31 32 # TVN10__cxxabiv12
+                        30 5f 5f 73 69 5f 63 6c 61 73 73 5f 74 79 70 65 # 0__si_class_type
+                        5f 69 6e 66 6f 45 00 5f 5a 54 49 37 51 4f 62 6a # _infoE._ZTI7QObj
+                        65 63 74 00 5f 5a 54 56 31 35 51 51 6d 6c 44 65 # ect._ZTV15QQmlDe
+                        62 75 67 43 6c 69 65 6e 74 00 5f 5a 4e 31 35 51 # bugClient._ZN15Q
+                        51 6d 6c 44 65 62 75 67 43 6c 69 65 6e 74 44 31 # QmlDebugClientD1
+                        45 76 00 5f 5a 4e 31 35 51 51 6d 6c 44 65 62 75 # Ev._ZN15QQmlDebu
+                        67 43 6c 69 65 6e 74 44 30 45 76 00 5f 5a 4e 37 # gClientD0Ev._ZN7
+                        51 4f 62 6a 65 63 74 35 65 76 65 6e 74 45 50 36 # QObject5eventEP6
+                        51 45 76 65 6e 74 00 5f 5a 4e 37 51 4f 62 6a 65 # QEvent._ZN7QObje
+                        63 74 31 31 65 76 65 6e 74 46 69 6c 74 65 72 45 # ct11eventFilterE
+                        50 53 5f 50 36 51 45 76 65 6e 74 00 5f 5a 4e 37 # PS_P6QEvent._ZN7
+                        51 4f 62 6a 65 63 74 31 30 74 69 6d 65 72 45 76 # QObject10timerEv
+                        65 6e 74 45 50 31 31 51 54 69 6d 65 72 45 76 65 # entEP11QTimerEve
+                        6e 74 00 5f 5a 4e 37 51 4f 62 6a 65 63 74 31 30 # nt._ZN7QObject10
+                        63 68 69 6c 64 45 76 65 6e 74 45 50 31 31 51 43 # childEventEP11QC
+                        68 69 6c 64 45 76 65 6e 74 00 5f 5a 4e 37 51 4f # hildEvent._ZN7QO
+                        62 6a 65 63 74 31 31 63 75 73 74 6f 6d 45 76 65 # bject11customEve
+                        6e 74 45 50 36 51 45 76 65 6e 74 00 5f 5a 4e 37 # ntEP6QEvent._ZN7
+                        51 4f 62 6a 65 63 74 31 33 63 6f 6e 6e 65 63 74 # QObject13connect
+                        4e 6f 74 69 66 79 45 52 4b 31 31 51 4d 65 74 61 # NotifyERK11QMeta
+                        4d 65 74 68 6f 64 00 5f 5a 4e 37 51 4f 62 6a 65 # Method._ZN7QObje
+                        63 74 31 36 64 69 73 63 6f 6e 6e 65 63 74 4e 6f # ct16disconnectNo
+                        74 69 66 79 45 52 4b 31 31 51 4d 65 74 61 4d 65 # tifyERK11QMetaMe
+                        74 68 6f 64 00 5f 5a 4e 31 35 51 51 6d 6c 44 65 # thod._ZN15QQmlDe
+                        62 75 67 43 6c 69 65 6e 74 31 35 6d 65 73 73 61 # bugClient15messa
+                        67 65 52 65 63 65 69 76 65 64 45 52 4b 31 30 51 # geReceivedERK10Q
+                        42 79 74 65 41 72 72 61 79 00 5f 5a 4e 37 51 4f # ByteArray._ZN7QO
+                        62 6a 65 63 74 31 36 73 74 61 74 69 63 4d 65 74 # bject16staticMet
+                        61 4f 62 6a 65 63 74 45 00                      # aObjectE.
+           - Name:      ".shstrtab"
+             Type:      SHT_STRTAB
+             Flags:     
+             Addr:      0x0
+             Size:      248
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      00 2e 73 79 6d 74 61 62 00 2e 73 74 72 74 61 62 # ..symtab..strtab
+                        00 2e 73 68 73 74 72 74 61 62 00 2e 67 72 6f 75 # ..shstrtab..grou
+                        70 00 2e 72 65 6c 61 2e 74 65 78 74 00 2e 64 61 # p..rela.text..da
+                        74 61 00 2e 62 73 73 00 2e 72 65 6c 61 2e 71 74 # ta..bss..rela.qt
+                        76 65 72 73 69 6f 6e 00 2e 72 6f 64 61 74 61 2e # version..rodata.
+                        5f 5a 54 53 31 35 51 51 6d 6c 44 65 62 75 67 43 # _ZTS15QQmlDebugC
+                        6c 69 65 6e 74 00 2e 72 65 6c 61 2e 64 61 74 61 # lient..rela.data
+                        2e 72 65 6c 2e 72 6f 2e 5f 5a 54 49 31 35 51 51 # .rel.ro._ZTI15QQ
+                        6d 6c 44 65 62 75 67 43 6c 69 65 6e 74 00 2e 72 # mlDebugClient..r
+                        65 6c 61 2e 64 61 74 61 2e 72 65 6c 2e 72 6f 2e # ela.data.rel.ro.
+                        5f 5a 54 56 31 35 51 51 6d 6c 44 65 62 75 67 43 # _ZTV15QQmlDebugC
+                        6c 69 65 6e 74 00 2e 72 65 6c 61 2e 64 61 74 61 # lient..rela.data
+                        2e 72 65 6c 2e 72 6f 00 2e 72 6f 64 61 74 61 00 # .rel.ro..rodata.
+                        2e 63 6f 6d 6d 65 6e 74 00 2e 6e 6f 74 65 2e 47 # .comment..note.G
+                        4e 55 2d 73 74 61 63 6b 00 2e 72 65 6c 61 2e 65 # NU-stack..rela.e
+                        68 5f 66 72 61 6d 65 00                         # h_frame.
+Segments:  

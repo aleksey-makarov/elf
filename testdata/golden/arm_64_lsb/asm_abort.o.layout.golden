@@ -1,0 +1,34 @@
+sections:
+	- 0  
+	- 1  .text
+	- 2  .rela.text
+	- 3  .data
+	- 4  .bss
+	- 5  .comment
+	- 6  .note.GNU-stack
+	- 7  .eh_frame
+	- 8  .rela.eh_frame
+	- 9  .symtab
+	- 10 .strtab
+	- 11 .shstrtab
+segments:
+┎ 0000000000000000 H ELF Header
+┖ 000000000000003f H
+┌ 0000000000000040 S 1 name: ".text"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
+└ 00000000000000af S 1
+┌ 00000000000000b0 S 5 name: ".comment"; type: SHT_PROGBITS; flags: [SHF_EXT 16,SHF_EXT 32]
+└ 00000000000000da S 5
+┌ 00000000000000e0 S 7 name: ".eh_frame"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+└ 0000000000000117 S 7
+┌ 0000000000000118 S 9 name: ".symtab"; type: SHT_SYMTAB; flags: []
+└ 000000000000024f S 9
+┌ 0000000000000250 S 10 name: ".strtab"; type: SHT_STRTAB; flags: []
+└ 0000000000000280 S 10
+┌ 0000000000000288 S 2 name: ".rela.text"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 0000000000000317 S 2
+┌ 0000000000000318 S 8 name: ".rela.eh_frame"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 000000000000032f S 8
+┌ 0000000000000330 S 11 name: ".shstrtab"; type: SHT_STRTAB; flags: []
+└ 0000000000000388 S 11
+┎ 0000000000000390 H Section table
+┖ 000000000000068f H

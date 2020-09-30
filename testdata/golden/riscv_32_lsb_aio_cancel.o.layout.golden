@@ -1,0 +1,30 @@
+sections:
+	- 0  
+	- 1  .text
+	- 2  .rela.text
+	- 3  .data
+	- 4  .bss
+	- 5  .rodata.str1.4
+	- 6  .comment
+	- 7  .symtab
+	- 8  .strtab
+	- 9  .shstrtab
+segments:
+┎ 0000000000000000 H ELF Header
+┖ 0000000000000033 H
+┌ 0000000000000034 S 1 name: ".text"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
+└ 0000000000000283 S 1
+┌ 0000000000000284 S 5 name: ".rodata.str1.4"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXT 16,SHF_EXT 32]
+└ 00000000000002de S 5
+┌ 00000000000002df S 6 name: ".comment"; type: SHT_PROGBITS; flags: [SHF_EXT 16,SHF_EXT 32]
+└ 00000000000002fe S 6
+┌ 0000000000000300 S 7 name: ".symtab"; type: SHT_SYMTAB; flags: []
+└ 0000000000000d3f S 7
+┌ 0000000000000d40 S 8 name: ".strtab"; type: SHT_STRTAB; flags: []
+└ 0000000000000ff2 S 8
+┌ 0000000000000ff4 S 2 name: ".rela.text"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 000000000000138f S 2
+┌ 0000000000001390 S 9 name: ".shstrtab"; type: SHT_STRTAB; flags: []
+└ 00000000000013d8 S 9
+┎ 00000000000013dc H Section table
+┖ 000000000000156b H

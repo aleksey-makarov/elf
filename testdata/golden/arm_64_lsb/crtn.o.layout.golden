@@ -1,0 +1,26 @@
+sections:
+	- 0  
+	- 1  .text
+	- 2  .data
+	- 3  .bss
+	- 4  .init
+	- 5  .fini
+	- 6  .note.GNU-stack
+	- 7  .symtab
+	- 8  .strtab
+	- 9  .shstrtab
+segments:
+┎ 0000000000000000 H ELF Header
+┖ 000000000000003f H
+┌ 0000000000000040 S 4 name: ".init"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
+└ 0000000000000047 S 4
+┌ 0000000000000048 S 5 name: ".fini"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
+└ 000000000000004f S 5
+┌ 0000000000000050 S 7 name: ".symtab"; type: SHT_SYMTAB; flags: []
+└ 0000000000000127 S 7
+┌ 0000000000000128 S 8 name: ".strtab"; type: SHT_STRTAB; flags: []
+└ 000000000000012b S 8
+┌ 000000000000012c S 9 name: ".shstrtab"; type: SHT_STRTAB; flags: []
+└ 0000000000000173 S 9
+┎ 0000000000000178 H Section table
+┖ 00000000000003f7 H

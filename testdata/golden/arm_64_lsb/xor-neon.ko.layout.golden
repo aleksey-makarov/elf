@@ -1,0 +1,70 @@
+sections:
+	- 0  
+	- 1  .note.gnu.build-id
+	- 2  .note.Linux
+	- 3  .text
+	- 4  __ksymtab
+	- 5  .rela__ksymtab
+	- 6  .rodata.str1.8
+	- 7  .rodata
+	- 8  .rela.rodata
+	- 9  .modinfo
+	- 10 __ksymtab_strings
+	- 11 .eh_frame
+	- 12 .rela.eh_frame
+	- 13 .data
+	- 14 __patchable_function_entries
+	- 15 .rela__patchable_function_entries
+	- 16 .gnu.linkonce.this_module
+	- 17 .plt
+	- 18 .init.plt
+	- 19 .text.ftrace_trampoline
+	- 20 .bss
+	- 21 .comment
+	- 22 .note.GNU-stack
+	- 23 .symtab
+	- 24 .strtab
+	- 25 .shstrtab
+segments:
+┎ 0000000000000000 H ELF Header
+┖ 000000000000003f H
+┌ 0000000000000040 S 1 name: ".note.gnu.build-id"; type: SHT_NOTE; flags: [SHF_ALLOC]
+└ 0000000000000063 S 1
+┌ 0000000000000064 S 2 name: ".note.Linux"; type: SHT_NOTE; flags: [SHF_ALLOC]
+└ 000000000000007b S 2
+┌ 0000000000000080 S 3 name: ".text"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
+└ 000000000000026b S 3
+┌ 000000000000026c S 4 name: "__ksymtab"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+└ 0000000000000277 S 4
+┌ 0000000000000278 S 6 name: ".rodata.str1.8"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXT 16,SHF_EXT 32]
+└ 0000000000000286 S 6
+┌ 0000000000000288 S 7 name: ".rodata"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+└ 00000000000002bf S 7
+┌ 00000000000002c0 S 9 name: ".modinfo"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+└ 0000000000000361 S 9
+┌ 0000000000000362 S 10 name: "__ksymtab_strings"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+└ 0000000000000377 S 10
+┌ 0000000000000378 S 11 name: ".eh_frame"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
+└ 00000000000003db S 11
+┌ 00000000000003dc S 14 name: "__patchable_function_entries"; type: SHT_PROGBITS; flags: [SHF_WRITE,SHF_ALLOC]
+└ 00000000000003fb S 14
+┌ 0000000000000400 S 16 name: ".gnu.linkonce.this_module"; type: SHT_PROGBITS; flags: [SHF_WRITE,SHF_ALLOC]
+└ 000000000000073f S 16
+┌ 0000000000000740 S 21 name: ".comment"; type: SHT_PROGBITS; flags: [SHF_EXT 16,SHF_EXT 32]
+└ 0000000000000795 S 21
+┌ 0000000000000798 S 23 name: ".symtab"; type: SHT_SYMTAB; flags: []
+└ 0000000000000be7 S 23
+┌ 0000000000000be8 S 24 name: ".strtab"; type: SHT_STRTAB; flags: []
+└ 0000000000000d5b S 24
+┌ 0000000000000d60 S 5 name: ".rela__ksymtab"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 0000000000000da7 S 5
+┌ 0000000000000da8 S 8 name: ".rela.rodata"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 0000000000000e1f S 8
+┌ 0000000000000e20 S 12 name: ".rela.eh_frame"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 0000000000000e7f S 12
+┌ 0000000000000e80 S 15 name: ".rela__patchable_function_entries"; type: SHT_RELA; flags: [SHF_EXT 64]
+└ 0000000000000edf S 15
+┌ 0000000000000ee0 S 25 name: ".shstrtab"; type: SHT_STRTAB; flags: []
+└ 0000000000000ff6 S 25
+┎ 0000000000000ff8 H Section table
+┖ 0000000000001677 H

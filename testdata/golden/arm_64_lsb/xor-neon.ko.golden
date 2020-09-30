@@ -1,0 +1,841 @@
+Class:     ELFCLASS64
+Data:      ELFDATA2LSB
+Version:   1
+OSABI:     ELFOSABI_SYSV
+ABIVersion: 0
+Type:      ET_REL
+Machine:   EM_EXT 183
+Entry:     0x0
+Sections:  - Name:      ""
+             Type:      SHT_NULL
+             Flags:     
+             Addr:      0x0
+             Size:      0
+             Link:      0
+             Info:      0
+             AddrAlign: 0
+             EntSize:   0
+             Data:      
+           - Name:      ".note.gnu.build-id"
+             Type:      SHT_NOTE
+             Flags:     - SHF_ALLOC
+             Addr:      0x0
+             Size:      36
+             Link:      0
+             Info:      0
+             AddrAlign: 4
+             EntSize:   0
+             Data:      04 00 00 00 14 00 00 00 03 00 00 00 47 4e 55 00 # ............GNU.
+                        d8 39 b1 9b cf bd 00 a6 e9 19 9c 02 a1 d8 47 30 # .9............G0
+                        ed f1 40 c4                                     # ..@.
+           - Name:      ".note.Linux"
+             Type:      SHT_NOTE
+             Flags:     - SHF_ALLOC
+             Addr:      0x0
+             Size:      24
+             Link:      0
+             Info:      0
+             AddrAlign: 4
+             EntSize:   0
+             Data:      06 00 00 00 01 00 00 00 00 01 00 00 4c 69 6e 75 # ............Linu
+                        78 00 00 00 00 00 00 00                         # x.......
+           - Name:      ".text"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_ALLOC
+                        - SHF_EXECINSTR
+             Addr:      0x0
+             Size:      492
+             Link:      0
+             Info:      0
+             AddrAlign: 8
+             EntSize:   0
+             Data:      1f 20 03 d5 1f 20 03 d5 00 fc 46 d3 1f 20 03 d5 # . ... ....F.. ..
+                        43 08 40 ad 00 04 00 d1 27 18 40 ad 1f 00 00 f1 # C.@.....'.@.....
+                        41 00 41 ad 42 00 01 91 25 10 41 ad 63 1c 27 6e # A.A.B...%.A.c.'n
+                        42 1c 26 6e 21 1c 25 6e 00 1c 24 6e 23 08 00 ad # B.&n!.%n..$n#...
+                        21 00 01 ad 21 00 01 91 4c fe ff 54 c0 03 5f d6 # !...!...L..T.._.
+                        1f 20 03 d5 1f 20 03 d5 00 fc 46 d3 1f 20 03 d5 # . ... ....F.. ..
+                        27 18 40 ad 00 04 00 d1 43 08 40 ad 1f 00 00 f1 # '.@.....C.@.....
+                        25 10 41 ad 41 00 41 ad 42 00 01 91 63 1c 27 6e # %.A.A.A.B...c.'n
+                        42 1c 26 6e 21 1c 25 6e 00 1c 24 6e 67 18 40 ad # B.&n!.%n..$ng.@.
+                        65 10 41 ad 63 00 01 91 63 1c 27 6e 42 1c 26 6e # e.A.c...c.'nB.&n
+                        21 1c 25 6e 00 1c 24 6e 23 08 00 ad 21 00 01 ad # !.%n..$n#...!...
+                        21 00 01 91 6c fd ff 54 c0 03 5f d6 1f 20 03 d5 # !...l..T.._.. ..
+                        1f 20 03 d5 1f 20 03 d5 00 fc 46 d3 1f 20 03 d5 # . ... ....F.. ..
+                        27 18 40 ad 00 04 00 d1 43 08 40 ad 1f 00 00 f1 # '.@.....C.@.....
+                        25 10 41 ad 41 00 41 ad 42 00 01 91 63 1c 27 6e # %.A.A.A.B...c.'n
+                        42 1c 26 6e 21 1c 25 6e 00 1c 24 6e 67 18 40 ad # B.&n!.%n..$ng.@.
+                        65 10 41 ad 63 00 01 91 63 1c 27 6e 42 1c 26 6e # e.A.c...c.'nB.&n
+                        21 1c 25 6e 00 1c 24 6e 87 18 40 ad 85 10 41 ad # !.%n..$n..@...A.
+                        84 00 01 91 63 1c 27 6e 42 1c 26 6e 21 1c 25 6e # ....c.'nB.&n!.%n
+                        00 1c 24 6e 23 08 00 ad 21 00 01 ad 21 00 01 91 # ..$n#...!...!...
+                        8c fc ff 54 c0 03 5f d6 1f 20 03 d5 1f 20 03 d5 # ...T.._.. ... ..
+                        00 fc 46 d3 1f 20 03 d5 27 18 40 ad 00 04 00 d1 # ..F.. ..'.@.....
+                        43 08 40 ad 1f 00 00 f1 25 10 41 ad 41 00 41 ad # C.@.....%.A.A.A.
+                        42 00 01 91 63 1c 27 6e 42 1c 26 6e 21 1c 25 6e # B...c.'nB.&n!.%n
+                        00 1c 24 6e 67 18 40 ad 65 10 41 ad 63 00 01 91 # ..$ng.@.e.A.c...
+                        63 1c 27 6e 42 1c 26 6e 21 1c 25 6e 00 1c 24 6e # c.'nB.&n!.%n..$n
+                        87 18 40 ad 85 10 41 ad 84 00 01 91 63 1c 27 6e # ..@...A.....c.'n
+                        42 1c 26 6e 21 1c 25 6e 00 1c 24 6e a7 18 40 ad # B.&n!.%n..$n..@.
+                        a5 10 41 ad a5 00 01 91 63 1c 27 6e 42 1c 26 6e # ..A.....c.'nB.&n
+                        21 1c 25 6e 00 1c 24 6e 23 08 00 ad 21 00 01 ad # !.%n..$n#...!...
+                        21 00 01 91 ac fb ff 54 c0 03 5f d6             # !......T.._.
+           - Name:      "__ksymtab"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_ALLOC
+             Addr:      0x0
+             Size:      12
+             Link:      0
+             Info:      0
+             AddrAlign: 4
+             EntSize:   0
+             Data:      00 00 00 00 00 00 00 00 00 00 00 00             # ............
+           - Name:      ".rela__ksymtab"
+             Type:      SHT_RELA
+             Flags:     - SHF_EXT 64
+             Addr:      0x0
+             Size:      72
+             Link:      23
+             Info:      4
+             AddrAlign: 8
+             EntSize:   24
+             Data:      00 00 00 00 00 00 00 00 05 01 00 00 2b 00 00 00 # ............+...
+                        00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 # ................
+                        05 01 00 00 08 00 00 00 01 00 00 00 00 00 00 00 # ................
+                        08 00 00 00 00 00 00 00 05 01 00 00 08 00 00 00 # ................
+                        00 00 00 00 00 00 00 00                         # ........
+           - Name:      ".rodata.str1.8"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_ALLOC
+                        - SHF_EXT 16
+                        - SHF_EXT 32
+             Addr:      0x0
+             Size:      15
+             Link:      0
+             Info:      0
+             AddrAlign: 8
+             EntSize:   1
+             Data:      5f 5f 69 6e 6e 65 72 5f 6e 65 6f 6e 5f 5f 00    # __inner_neon__.
+           - Name:      ".rodata"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_ALLOC
+             Addr:      0x0
+             Size:      56
+             Link:      0
+             Info:      0
+             AddrAlign: 8
+             EntSize:   0
+             Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00                         # ........
+           - Name:      ".rela.rodata"
+             Type:      SHT_RELA
+             Flags:     - SHF_EXT 64
+             Addr:      0x0
+             Size:      120
+             Link:      23
+             Info:      7
+             AddrAlign: 8
+             EntSize:   24
+             Data:      08 00 00 00 00 00 00 00 01 01 00 00 05 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 18 00 00 00 00 00 00 00 # ................
+                        01 01 00 00 2c 00 00 00 00 00 00 00 00 00 00 00 # ....,...........
+                        20 00 00 00 00 00 00 00 01 01 00 00 29 00 00 00 #  ...........)...
+                        00 00 00 00 00 00 00 00 28 00 00 00 00 00 00 00 # ........(.......
+                        01 01 00 00 2d 00 00 00 00 00 00 00 00 00 00 00 # ....-...........
+                        30 00 00 00 00 00 00 00 01 01 00 00 2a 00 00 00 # 0...........*...
+                        00 00 00 00 00 00 00 00                         # ........
+           - Name:      ".modinfo"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_ALLOC
+             Addr:      0x0
+             Size:      162
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      6c 69 63 65 6e 73 65 3d 47 50 4c 00 64 65 73 63 # license=GPL.desc
+                        72 69 70 74 69 6f 6e 3d 41 52 4d 76 38 20 58 4f # ription=ARMv8 XO
+                        52 20 45 78 74 65 6e 73 69 6f 6e 73 00 61 75 74 # R Extensions.aut
+                        68 6f 72 3d 4a 61 63 6b 69 65 20 4c 69 75 20 3c # hor=Jackie Liu <
+                        6c 69 75 79 75 6e 30 31 40 6b 79 6c 69 6e 6f 73 # liuyun01@kylinos
+                        2e 63 6e 3e 00 64 65 70 65 6e 64 73 3d 00 69 6e # .cn>.depends=.in
+                        74 72 65 65 3d 59 00 6e 61 6d 65 3d 78 6f 72 5f # tree=Y.name=xor_
+                        6e 65 6f 6e 00 76 65 72 6d 61 67 69 63 3d 35 2e # neon.vermagic=5.
+                        35 2e 37 2d 31 2d 41 52 43 48 20 53 4d 50 20 6d # 5.7-1-ARCH SMP m
+                        6f 64 5f 75 6e 6c 6f 61 64 20 61 61 72 63 68 36 # od_unload aarch6
+                        34 00                                           # 4.
+           - Name:      "__ksymtab_strings"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_ALLOC
+             Addr:      0x0
+             Size:      22
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      00 78 6f 72 5f 62 6c 6f 63 6b 5f 69 6e 6e 65 72 # .xor_block_inner
+                        5f 6e 65 6f 6e 00                               # _neon.
+           - Name:      ".eh_frame"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_ALLOC
+             Addr:      0x0
+             Size:      100
+             Link:      0
+             Info:      0
+             AddrAlign: 8
+             EntSize:   0
+             Data:      10 00 00 00 00 00 00 00 01 7a 52 00 04 78 1e 01 # .........zR..x..
+                        1b 0c 1f 00 10 00 00 00 18 00 00 00 00 00 00 00 # ................
+                        48 00 00 00 00 00 00 00 10 00 00 00 2c 00 00 00 # H...........,...
+                        00 00 00 00 64 00 00 00 00 00 00 00 10 00 00 00 # ....d...........
+                        40 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 # @...............
+                        10 00 00 00 54 00 00 00 00 00 00 00 9c 00 00 00 # ....T...........
+                        00 00 00 00                                     # ....
+           - Name:      ".rela.eh_frame"
+             Type:      SHT_RELA
+             Flags:     - SHF_EXT 64
+             Addr:      0x0
+             Size:      96
+             Link:      23
+             Info:      11
+             AddrAlign: 8
+             EntSize:   24
+             Data:      1c 00 00 00 00 00 00 00 05 01 00 00 03 00 00 00 # ................
+                        08 00 00 00 00 00 00 00 30 00 00 00 00 00 00 00 # ........0.......
+                        05 01 00 00 03 00 00 00 58 00 00 00 00 00 00 00 # ........X.......
+                        44 00 00 00 00 00 00 00 05 01 00 00 03 00 00 00 # D...............
+                        c8 00 00 00 00 00 00 00 58 00 00 00 00 00 00 00 # ........X.......
+                        05 01 00 00 03 00 00 00 50 01 00 00 00 00 00 00 # ........P.......
+           - Name:      ".data"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
+             Addr:      0x0
+             Size:      0
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      
+           - Name:      "__patchable_function_entries"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
+             Addr:      0x0
+             Size:      32
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+           - Name:      ".rela__patchable_function_entries"
+             Type:      SHT_RELA
+             Flags:     - SHF_EXT 64
+             Addr:      0x0
+             Size:      96
+             Link:      23
+             Info:      14
+             AddrAlign: 8
+             EntSize:   24
+             Data:      00 00 00 00 00 00 00 00 01 01 00 00 03 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 # ................
+                        01 01 00 00 03 00 00 00 50 00 00 00 00 00 00 00 # ........P.......
+                        10 00 00 00 00 00 00 00 01 01 00 00 03 00 00 00 # ................
+                        c0 00 00 00 00 00 00 00 18 00 00 00 00 00 00 00 # ................
+                        01 01 00 00 03 00 00 00 48 01 00 00 00 00 00 00 # ........H.......
+           - Name:      ".gnu.linkonce.this_module"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
+             Addr:      0x0
+             Size:      832
+             Link:      0
+             Info:      0
+             AddrAlign: 64
+             EntSize:   0
+             Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 78 6f 72 5f 6e 65 6f 6e # ........xor_neon
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+           - Name:      ".plt"
+             Type:      SHT_NOBITS
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
+             Addr:      0x340
+             Size:      1
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      00                                              # .
+           - Name:      ".init.plt"
+             Type:      SHT_NOBITS
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
+             Addr:      0x341
+             Size:      1
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      00                                              # .
+           - Name:      ".text.ftrace_trampoline"
+             Type:      SHT_NOBITS
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
+             Addr:      0x342
+             Size:      1
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      00                                              # .
+           - Name:      ".bss"
+             Type:      SHT_NOBITS
+             Flags:     - SHF_WRITE
+                        - SHF_ALLOC
+             Addr:      0x0
+             Size:      0
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      
+           - Name:      ".comment"
+             Type:      SHT_PROGBITS
+             Flags:     - SHF_EXT 16
+                        - SHF_EXT 32
+             Addr:      0x0
+             Size:      86
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   1
+             Data:      00 47 43 43 3a 20 28 63 72 6f 73 73 74 6f 6f 6c # .GCC: (crosstool
+                        2d 4e 47 20 31 2e 32 33 2e 30 2e 34 31 38 2d 64 # -NG 1.23.0.418-d
+                        35 39 30 29 20 39 2e 32 2e 30 00 00 47 43 43 3a # 590) 9.2.0..GCC:
+                        20 28 63 72 6f 73 73 74 6f 6f 6c 2d 4e 47 20 31 #  (crosstool-NG 1
+                        2e 32 33 2e 30 2e 34 31 38 2d 64 35 39 30 29 20 # .23.0.418-d590) 
+                        39 2e 32 2e 30 00                               # 9.2.0.
+           - Name:      ".note.GNU-stack"
+             Type:      SHT_PROGBITS
+             Flags:     
+             Addr:      0x0
+             Size:      0
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      
+           - Name:      ".symtab"
+             Type:      SHT_SYMTAB
+             Flags:     
+             Addr:      0x0
+             Size:      1104
+             Link:      24
+             Info:      40
+             AddrAlign: 8
+             EntSize:   24
+             Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 01 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 02 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 03 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 04 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 06 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 07 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 09 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 0a 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 0b 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 0d 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 0e 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 10 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 11 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 12 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 13 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 14 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 03 00 15 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 03 00 16 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 01 00 00 00 04 00 f1 ff # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        10 00 00 00 00 00 10 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 13 00 00 00 01 00 09 00 # ................
+                        55 00 00 00 00 00 00 00 09 00 00 00 00 00 00 00 # U...............
+                        29 00 00 00 01 00 09 00 5e 00 00 00 00 00 00 00 # ).......^.......
+                        09 00 00 00 00 00 00 00 3e 00 00 00 01 00 09 00 # ........>.......
+                        67 00 00 00 00 00 00 00 0e 00 00 00 00 00 00 00 # g...............
+                        51 00 00 00 01 00 09 00 75 00 00 00 00 00 00 00 # Q.......u.......
+                        2d 00 00 00 00 00 00 00 10 00 00 00 00 00 02 00 # -...............
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        68 00 00 00 01 00 02 00 00 00 00 00 00 00 00 00 # h...............
+                        18 00 00 00 00 00 00 00 70 00 00 00 04 00 f1 ff # ........p.......
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        10 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 7b 00 00 00 00 00 04 00 # ........{.......
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        9a 00 00 00 01 00 0a 00 01 00 00 00 00 00 00 00 # ................
+                        15 00 00 00 00 00 00 00 b9 00 00 00 01 00 0a 00 # ................
+                        00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 # ................
+                        da 00 00 00 00 00 03 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 10 00 00 00 00 00 06 00 # ................
+                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        10 00 00 00 00 00 07 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 dd 00 00 00 01 00 09 00 # ................
+                        00 00 00 00 00 00 00 00 0c 00 00 00 00 00 00 00 # ................
+                        f3 00 00 00 01 00 09 00 0c 00 00 00 00 00 00 00 # ................
+                        21 00 00 00 00 00 00 00 0d 01 00 00 01 00 09 00 # !...............
+                        2d 00 00 00 00 00 00 00 28 00 00 00 00 00 00 00 # -.......(.......
+                        10 00 00 00 00 00 0a 00 00 00 00 00 00 00 00 00 # ................
+                        00 00 00 00 00 00 00 00 10 00 00 00 00 00 0b 00 # ................
+                        14 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                        22 01 00 00 11 00 10 00 00 00 00 00 00 00 00 00 # "...............
+                        40 03 00 00 00 00 00 00 30 01 00 00 12 00 03 00 # @.......0.......
+                        50 00 00 00 00 00 00 00 6c 00 00 00 00 00 00 00 # P.......l.......
+                        41 01 00 00 12 00 03 00 48 01 00 00 00 00 00 00 # A.......H.......
+                        a4 00 00 00 00 00 00 00 85 00 00 00 11 00 07 00 # ................
+                        00 00 00 00 00 00 00 00 38 00 00 00 00 00 00 00 # ........8.......
+                        52 01 00 00 12 00 03 00 00 00 00 00 00 00 00 00 # R...............
+                        50 00 00 00 00 00 00 00 63 01 00 00 12 00 03 00 # P.......c.......
+                        c0 00 00 00 00 00 00 00 88 00 00 00 00 00 00 00 # ................
+             Symbols:   - Name:      ""
+                          Type:      STT_NoType
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_Undef
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 1
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 2
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 3
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 4
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 6
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 7
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 9
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 10
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 11
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 13
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 14
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 16
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 17
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 18
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 19
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 20
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 21
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      ""
+                          Type:      STT_Section
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 22
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "xor-neon.mod.c"
+                          Type:      STT_File
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_Abs
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "$d"
+                          Type:      STT_NoType
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 16
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "__UNIQUE_ID_depends13"
+                          Type:      STT_Object
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 9
+                          Value:     0x55
+                          Size:      0x9
+                        - Name:      "__UNIQUE_ID_intree12"
+                          Type:      STT_Object
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 9
+                          Value:     0x5e
+                          Size:      0x9
+                        - Name:      "__UNIQUE_ID_name11"
+                          Type:      STT_Object
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 9
+                          Value:     0x67
+                          Size:      0xe
+                        - Name:      "__UNIQUE_ID_vermagic10"
+                          Type:      STT_Object
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 9
+                          Value:     0x75
+                          Size:      0x2d
+                        - Name:      "$d"
+                          Type:      STT_NoType
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 2
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "_note_6"
+                          Type:      STT_Object
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 2
+                          Value:     0x0
+                          Size:      0x18
+                        - Name:      "xor-neon.c"
+                          Type:      STT_File
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_Abs
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "$d"
+                          Type:      STT_NoType
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 4
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "__ksymtab_xor_block_inner_neon"
+                          Type:      STT_NoType
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 4
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "__kstrtab_xor_block_inner_neon"
+                          Type:      STT_Object
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 10
+                          Value:     0x1
+                          Size:      0x15
+                        - Name:      "__kstrtabns_xor_block_inner_neon"
+                          Type:      STT_Object
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 10
+                          Value:     0x0
+                          Size:      0x1
+                        - Name:      "$x"
+                          Type:      STT_NoType
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 3
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "$d"
+                          Type:      STT_NoType
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 6
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "$d"
+                          Type:      STT_NoType
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 7
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "__UNIQUE_ID_license12"
+                          Type:      STT_Object
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 9
+                          Value:     0x0
+                          Size:      0xc
+                        - Name:      "__UNIQUE_ID_description11"
+                          Type:      STT_Object
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 9
+                          Value:     0xc
+                          Size:      0x21
+                        - Name:      "__UNIQUE_ID_author10"
+                          Type:      STT_Object
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 9
+                          Value:     0x2d
+                          Size:      0x28
+                        - Name:      "$d"
+                          Type:      STT_NoType
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 10
+                          Value:     0x0
+                          Size:      0x0
+                        - Name:      "$d"
+                          Type:      STT_NoType
+                          Binding:   STB_Local
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 11
+                          Value:     0x14
+                          Size:      0x0
+                        - Name:      "__this_module"
+                          Type:      STT_Object
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 16
+                          Value:     0x0
+                          Size:      0x340
+                        - Name:      "xor_arm64_neon_3"
+                          Type:      STT_Func
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 3
+                          Value:     0x50
+                          Size:      0x6c
+                        - Name:      "xor_arm64_neon_5"
+                          Type:      STT_Func
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 3
+                          Value:     0x148
+                          Size:      0xa4
+                        - Name:      "xor_block_inner_neon"
+                          Type:      STT_Object
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 7
+                          Value:     0x0
+                          Size:      0x38
+                        - Name:      "xor_arm64_neon_2"
+                          Type:      STT_Func
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 3
+                          Value:     0x0
+                          Size:      0x50
+                        - Name:      "xor_arm64_neon_4"
+                          Type:      STT_Func
+                          Binding:   STB_Global
+                          Other:     0x0
+                          SectionIndex: SHN_EXT 3
+                          Value:     0xc0
+                          Size:      0x88
+           - Name:      ".strtab"
+             Type:      SHT_STRTAB
+             Flags:     
+             Addr:      0x0
+             Size:      372
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      00 78 6f 72 2d 6e 65 6f 6e 2e 6d 6f 64 2e 63 00 # .xor-neon.mod.c.
+                        24 64 00 5f 5f 55 4e 49 51 55 45 5f 49 44 5f 64 # $d.__UNIQUE_ID_d
+                        65 70 65 6e 64 73 31 33 00 5f 5f 55 4e 49 51 55 # epends13.__UNIQU
+                        45 5f 49 44 5f 69 6e 74 72 65 65 31 32 00 5f 5f # E_ID_intree12.__
+                        55 4e 49 51 55 45 5f 49 44 5f 6e 61 6d 65 31 31 # UNIQUE_ID_name11
+                        00 5f 5f 55 4e 49 51 55 45 5f 49 44 5f 76 65 72 # .__UNIQUE_ID_ver
+                        6d 61 67 69 63 31 30 00 5f 6e 6f 74 65 5f 36 00 # magic10._note_6.
+                        78 6f 72 2d 6e 65 6f 6e 2e 63 00 5f 5f 6b 73 79 # xor-neon.c.__ksy
+                        6d 74 61 62 5f 78 6f 72 5f 62 6c 6f 63 6b 5f 69 # mtab_xor_block_i
+                        6e 6e 65 72 5f 6e 65 6f 6e 00 5f 5f 6b 73 74 72 # nner_neon.__kstr
+                        74 61 62 5f 78 6f 72 5f 62 6c 6f 63 6b 5f 69 6e # tab_xor_block_in
+                        6e 65 72 5f 6e 65 6f 6e 00 5f 5f 6b 73 74 72 74 # ner_neon.__kstrt
+                        61 62 6e 73 5f 78 6f 72 5f 62 6c 6f 63 6b 5f 69 # abns_xor_block_i
+                        6e 6e 65 72 5f 6e 65 6f 6e 00 24 78 00 5f 5f 55 # nner_neon.$x.__U
+                        4e 49 51 55 45 5f 49 44 5f 6c 69 63 65 6e 73 65 # NIQUE_ID_license
+                        31 32 00 5f 5f 55 4e 49 51 55 45 5f 49 44 5f 64 # 12.__UNIQUE_ID_d
+                        65 73 63 72 69 70 74 69 6f 6e 31 31 00 5f 5f 55 # escription11.__U
+                        4e 49 51 55 45 5f 49 44 5f 61 75 74 68 6f 72 31 # NIQUE_ID_author1
+                        30 00 5f 5f 74 68 69 73 5f 6d 6f 64 75 6c 65 00 # 0.__this_module.
+                        78 6f 72 5f 61 72 6d 36 34 5f 6e 65 6f 6e 5f 33 # xor_arm64_neon_3
+                        00 78 6f 72 5f 61 72 6d 36 34 5f 6e 65 6f 6e 5f # .xor_arm64_neon_
+                        35 00 78 6f 72 5f 61 72 6d 36 34 5f 6e 65 6f 6e # 5.xor_arm64_neon
+                        5f 32 00 78 6f 72 5f 61 72 6d 36 34 5f 6e 65 6f # _2.xor_arm64_neo
+                        6e 5f 34 00                                     # n_4.
+           - Name:      ".shstrtab"
+             Type:      SHT_STRTAB
+             Flags:     
+             Addr:      0x0
+             Size:      279
+             Link:      0
+             Info:      0
+             AddrAlign: 1
+             EntSize:   0
+             Data:      00 2e 73 79 6d 74 61 62 00 2e 73 74 72 74 61 62 # ..symtab..strtab
+                        00 2e 73 68 73 74 72 74 61 62 00 2e 6e 6f 74 65 # ..shstrtab..note
+                        2e 67 6e 75 2e 62 75 69 6c 64 2d 69 64 00 2e 6e # .gnu.build-id..n
+                        6f 74 65 2e 4c 69 6e 75 78 00 2e 74 65 78 74 00 # ote.Linux..text.
+                        2e 72 65 6c 61 5f 5f 6b 73 79 6d 74 61 62 00 2e # .rela__ksymtab..
+                        72 6f 64 61 74 61 2e 73 74 72 31 2e 38 00 2e 72 # rodata.str1.8..r
+                        65 6c 61 2e 72 6f 64 61 74 61 00 2e 6d 6f 64 69 # ela.rodata..modi
+                        6e 66 6f 00 5f 5f 6b 73 79 6d 74 61 62 5f 73 74 # nfo.__ksymtab_st
+                        72 69 6e 67 73 00 2e 72 65 6c 61 2e 65 68 5f 66 # rings..rela.eh_f
+                        72 61 6d 65 00 2e 64 61 74 61 00 2e 72 65 6c 61 # rame..data..rela
+                        5f 5f 70 61 74 63 68 61 62 6c 65 5f 66 75 6e 63 # __patchable_func
+                        74 69 6f 6e 5f 65 6e 74 72 69 65 73 00 2e 67 6e # tion_entries..gn
+                        75 2e 6c 69 6e 6b 6f 6e 63 65 2e 74 68 69 73 5f # u.linkonce.this_
+                        6d 6f 64 75 6c 65 00 2e 69 6e 69 74 2e 70 6c 74 # module..init.plt
+                        00 2e 74 65 78 74 2e 66 74 72 61 63 65 5f 74 72 # ..text.ftrace_tr
+                        61 6d 70 6f 6c 69 6e 65 00 2e 62 73 73 00 2e 63 # ampoline..bss..c
+                        6f 6d 6d 65 6e 74 00 2e 6e 6f 74 65 2e 47 4e 55 # omment..note.GNU
+                        2d 73 74 61 63 6b 00                            # -stack.
+Segments:  
