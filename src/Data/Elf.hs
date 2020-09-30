@@ -238,28 +238,6 @@ dsegment (n, s) = case toNonEmpty $ segmentInterval s of
     Just i -> Right $ ElfRBuilderSegment s n [] i
 
 
---    = ElfRBuilderHeader
---        { erbhHeader :: HeaderXX c
---        , interval   :: INE.Interval Word64
---        }
-
--- data HeaderXX (c :: ElfClass) =
---     HeaderXX
---         { hData       :: ElfData
---         , hOSABI      :: ElfOSABI
---         , hABIVersion :: Word8
---         , hType       :: ElfType
---         , hMachine    :: ElfMachine
---         , hEntry      :: WXX c
---         , hFlags      :: Word32
---                      , hPhOff      :: WXX c
---                      , hShOff      :: WXX c
---                      , hPhEntSize  :: Word16
---                      , hPhNum      :: Word16
---                      , hShEntSize  :: Word16
---                      , hShNum      :: Word16
---                      , hShStrNdx   :: Word16 -- FIXME
---         }
 
 data Elf (c :: ElfClass)
     = ElfHeader
@@ -272,11 +250,21 @@ data Elf (c :: ElfClass)
         , ehFlags      :: Word32
         }
     | ElfSection
-        { esN      :: Word32
+        { esName      :: String -- NB: different
+        , esType      :: ElfSectionType
+        , esFlags     :: WXX c
+        , esAddr      :: WXX c
+        , esAddrAlign :: WXX c
+        , esEntSize   :: WXX c
         }
     | ElfSegment
-        { epN      :: Word32
-        , epData   :: [Elf c]
+        { epType     :: ElfSegmentType
+        , epFlags    :: Word32
+        , epVirtAddr :: WXX c
+        , epPhysAddr :: WXX c
+        , epMemSize  :: WXX c
+        , epAlign    :: WXX c
+        , epData     :: [Elf c]
         }
     | ElfSectionTable
     | ElfSegmentTable
@@ -297,8 +285,27 @@ mapRBuilderToElf bs l = fmap f l
                 ehFlags      = hFlags
             in
                 ElfHeader{..}
-        f ElfRBuilderSection{..}      = ElfSection erbsN
-        f ElfRBuilderSegment{..}      = ElfSegment erbpN $ mapRBuilderToElf bs erbpData
+        f ElfRBuilderSection{ erbsHeader = SectionXX{..}, ..} =
+            let
+                esName      = "name"
+                esType      = sType
+                esFlags     = sFlags
+                esAddr      = sAddr
+                esAddrAlign = sAddrAlign
+                esEntSize   = sEntSize
+            in
+                ElfSection{..}
+        f ElfRBuilderSegment{ erbpHeader = SegmentXX{..}, ..} =
+            let
+                epType     = pType
+                epFlags    = pFlags
+                epVirtAddr = pVirtAddr
+                epPhysAddr = pPhysAddr
+                epMemSize  = pMemSize
+                epAlign    = pAlign
+                epData     = mapRBuilderToElf bs erbpData
+            in
+                ElfSegment{..}
         f ElfRBuilderSectionTable{..} = ElfSectionTable
         f ElfRBuilderSegmentTable{..} = ElfSegmentTable
 

@@ -3,7 +3,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Data.Elf.Doc
     ( printHeader
@@ -56,51 +58,52 @@ printWXXS SELFCLASS64 = printWord64
 printWXX :: SingI a => WXX a -> Doc ()
 printWXX = withSing printWXXS
 
-printHeader :: SingI a => HeaderXX a -> Doc ()
+printHeader :: forall a . SingI a => HeaderXX a -> Doc ()
 printHeader HeaderXX{..} =
     formatPairs
-        [ ("hData",       viaShow hData           ) -- ElfData
-        , ("hOSABI",      viaShow hOSABI          ) -- ElfOSABI
-        , ("hABIVersion", viaShow hABIVersion     ) -- Word8
-        , ("hType",       viaShow hType           ) -- ElfType
-        , ("hMachine",    viaShow hMachine        ) -- ElfMachine
-        , ("hEntry",      printWXX hEntry         ) -- WXX c
-        , ("hPhOff",      printWXX hPhOff         ) -- WXX c
-        , ("hShOff",      printWXX hShOff         ) -- WXX c
-        , ("hFlags",      printWord32 hFlags      ) -- Word32
-        , ("hPhEntSize",  printWord16 hPhEntSize  ) -- Word16
-        , ("hPhNum",      viaShow hPhNum          ) -- Word16
-        , ("hShEntSize",  printWord16  hShEntSize ) -- Word16
-        , ("hShNum",      viaShow hShNum          ) -- Word16
-        , ("hShStrNdx",   viaShow hShStrNdx       ) -- Word16
+        [ ("Class",      viaShow $ fromSing $ sing @a )
+        , ("Data",       viaShow hData           ) -- ElfData
+        , ("OSABI",      viaShow hOSABI          ) -- ElfOSABI
+        , ("ABIVersion", viaShow hABIVersion     ) -- Word8
+        , ("Type",       viaShow hType           ) -- ElfType
+        , ("Machine",    viaShow hMachine        ) -- ElfMachine
+        , ("Entry",      printWXX hEntry         ) -- WXX c
+        , ("PhOff",      printWXX hPhOff         ) -- WXX c
+        , ("ShOff",      printWXX hShOff         ) -- WXX c
+        , ("Flags",      printWord32 hFlags      ) -- Word32
+        , ("PhEntSize",  printWord16 hPhEntSize  ) -- Word16
+        , ("PhNum",      viaShow hPhNum          ) -- Word16
+        , ("ShEntSize",  printWord16  hShEntSize ) -- Word16
+        , ("ShNum",      viaShow hShNum          ) -- Word16
+        , ("ShStrNdx",   viaShow hShStrNdx       ) -- Word16
         ]
 
 printSection :: SingI a => SectionXX a -> Doc ()
 printSection SectionXX{..} =
     formatPairs
-        [ ("sName",      viaShow sName       ) -- Word32
-        , ("sType",      viaShow sType       ) -- ElfSectionType
-        , ("sFlags",     printWXX sFlags     ) -- WXX c
-        , ("sAddr",      printWXX sAddr      ) -- WXX c
-        , ("sOffset",    printWXX sOffset    ) -- WXX c
-        , ("sSize",      printWXX sSize      ) -- WXX c
-        , ("sLink",      viaShow sLink       ) -- Word32
-        , ("sInfo",      viaShow sInfo       ) -- Word32
-        , ("sAddrAlign", printWXX sAddrAlign ) -- WXX c
-        , ("sEntSize",   printWXX sEntSize   ) -- WXX c
+        [ ("Name",      viaShow sName       ) -- Word32
+        , ("Type",      viaShow sType       ) -- ElfSectionType
+        , ("Flags",     printWXX sFlags     ) -- WXX c
+        , ("Addr",      printWXX sAddr      ) -- WXX c
+        , ("Offset",    printWXX sOffset    ) -- WXX c
+        , ("Size",      printWXX sSize      ) -- WXX c
+        , ("Link",      viaShow sLink       ) -- Word32
+        , ("Info",      viaShow sInfo       ) -- Word32
+        , ("AddrAlign", printWXX sAddrAlign ) -- WXX c
+        , ("EntSize",   printWXX sEntSize   ) -- WXX c
         ]
 
 printSegment :: SingI a => SegmentXX a -> Doc ()
 printSegment SegmentXX{..} =
     formatPairs
-        [ ("pType",     viaShow pType      ) -- ElfSegmentType
-        , ("pFlags",    printWord32 pFlags ) -- Word32
-        , ("pOffset",   printWXX pOffset   ) -- WXX c
-        , ("pVirtAddr", printWXX pVirtAddr ) -- WXX c
-        , ("pPhysAddr", printWXX pPhysAddr ) -- WXX c
-        , ("pFileSize", printWXX pFileSize ) -- WXX c
-        , ("pMemSize",  printWXX pMemSize  ) -- WXX c
-        , ("pAlign",    printWXX pAlign    ) -- WXX c
+        [ ("Type",     viaShow pType      ) -- ElfSegmentType
+        , ("Flags",    printWord32 pFlags ) -- Word32
+        , ("Offset",   printWXX pOffset   ) -- WXX c
+        , ("VirtAddr", printWXX pVirtAddr ) -- WXX c
+        , ("PhysAddr", printWXX pPhysAddr ) -- WXX c
+        , ("FileSize", printWXX pFileSize ) -- WXX c
+        , ("MemSize",  printWXX pMemSize  ) -- WXX c
+        , ("Align",    printWXX pAlign    ) -- WXX c
         ]
 
 printHeaders' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> Doc ()
@@ -119,22 +122,38 @@ printHeaders' hdr ss ps =
 printHeaders :: Sigma ElfClass (TyCon1 HeadersXX) -> Doc ()
 printHeaders (classS :&: HeadersXX (hdr, ss, ps)) = withSingI classS $ printHeaders' hdr ss ps
 
-printElf'' :: SingI a => Elf a -> Doc ()
-printElf'' ElfHeader{..}   =
-    formatPairs
-        [ ("ehData",       viaShow ehData           ) -- ElfData
-        , ("ehOSABI",      viaShow ehOSABI          ) -- ElfOSABI
-        , ("ehABIVersion", viaShow ehABIVersion     ) -- Word8
-        , ("ehType",       viaShow ehType           ) -- ElfType
-        , ("ehMachine",    viaShow ehMachine        ) -- ElfMachine
-        , ("ehEntry",      printWXX ehEntry         ) -- WXX c
-        , ("ehFlags",      printWord32 ehFlags      ) -- Word32
-        ]
+formatPairsBlock :: String -> [(String, Doc a)] -> Doc a
+formatPairsBlock name pairs = vsep [ pretty name <+> "{", indent 4 $ formatPairs pairs, "}" ]
 
-printElf'' ElfSection{..}  = "section" <+> pretty esN
-printElf'' ElfSegment{..}  = formatPairs
-    [ ("n",    pretty epN)
-    , ("data", printElf' epData)
+printElf'' :: forall a . SingI a => Elf a -> Doc ()
+printElf'' ElfHeader{..} =
+    (formatPairsBlock "header")
+        [ ("Class",      viaShow $ fromSing $ sing @a )
+        , ("Data",       viaShow ehData       ) -- ElfData
+        , ("OSABI",      viaShow ehOSABI      ) -- ElfOSABI
+        , ("ABIVersion", viaShow ehABIVersion ) -- Word8
+        , ("Type",       viaShow ehType       ) -- ElfType
+        , ("Machine",    viaShow ehMachine    ) -- ElfMachine
+        , ("Entry",      printWXX ehEntry     ) -- WXX c
+        , ("Flags",      printWord32 ehFlags  ) -- Word32
+        ]
+printElf'' ElfSection{..} =
+    (formatPairsBlock $ "section " ++ esName)
+        [ ("Type",       viaShow esType       )
+        , ("Flags",      printWXX esFlags     )
+        , ("Addr",       printWXX esAddr      )
+        , ("AddrAlign",  printWXX esAddrAlign )
+        , ("EntSize",    printWXX esEntSize   )
+        ]
+printElf'' ElfSegment{..} =
+    (formatPairsBlock "segment")
+        [ ("Type",       viaShow epType       )
+        , ("Flags",      printWord32 epFlags  )
+        , ("VirtAddr",   printWXX epVirtAddr  )
+        , ("PhysAddr",   printWXX epPhysAddr  )
+        , ("MemSize",    printWXX epMemSize   )
+        , ("Align",      printWXX epAlign     )
+        , ("Data",       printElf' epData     )
     ]
 printElf'' ElfSectionTable = "section table"
 printElf'' ElfSegmentTable = "segment table"
