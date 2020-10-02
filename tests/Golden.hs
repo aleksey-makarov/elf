@@ -37,9 +37,6 @@ import Data.Elf
 import Data.Elf.Headers
 import Data.Elf.Doc
 
-workDir :: FilePath
-workDir = "testdata"
-
 -- runExecWithStdoutFile :: FilePath -> [String] -> FilePath -> IO ()
 -- runExecWithStdoutFile execFilePath args stdoutPath =
 --     withBinaryFile stdoutPath WriteMode (\ oh -> do
@@ -54,19 +51,18 @@ partitionM p l = foldlM f ([], []) l
             b <- p x
             return $ if b then (x:ts, fs) else (ts, x:fs)
 
-traverseDir :: FilePath -> (FilePath -> Bool) -> IO [FilePath]
+traverseDir :: FilePath -> (FilePath -> IO Bool) -> IO [FilePath]
 traverseDir root ok = go root
     where
         go :: FilePath -> IO [FilePath]
         go dir = do
             paths <- P.map (dir </>) <$> listDirectory dir
             (dirPaths, filePaths) <- partitionM doesDirectoryExist paths
-            let
-                oks = P.filter ok filePaths
+            oks <- filterM ok filePaths
             (oks ++) <$> (F.concat <$> (sequence $ P.map go dirPaths))
 
-isElf :: FilePath -> Bool
-isElf p = takeExtension p == ".elf"
+isElf :: FilePath -> IO Bool
+isElf p = if takeExtension p == ".bad" then return False else (elfMagic ==) . decode <$> BSL.readFile p
 
 decodeOrFailAssertion :: Binary a => ByteString -> IO (Int64, a)
 decodeOrFailAssertion bs = case decodeOrFail bs of
@@ -120,8 +116,11 @@ mkTest p = testCase p $ withBinaryFile p ReadMode (BSL.hGetContents >=> mkTest')
 mkGoldenTest :: String -> (FilePath -> IO (Doc ())) -> FilePath -> TestTree
 mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
     where
-        o = replaceExtension file "." ++ name ++ ".out"
-        g = replaceExtension file "." ++ name ++ ".golden"
+
+        newBase = "tests" </> file <.> name
+
+        o = newBase <.> "out"
+        g = newBase <.> "golden"
 
         mkGoldenTestOutput :: IO ()
         mkGoldenTestOutput = do
@@ -146,7 +145,7 @@ main :: IO ()
 main = do
 
     -- binDir <- getBinDir
-    elfs <- traverseDir workDir isElf
+    elfs <- traverseDir "testdata" isElf
 
     defaultMain $ testGroup "elf" [ testGroup "headers round trip" (mkTest <$> elfs)
                                   , testGroup "headers golden" (mkGoldenTest "header" printHeadersFile <$> elfs)

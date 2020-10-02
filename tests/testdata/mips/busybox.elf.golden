@@ -1,0 +1,69 @@
+segment {
+    Type:     PT_LOAD
+    Flags:    0x00000005
+    VirtAddr: 0x00400000
+    PhysAddr: 0x00400000
+    MemSize:  0x00081b94
+    Align:    0x00001000
+    Data:     
+        header {
+            Class:      ELFCLASS32
+            Data:       ELFDATA2MSB
+            OSABI:      ELFOSABI_SYSV
+            ABIVersion: 0
+            Type:       ET_EXEC
+            Machine:    EM_MIPS
+            Entry:      0x004060f0
+            Flags:      0x50001007
+        }
+        segment {
+            Type:     PT_PHDR
+            Flags:    0x00000005
+            VirtAddr: 0x00400034
+            PhysAddr: 0x00400034
+            MemSize:  0x000000e0
+            Align:    0x00000004
+            Data:     
+                segment table
+        }
+        segment {
+            Type:     PT_INTERP
+            Flags:    0x00000004
+            VirtAddr: 0x00400114
+            PhysAddr: 0x00400114
+            MemSize:  0x00000014
+            Align:    0x00000001
+            Data:     
+                
+        }
+        segment {
+            Type:     PT_DYNAMIC
+            Flags:    0x00000007
+            VirtAddr: 0x00400128
+            PhysAddr: 0x00400128
+            MemSize:  0x00005f34
+            Align:    0x00000004
+            Data:     
+                
+        }
+        segment {
+            Type:     PT_EXT 1685382480
+            Flags:    0x00000004
+            VirtAddr: 0x00481b68
+            PhysAddr: 0x00481b68
+            MemSize:  0x0000002c
+            Align:    0x00000004
+            Data:     
+                
+        }
+}
+segment {
+    Type:     PT_LOAD
+    Flags:    0x00000006
+    VirtAddr: 0x004c2000
+    PhysAddr: 0x004c2000
+    MemSize:  0x00002c68
+    Align:    0x00001000
+    Data:     
+        
+}

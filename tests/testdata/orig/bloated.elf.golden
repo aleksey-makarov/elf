@@ -1,0 +1,287 @@
+segment {
+    Type:     PT_LOAD
+    Flags:    0x00000005
+    VirtAddr: 0x08048000
+    PhysAddr: 0x08048000
+    MemSize:  0x00000934
+    Align:    0x00001000
+    Data:     
+        header {
+            Class:      ELFCLASS32
+            Data:       ELFDATA2LSB
+            OSABI:      ELFOSABI_SYSV
+            ABIVersion: 0
+            Type:       ET_EXEC
+            Machine:    EM_386
+            Entry:      0x08048610
+            Flags:      0x00000000
+        }
+        segment {
+            Type:     PT_PHDR
+            Flags:    0x00000005
+            VirtAddr: 0x08048034
+            PhysAddr: 0x08048034
+            MemSize:  0x00000120
+            Align:    0x00000004
+            Data:     
+                segment table
+        }
+        segment {
+            Type:     PT_INTERP
+            Flags:    0x00000004
+            VirtAddr: 0x08048154
+            PhysAddr: 0x08048154
+            MemSize:  0x00000013
+            Align:    0x00000001
+            Data:     
+                section name {
+                    Type:      SHT_PROGBITS
+                    Flags:     0x00000002
+                    Addr:      0x08048154
+                    AddrAlign: 0x00000001
+                    EntSize:   0x00000000
+                }
+        }
+        segment {
+            Type:     PT_NOTE
+            Flags:    0x00000004
+            VirtAddr: 0x08048168
+            PhysAddr: 0x08048168
+            MemSize:  0x00000044
+            Align:    0x00000004
+            Data:     
+                section name {
+                    Type:      SHT_NOTE
+                    Flags:     0x00000002
+                    Addr:      0x08048168
+                    AddrAlign: 0x00000004
+                    EntSize:   0x00000000
+                }
+                section name {
+                    Type:      SHT_NOTE
+                    Flags:     0x00000002
+                    Addr:      0x08048188
+                    AddrAlign: 0x00000004
+                    EntSize:   0x00000000
+                }
+        }
+        section name {
+            Type:      SHT_EXT 1879048182
+            Flags:     0x00000002
+            Addr:      0x080481ac
+            AddrAlign: 0x00000004
+            EntSize:   0x00000004
+        }
+        section name {
+            Type:      SHT_DYNSYM
+            Flags:     0x00000002
+            Addr:      0x080481dc
+            AddrAlign: 0x00000004
+            EntSize:   0x00000010
+        }
+        section name {
+            Type:      SHT_STRTAB
+            Flags:     0x00000002
+            Addr:      0x080482bc
+            AddrAlign: 0x00000001
+            EntSize:   0x00000000
+        }
+        section name {
+            Type:      SHT_EXT 1879048191
+            Flags:     0x00000002
+            Addr:      0x08048456
+            AddrAlign: 0x00000002
+            EntSize:   0x00000002
+        }
+        section name {
+            Type:      SHT_EXT 1879048190
+            Flags:     0x00000002
+            Addr:      0x08048474
+            AddrAlign: 0x00000004
+            EntSize:   0x00000000
+        }
+        section name {
+            Type:      SHT_REL
+            Flags:     0x00000002
+            Addr:      0x080484c4
+            AddrAlign: 0x00000004
+            EntSize:   0x00000008
+        }
+        section name {
+            Type:      SHT_REL
+            Flags:     0x00000042
+            Addr:      0x080484d4
+            AddrAlign: 0x00000004
+            EntSize:   0x00000008
+        }
+        section name {
+            Type:      SHT_PROGBITS
+            Flags:     0x00000006
+            Addr:      0x0804850c
+            AddrAlign: 0x00000004
+            EntSize:   0x00000000
+        }
+        section name {
+            Type:      SHT_PROGBITS
+            Flags:     0x00000006
+            Addr:      0x08048530
+            AddrAlign: 0x00000010
+            EntSize:   0x00000004
+        }
+        section name {
+            Type:      SHT_PROGBITS
+            Flags:     0x00000006
+            Addr:      0x080485b0
+            AddrAlign: 0x00000008
+            EntSize:   0x00000000
+        }
+        section name {
+            Type:      SHT_PROGBITS
+            Flags:     0x00000006
+            Addr:      0x080485c0
+            AddrAlign: 0x00000010
+            EntSize:   0x00000000
+        }
+        section name {
+            Type:      SHT_PROGBITS
+            Flags:     0x00000006
+            Addr:      0x080487d4
+            AddrAlign: 0x00000004
+            EntSize:   0x00000000
+        }
+        section name {
+            Type:      SHT_PROGBITS
+            Flags:     0x00000002
+            Addr:      0x080487e8
+            AddrAlign: 0x00000004
+            EntSize:   0x00000000
+        }
+        segment {
+            Type:     PT_EXT 1685382480
+            Flags:    0x00000004
+            VirtAddr: 0x08048804
+            PhysAddr: 0x08048804
+            MemSize:  0x0000003c
+            Align:    0x00000004
+            Data:     
+                section name {
+                    Type:      SHT_PROGBITS
+                    Flags:     0x00000002
+                    Addr:      0x08048804
+                    AddrAlign: 0x00000004
+                    EntSize:   0x00000000
+                }
+        }
+        section name {
+            Type:      SHT_PROGBITS
+            Flags:     0x00000002
+            Addr:      0x08048840
+            AddrAlign: 0x00000004
+            EntSize:   0x00000000
+        }
+}
+segment {
+    Type:     PT_LOAD
+    Flags:    0x00000006
+    VirtAddr: 0x08049eec
+    PhysAddr: 0x08049eec
+    MemSize:  0x000001e4
+    Align:    0x00001000
+    Data:     
+        segment {
+            Type:     PT_EXT 1685382482
+            Flags:    0x00000004
+            VirtAddr: 0x08049eec
+            PhysAddr: 0x08049eec
+            MemSize:  0x00000114
+            Align:    0x00000001
+            Data:     
+                section name {
+                    Type:      SHT_EXT 14
+                    Flags:     0x00000003
+                    Addr:      0x08049eec
+                    AddrAlign: 0x00000004
+                    EntSize:   0x00000000
+                }
+                section name {
+                    Type:      SHT_EXT 15
+                    Flags:     0x00000003
+                    Addr:      0x08049ef4
+                    AddrAlign: 0x00000004
+                    EntSize:   0x00000000
+                }
+                section name {
+                    Type:      SHT_PROGBITS
+                    Flags:     0x00000003
+                    Addr:      0x08049ef8
+                    AddrAlign: 0x00000004
+                    EntSize:   0x00000000
+                }
+                segment {
+                    Type:     PT_DYNAMIC
+                    Flags:    0x00000006
+                    VirtAddr: 0x08049efc
+                    PhysAddr: 0x08049efc
+                    MemSize:  0x00000100
+                    Align:    0x00000004
+                    Data:     
+                        section name {
+                            Type:      SHT_DYNAMIC
+                            Flags:     0x00000003
+                            Addr:      0x08049efc
+                            AddrAlign: 0x00000004
+                            EntSize:   0x00000008
+                        }
+                }
+                section name {
+                    Type:      SHT_PROGBITS
+                    Flags:     0x00000003
+                    Addr:      0x08049ffc
+                    AddrAlign: 0x00000004
+                    EntSize:   0x00000004
+                }
+        }
+        section name {
+            Type:      SHT_PROGBITS
+            Flags:     0x00000003
+            Addr:      0x0804a000
+            AddrAlign: 0x00000004
+            EntSize:   0x00000004
+        }
+        section name {
+            Type:      SHT_PROGBITS
+            Flags:     0x00000003
+            Addr:      0x0804a028
+            AddrAlign: 0x00000001
+            EntSize:   0x00000000
+        }
+}
+section name {
+    Type:      SHT_PROGBITS
+    Flags:     0x00000030
+    Addr:      0x00000000
+    AddrAlign: 0x00000001
+    EntSize:   0x00000001
+}
+section name {
+    Type:      SHT_SYMTAB
+    Flags:     0x00000000
+    Addr:      0x00000000
+    AddrAlign: 0x00000004
+    EntSize:   0x00000010
+}
+section name {
+    Type:      SHT_STRTAB
+    Flags:     0x00000000
+    Addr:      0x00000000
+    AddrAlign: 0x00000001
+    EntSize:   0x00000000
+}
+section name {
+    Type:      SHT_STRTAB
+    Flags:     0x00000000
+    Addr:      0x00000000
+    AddrAlign: 0x00000001
+    EntSize:   0x00000000
+}
+section table

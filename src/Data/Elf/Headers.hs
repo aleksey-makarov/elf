@@ -51,6 +51,8 @@ module Data.Elf.Headers
     , HeadersXX (..)
     , parseHeaders
 
+    , elfMagic
+
     , module Data.Elf.Generated) where
 
 -- import Control.Lens hiding (at)

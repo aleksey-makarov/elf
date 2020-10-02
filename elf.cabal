@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 976d633ca43b6161664ed8335f97737fedf37fcf1159a6ce41fec3e5c9e0c4c5
+-- hash: f479d43bf56ce14d1406e186f4c1acdb78052daed47544522286f0109851e687
 
 name:           elf
 version:        0.31
@@ -20,13 +20,6 @@ license:        BSD3
 license-file:   LICENSE
 tested-with:    GHC == 8.6.2, GHC == 8.4.4, GHC == 8.2.2, GHC == 8.0.2
 build-type:     Simple
-extra-source-files:
-    testdata/tiny.elf
-    testdata/bloated.elf
-    testdata/vdso.elf
-    testdata/HOWTO
-    testdata/bloated.cpp
-    testdata/tiny.asm
 
 source-repository head
   type: git
