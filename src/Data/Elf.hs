@@ -307,6 +307,14 @@ mapRBuilderToElf bs l = fmap f l
         f ElfRBuilderSectionTable{..} = ElfSectionTable
         f ElfRBuilderSegmentTable{..} = ElfSegmentTable
 
+dropFrom :: (a -> Bool) -> [a] -> (Maybe a, [a])
+dropFrom _ [] = (Nothing, [])
+dropFrom f (x:xs) = if f x then (Just x, xs) else
+    let
+        (mr, nxs) = dropFrom f xs
+    in
+        (mr, x:nxs)
+
 parseElf' :: (MonadCatch m, SingI a) => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
 parseElf' hdr ss ps bs = do
 
