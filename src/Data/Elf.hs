@@ -52,12 +52,12 @@ data ElfRBuilder (c :: ElfClass)
         }
     | ElfRBuilderSection
         { erbsHeader :: SectionXX c
-        , erbsN      :: Word32
+        , erbsN      :: Word16
         , interval   :: INE.Interval Word64
         }
     | ElfRBuilderSegment
         { erbpHeader :: SegmentXX c
-        , erbpN      :: Word32
+        , erbpN      :: Word16
         , erbpData   :: [ElfRBuilder c]
         , interval   :: INE.Interval Word64
         }
@@ -225,12 +225,12 @@ addRBuilder t ts =
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
                     $elfError $ intersectMessage t c2
 
-dsection :: SingI a => (Word32, SectionXX a) -> Either (Word32, SectionXX a) (ElfRBuilder a)
+dsection :: SingI a => (Word16, SectionXX a) -> Either (Word16, SectionXX a) (ElfRBuilder a)
 dsection (n, s) = case toNonEmpty $ sectionInterval s of
     Nothing -> Left (n, s)
     Just i -> Right $ ElfRBuilderSection s n i
 
-dsegment :: SingI a => (Word32, SegmentXX a) -> Either (Word32, SegmentXX a) (ElfRBuilder a)
+dsegment :: SingI a => (Word16, SegmentXX a) -> Either (Word16, SegmentXX a) (ElfRBuilder a)
 dsegment (n, s) = case toNonEmpty $ segmentInterval s of
     Nothing -> Left (n, s)
     Just i -> Right $ ElfRBuilderSegment s n [] i
@@ -315,17 +315,29 @@ dropFrom f (x:xs) = if f x then (Just x, xs) else
     in
         (mr, x:nxs)
 
+getSectionData :: (MonadCatch m, SingI a) => BSL.ByteString -> SectionXX a -> m BSL.ByteString
+getSectionData = undefined
+
 parseElf' :: (MonadCatch m, SingI a) => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
-parseElf' hdr ss ps bs = do
+parseElf' hdr@HeaderXX{..} ss ps bs = do
 
     let
-        (_emptySections, sections) = partitionEithers $ fmap dsection (Prelude.zip [0 .. ] ss)
+        findStrSection (n, _) = n == hShStrNdx
+        (maybeStrSection, ssx) = dropFrom findStrSection (Prelude.zip [0 .. ] ss)
+
+    -- FIXME: check that maybestrsection is a stringsection
+    -- maybeStrSectionData <- getSectionData bs . snd <$> maybeStrSection
+
+    let
+        (_emptySections, sections) = partitionEithers $ fmap dsection ssx
         (_emptySegments, segments) = partitionEithers $ fmap dsegment (Prelude.zip [0 .. ] ps)
 
         header = ElfRBuilderHeader hdr $ headerInterval hdr
 
         maybeSectionTable = ElfRBuilderSectionTable <$> (toNonEmpty $ sectionTableInterval hdr)
         maybeSegmentTable = ElfRBuilderSegmentTable <$> (toNonEmpty $ segmentTableInterval hdr)
+
+
 
     all  <- addRBuilder header
         =<< maybe return addRBuilder maybeSectionTable

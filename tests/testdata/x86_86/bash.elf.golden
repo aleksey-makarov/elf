@@ -253,11 +253,4 @@ section name {
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000001
 }
-section name {
-    Type:      SHT_STRTAB
-    Flags:     0x0000000000000000
-    Addr:      0x0000000000000000
-    AddrAlign: 0x0000000000000001
-    EntSize:   0x0000000000000000
-}
 section table

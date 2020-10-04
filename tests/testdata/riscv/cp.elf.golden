@@ -228,11 +228,4 @@ segment {
             EntSize:   0x00000004
         }
 }
-section name {
-    Type:      SHT_STRTAB
-    Flags:     0x00000000
-    Addr:      0x00000000
-    AddrAlign: 0x00000001
-    EntSize:   0x00000000
-}
 section table
