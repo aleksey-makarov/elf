@@ -249,4 +249,5 @@ section name {
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
 }
+string section
 section table

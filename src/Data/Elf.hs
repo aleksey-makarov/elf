@@ -38,7 +38,8 @@ import Control.Monad.Catch
 -- import Data.Bifunctor
 import Data.ByteString.Lazy as BSL
 import Data.Either
-import Data.List as L
+import Data.Int
+-- import Data.List as L
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Word
@@ -48,24 +49,28 @@ import Numeric.Interval.NonEmpty as INE
 data ElfRBuilder (c :: ElfClass)
     = ElfRBuilderHeader
         { erbhHeader :: HeaderXX c
-        , interval   :: INE.Interval Word64
+        , bInterval  :: INE.Interval Word64
         }
     | ElfRBuilderSection
         { erbsHeader :: SectionXX c
         , erbsN      :: Word16
-        , interval   :: INE.Interval Word64
+        , bInterval  :: INE.Interval Word64
         }
     | ElfRBuilderSegment
         { erbpHeader :: SegmentXX c
         , erbpN      :: Word16
         , erbpData   :: [ElfRBuilder c]
-        , interval   :: INE.Interval Word64
+        , bInterval  :: INE.Interval Word64
         }
     | ElfRBuilderSectionTable
-        { interval   :: INE.Interval Word64
+        { bInterval  :: INE.Interval Word64
         }
     | ElfRBuilderSegmentTable
-        { interval   :: INE.Interval Word64
+        { bInterval  :: INE.Interval Word64
+        }
+    | ElfRBuilderStringSection
+        { erbstrsN   :: Word16
+        , bInterval  :: INE.Interval Word64
         }
 
 -- Header can not be empty
@@ -118,17 +123,18 @@ toNonEmpty i | I.null i  = Nothing
 toNonEmpty i | otherwise = Just (I.inf i INE.... I.sup i)
 
 showElfRBuilber' :: ElfRBuilder a -> String
-showElfRBuilber' ElfRBuilderHeader{..}       = "header"
-showElfRBuilber' ElfRBuilderSection{..}      = "section " ++ show erbsN
-showElfRBuilber' ElfRBuilderSegment{..}      = "segment " ++ show erbpN
-showElfRBuilber' ElfRBuilderSectionTable{..} = "section table"
-showElfRBuilber' ElfRBuilderSegmentTable{..} = "segment table"
+showElfRBuilber' ElfRBuilderHeader{..}        = "header"
+showElfRBuilber' ElfRBuilderSection{..}       = "section " ++ show erbsN
+showElfRBuilber' ElfRBuilderSegment{..}       = "segment " ++ show erbpN
+showElfRBuilber' ElfRBuilderSectionTable{..}  = "section table"
+showElfRBuilber' ElfRBuilderSegmentTable{..}  = "segment table"
+showElfRBuilber' ElfRBuilderStringSection{..} = "string section"
 
 showElfRBuilber :: ElfRBuilder a -> String
-showElfRBuilber v = showElfRBuilber' v ++ " (" ++ (show $ Data.Elf.interval v) ++ ")"
+showElfRBuilber v = showElfRBuilber' v ++ " (" ++ (show $ bInterval v) ++ ")"
 
-showERBList :: [ElfRBuilder a] -> String
-showERBList l = "[" ++ (L.concat $ L.intersperse ", " $ fmap showElfRBuilber l) ++ "]"
+-- showERBList :: [ElfRBuilder a] -> String
+-- showERBList l = "[" ++ (L.concat $ L.intersperse ", " $ fmap showElfRBuilber l) ++ "]"
 
 intersectMessage :: ElfRBuilder b -> ElfRBuilder b -> String
 intersectMessage x y = showElfRBuilber x ++ " and " ++ showElfRBuilber y ++ " intersect"
@@ -138,31 +144,31 @@ addRBuildersToList newts l = foldM (flip addRBuilder) l newts
 
 addRBuilders :: MonadCatch m => [ElfRBuilder b] -> ElfRBuilder b -> m (ElfRBuilder b)
 addRBuilders [] x = return x
-addRBuilders ts t@ElfRBuilderSegment{..} = do
+addRBuilders ts ElfRBuilderSegment{..} = do
     d <- addRBuildersToList ts erbpData
-    return $ t{ erbpData = d }
+    return ElfRBuilderSegment{ erbpData = d, .. }
 addRBuilders (x:_) y = $elfError $ intersectMessage x y
 
 addOneRBuilder :: MonadCatch m => ElfRBuilder b -> ElfRBuilder b -> m (ElfRBuilder b)
-addOneRBuilder t@ElfRBuilderSegment{..} c | Data.Elf.interval t == Data.Elf.interval c = do
+addOneRBuilder ElfRBuilderSegment{..} c | bInterval == Data.Elf.bInterval c = do
     d <- addRBuilder c erbpData
-    return $ t{ erbpData = d }
-addOneRBuilder t c@ElfRBuilderSegment{..} = do
+    return ElfRBuilderSegment{ erbpData = d, .. }
+addOneRBuilder t ElfRBuilderSegment{..} = do
     d <- addRBuilder t erbpData
-    return $ c{ erbpData = d }
+    return ElfRBuilderSegment{ erbpData = d, .. }
 addOneRBuilder t c = $elfError $ intersectMessage t c
 
 addRBuilder :: MonadCatch m => ElfRBuilder b -> [ElfRBuilder b] -> m [ElfRBuilder b]
 addRBuilder t ts =
     let
-        (LZip l  c'  r ) = findInterval Data.Elf.interval (INE.inf ti) ts
-        (LZip l2 c2' r2) = findInterval Data.Elf.interval (INE.sup ti) r
-        ti = Data.Elf.interval t
+        (LZip l  c'  r ) = findInterval bInterval (INE.inf ti) ts
+        (LZip l2 c2' r2) = findInterval bInterval (INE.sup ti) r
+        ti = bInterval t
     in
         case (c', c2') of
             (Just c, _)  ->
                 let
-                    ci = Data.Elf.interval c
+                    ci = bInterval c
                 in if ci `INE.contains` ti then do
 
                     -- add this:     .........[t____].................................
@@ -183,7 +189,7 @@ addRBuilder t ts =
 
                         Just c2 ->
                             let
-                                c2i = Data.Elf.interval c2
+                                c2i = bInterval c2
                             in if ti `INE.contains` c2i then do
 
                                 -- add this:     ......[t______________________]........................
@@ -211,7 +217,7 @@ addRBuilder t ts =
 
             (Nothing, Just c2) ->
                 let
-                    c2i = Data.Elf.interval c2
+                    c2i = bInterval c2
                 in if ti `INE.contains` c2i then do
 
                     -- add this:     ....[t_________________________________]........
@@ -235,7 +241,12 @@ dsegment (n, s) = case toNonEmpty $ segmentInterval s of
     Nothing -> Left (n, s)
     Just i -> Right $ ElfRBuilderSegment s n [] i
 
-
+dstrsection :: (SingI a, MonadThrow m) => (Word16, SectionXX a) -> m (ElfRBuilder a)
+dstrsection (n, s) =
+    -- FIXME: check that this section is a valid stringsection
+    case toNonEmpty $ sectionInterval s of
+        Nothing -> $elfError "empty string section"
+        Just i -> return $ ElfRBuilderStringSection n i
 
 data Elf (c :: ElfClass)
     = ElfHeader
@@ -266,6 +277,7 @@ data Elf (c :: ElfClass)
         }
     | ElfSectionTable
     | ElfSegmentTable
+    | ElfStringSection
 
 newtype ElfList c = ElfList [Elf c]
 
@@ -306,27 +318,38 @@ mapRBuilderToElf bs l = fmap f l
                 ElfSegment{..}
         f ElfRBuilderSectionTable{..} = ElfSectionTable
         f ElfRBuilderSegmentTable{..} = ElfSegmentTable
+        f ElfRBuilderStringSection{..} = ElfStringSection
 
-dropFrom :: (a -> Bool) -> [a] -> (Maybe a, [a])
-dropFrom _ [] = (Nothing, [])
-dropFrom f (x:xs) = if f x then (Just x, xs) else
+dropFirstFrom :: (a -> Bool) -> [a] -> (Maybe a, [a])
+dropFirstFrom _ [] = (Nothing, [])
+dropFirstFrom f (x:xs) = if f x then (Just x, xs) else
     let
-        (mr, nxs) = dropFrom f xs
+        (mr, nxs) = dropFirstFrom f xs
     in
         (mr, x:nxs)
 
-getSectionData :: (MonadCatch m, SingI a) => BSL.ByteString -> SectionXX a -> m BSL.ByteString
-getSectionData = undefined
+cut :: BSL.ByteString -> Int64 -> Int64 -> BSL.ByteString
+cut content offset size = BSL.take size $ BSL.drop offset content
 
-parseElf' :: (MonadCatch m, SingI a) => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
+getSectionData :: (MonadCatch m, SingI a) => BSL.ByteString -> SectionXX a -> m BSL.ByteString
+getSectionData bs SectionXX{..} = if o + s > BSL.length bs then $elfError "incorrect offset or length for secrion" else return $ cut bs o s
+    where
+        o = wxxToIntegral sOffset
+        s = wxxToIntegral sSize
+
+parseElf' :: (MonadCatch m, SingI a) =>
+                          HeaderXX a ->
+                       [SectionXX a] ->
+                       [SegmentXX a] ->
+                      BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
 parseElf' hdr@HeaderXX{..} ss ps bs = do
 
     let
         findStrSection (n, _) = n == hShStrNdx
-        (maybeStrSection, ssx) = dropFrom findStrSection (Prelude.zip [0 .. ] ss)
+        (maybeStrSection, ssx) = dropFirstFrom findStrSection (Prelude.zip [0 .. ] ss)
 
-    -- FIXME: check that maybestrsection is a stringsection
-    -- maybeStrSectionData <- getSectionData bs . snd <$> maybeStrSection
+    maybeStringSection <- sequence $ dstrsection <$> maybeStrSection
+    _maybeStringSectionData <- sequence $ getSectionData bs . snd <$> maybeStrSection
 
     let
         (_emptySections, sections) = partitionEithers $ fmap dsection ssx
@@ -337,17 +360,16 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
         maybeSectionTable = ElfRBuilderSectionTable <$> (toNonEmpty $ sectionTableInterval hdr)
         maybeSegmentTable = ElfRBuilderSegmentTable <$> (toNonEmpty $ segmentTableInterval hdr)
 
-
-
-    all  <- addRBuilder header
+    rBuilder  <- addRBuilder header
         =<< maybe return addRBuilder maybeSectionTable
         =<< maybe return addRBuilder maybeSegmentTable
+        =<< maybe return addRBuilder maybeStringSection
         =<< addRBuildersToList segments
         =<< addRBuildersToList sections []
 
     -- FIXME: _emptySections, _emptySegments
 
-    return $ sing :&: ElfList (mapRBuilderToElf bs all)
+    return $ sing :&: ElfList (mapRBuilderToElf bs rBuilder)
 
 parseElf :: MonadCatch m => BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
 parseElf bs = do

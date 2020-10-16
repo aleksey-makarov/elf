@@ -157,6 +157,7 @@ printElf'' ElfSegment{..} =
     ]
 printElf'' ElfSectionTable = "section table"
 printElf'' ElfSegmentTable = "segment table"
+printElf'' ElfStringSection = "string section"
 
 printElf' :: SingI a => [Elf a] -> Doc ()
 printElf' l = align . vsep $ fmap printElf'' l

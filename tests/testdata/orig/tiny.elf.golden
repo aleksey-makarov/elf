@@ -25,4 +25,5 @@ segment {
             EntSize:   0x0000000000000000
         }
 }
+string section
 section table
