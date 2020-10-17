@@ -25,7 +25,7 @@ segment {
             MemSize:  0x0000000000000024
             Align:    0x0000000000000004
             Data:     
-                section name {
+                section ".note.gnu.build-id" {
                     Type:      SHT_NOTE
                     Flags:     0x0000000000000002
                     Addr:      0x0000000000000158
@@ -33,77 +33,77 @@ segment {
                     EntSize:   0x0000000000000000
                 }
         }
-        section name {
+        section ".gnu.hash" {
             Type:      SHT_EXT 1879048182
             Flags:     0x0000000000000002
             Addr:      0x0000000000000180
             AddrAlign: 0x0000000000000008
             EntSize:   0x0000000000000000
         }
-        section name {
+        section ".dynsym" {
             Type:      SHT_DYNSYM
             Flags:     0x0000000000000002
             Addr:      0x0000000000000890
             AddrAlign: 0x0000000000000008
             EntSize:   0x0000000000000018
         }
-        section name {
+        section ".dynstr" {
             Type:      SHT_STRTAB
             Flags:     0x0000000000000002
             Addr:      0x0000000000001fd0
             AddrAlign: 0x0000000000000001
             EntSize:   0x0000000000000000
         }
-        section name {
+        section ".gnu.version" {
             Type:      SHT_EXT 1879048191
             Flags:     0x0000000000000002
             Addr:      0x0000000000002b48
             AddrAlign: 0x0000000000000002
             EntSize:   0x0000000000000002
         }
-        section name {
+        section ".gnu.version_r" {
             Type:      SHT_EXT 1879048190
             Flags:     0x0000000000000002
             Addr:      0x0000000000002d38
             AddrAlign: 0x0000000000000008
             EntSize:   0x0000000000000000
         }
-        section name {
+        section ".rela.dyn" {
             Type:      SHT_RELA
             Flags:     0x0000000000000002
             Addr:      0x0000000000002db8
             AddrAlign: 0x0000000000000008
             EntSize:   0x0000000000000018
         }
-        section name {
+        section ".rela.plt" {
             Type:      SHT_RELA
             Flags:     0x0000000000000042
             Addr:      0x0000000000005cf8
             AddrAlign: 0x0000000000000008
             EntSize:   0x0000000000000018
         }
-        section name {
+        section ".plt" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
             Addr:      0x0000000000007150
             AddrAlign: 0x0000000000000010
             EntSize:   0x0000000000000010
         }
-        section name {
+        section ".text" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
             Addr:      0x0000000000007f00
             AddrAlign: 0x0000000000000002
             EntSize:   0x0000000000000000
         }
-        section name {
+        section ".rodata" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
             Addr:      0x0000000000021380
             AddrAlign: 0x0000000000000008
             EntSize:   0x0000000000000000
         }
-        section name {
+        section ".eh_frame" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
             Addr:      0x00000000000252c0
@@ -127,21 +127,21 @@ segment {
             MemSize:  0x00000000000012c8
             Align:    0x0000000000000001
             Data:     
-                section name {
+                section ".init_array" {
                     Type:      SHT_EXT 14
                     Flags:     0x0000000000000003
                     Addr:      0x0000000000026d38
                     AddrAlign: 0x0000000000000008
                     EntSize:   0x0000000000000008
                 }
-                section name {
+                section ".fini_array" {
                     Type:      SHT_EXT 15
                     Flags:     0x0000000000000003
                     Addr:      0x0000000000026d40
                     AddrAlign: 0x0000000000000008
                     EntSize:   0x0000000000000008
                 }
-                section name {
+                section ".data.rel.ro" {
                     Type:      SHT_PROGBITS
                     Flags:     0x0000000000000003
                     Addr:      0x0000000000026d48
@@ -156,7 +156,7 @@ segment {
                     MemSize:  0x00000000000001e0
                     Align:    0x0000000000000008
                     Data:     
-                        section name {
+                        section ".dynamic" {
                             Type:      SHT_DYNAMIC
                             Flags:     0x0000000000000003
                             Addr:      0x0000000000027e20
@@ -165,7 +165,7 @@ segment {
                         }
                 }
         }
-        section name {
+        section ".got" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000003
             Addr:      0x0000000000028000
@@ -173,7 +173,7 @@ segment {
             EntSize:   0x0000000000000008
         }
 }
-section name {
+section ".gnu_debuglink" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000

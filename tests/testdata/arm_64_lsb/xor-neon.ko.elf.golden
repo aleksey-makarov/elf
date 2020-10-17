@@ -8,126 +8,126 @@ header {
     Entry:      0x0000000000000000
     Flags:      0x00000000
 }
-section name {
+section ".note.gnu.build-id" {
     Type:      SHT_NOTE
     Flags:     0x0000000000000002
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
 }
-section name {
+section ".note.Linux" {
     Type:      SHT_NOTE
     Flags:     0x0000000000000002
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
 }
-section name {
+section ".text" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000006
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
 }
-section name {
+section "__ksymtab" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000002
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
 }
-section name {
+section ".rodata.str1.8" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000032
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000001
 }
-section name {
+section ".rodata" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000002
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
 }
-section name {
+section ".modinfo" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000002
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
 }
-section name {
+section "__ksymtab_strings" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000002
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
 }
-section name {
+section ".eh_frame" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000002
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
 }
-section name {
+section "__patchable_function_entries" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000003
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
 }
-section name {
+section ".gnu.linkonce.this_module" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000003
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000040
     EntSize:   0x0000000000000000
 }
-section name {
+section ".comment" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000030
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000001
 }
-section name {
+section ".symtab" {
     Type:      SHT_SYMTAB
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
 }
-section name {
+section ".strtab" {
     Type:      SHT_STRTAB
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
 }
-section name {
+section ".rela__ksymtab" {
     Type:      SHT_RELA
     Flags:     0x0000000000000040
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
 }
-section name {
+section ".rela.rodata" {
     Type:      SHT_RELA
     Flags:     0x0000000000000040
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
 }
-section name {
+section ".rela.eh_frame" {
     Type:      SHT_RELA
     Flags:     0x0000000000000040
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
 }
-section name {
+section ".rela__patchable_function_entries" {
     Type:      SHT_RELA
     Flags:     0x0000000000000040
     Addr:      0x0000000000000000

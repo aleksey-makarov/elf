@@ -8,112 +8,112 @@ header {
     Entry:      0x00000000
     Flags:      0x00000000
 }
-section name {
+section ".text" {
     Type:      SHT_PROGBITS
     Flags:     0x00000006
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x00000000
 }
-section name {
+section ".rodata" {
     Type:      SHT_PROGBITS
     Flags:     0x00000002
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x00000000
 }
-section name {
+section ".debug_info" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
 }
-section name {
+section ".debug_abbrev" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
 }
-section name {
+section ".debug_aranges" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
 }
-section name {
+section ".debug_line" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
 }
-section name {
+section ".debug_str" {
     Type:      SHT_PROGBITS
     Flags:     0x00000030
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000001
 }
-section name {
+section ".comment" {
     Type:      SHT_PROGBITS
     Flags:     0x00000030
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000001
 }
-section name {
+section ".debug_frame" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x00000000
 }
-section name {
+section ".symtab" {
     Type:      SHT_SYMTAB
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x00000010
 }
-section name {
+section ".strtab" {
     Type:      SHT_STRTAB
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
 }
-section name {
+section ".rela.text" {
     Type:      SHT_RELA
     Flags:     0x00000040
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x0000000c
 }
-section name {
+section ".rela.debug_info" {
     Type:      SHT_RELA
     Flags:     0x00000040
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x0000000c
 }
-section name {
+section ".rela.debug_aranges" {
     Type:      SHT_RELA
     Flags:     0x00000040
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x0000000c
 }
-section name {
+section ".rela.debug_line" {
     Type:      SHT_RELA
     Flags:     0x00000040
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x0000000c
 }
-section name {
+section ".rela.debug_frame" {
     Type:      SHT_RELA
     Flags:     0x00000040
     Addr:      0x00000000

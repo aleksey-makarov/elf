@@ -17,14 +17,14 @@ segment {
             Flags:      0x00000000
         }
         segment table
-        section name {
+        section ".text" {
             Type:      SHT_PROGBITS
             Flags:     0x00000006
             Addr:      0x00001078
             AddrAlign: 0x00000008
             EntSize:   0x00000000
         }
-        section name {
+        section ".rodata" {
             Type:      SHT_PROGBITS
             Flags:     0x00000002
             Addr:      0x0000dc18
@@ -40,14 +40,14 @@ segment {
     MemSize:  0x000009e8
     Align:    0x00001000
     Data:     
-        section name {
+        section ".data" {
             Type:      SHT_PROGBITS
             Flags:     0x00000003
             Addr:      0x0000f23c
             AddrAlign: 0x00000004
             EntSize:   0x00000000
         }
-        section name {
+        section ".sdata" {
             Type:      SHT_PROGBITS
             Flags:     0x10000003
             Addr:      0x0000fbd4
@@ -55,77 +55,77 @@ segment {
             EntSize:   0x00000000
         }
 }
-section name {
+section ".comment" {
     Type:      SHT_PROGBITS
     Flags:     0x00000030
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000001
 }
-section name {
+section ".debug_aranges" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
 }
-section name {
+section ".debug_info" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
 }
-section name {
+section ".debug_abbrev" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
 }
-section name {
+section ".debug_line" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
 }
-section name {
+section ".debug_frame" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x00000000
 }
-section name {
+section ".debug_str" {
     Type:      SHT_PROGBITS
     Flags:     0x00000030
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000001
 }
-section name {
+section ".debug_loc" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
 }
-section name {
+section ".debug_ranges" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
 }
-section name {
+section ".symtab" {
     Type:      SHT_SYMTAB
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x00000010
 }
-section name {
+section ".strtab" {
     Type:      SHT_STRTAB
     Flags:     0x00000000
     Addr:      0x00000000

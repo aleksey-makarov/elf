@@ -8,28 +8,28 @@ header {
     Entry:      0x0000000000000000
     Flags:      0x00000000
 }
-section name {
+section ".init" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000006
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
 }
-section name {
+section ".fini" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000006
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
 }
-section name {
+section ".symtab" {
     Type:      SHT_SYMTAB
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
 }
-section name {
+section ".strtab" {
     Type:      SHT_STRTAB
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000

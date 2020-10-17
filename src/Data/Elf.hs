@@ -36,6 +36,7 @@ import Data.Elf.Headers
 import Control.Monad
 import Control.Monad.Catch
 -- import Data.Bifunctor
+import Data.ByteString.Char8 as BSC
 import Data.ByteString.Lazy as BSL
 import Data.Either
 import Data.Int
@@ -56,6 +57,11 @@ data ElfRBuilder (c :: ElfClass)
         , erbsN      :: Word16
         , bInterval  :: INE.Interval Word64
         }
+    | ElfRBuilderStringSection
+        { erbstrsHeader :: SectionXX c
+        , erbstrsN      :: Word16
+        , bInterval     :: INE.Interval Word64
+        }
     | ElfRBuilderSegment
         { erbpHeader :: SegmentXX c
         , erbpN      :: Word16
@@ -67,10 +73,6 @@ data ElfRBuilder (c :: ElfClass)
         }
     | ElfRBuilderSegmentTable
         { bInterval  :: INE.Interval Word64
-        }
-    | ElfRBuilderStringSection
-        { erbstrsN   :: Word16
-        , bInterval  :: INE.Interval Word64
         }
 
 -- Header can not be empty
@@ -246,7 +248,7 @@ dstrsection (n, s) =
     -- FIXME: check that this section is a valid stringsection
     case toNonEmpty $ sectionInterval s of
         Nothing -> $elfError "empty string section"
-        Just i -> return $ ElfRBuilderStringSection n i
+        Just i -> return $ ElfRBuilderStringSection s n i
 
 data Elf (c :: ElfClass)
     = ElfHeader
@@ -281,8 +283,8 @@ data Elf (c :: ElfClass)
 
 newtype ElfList c = ElfList [Elf c]
 
-mapRBuilderToElf :: SingI a => BSL.ByteString -> [ElfRBuilder a] -> [Elf a]
-mapRBuilderToElf bs l = fmap f l
+mapRBuilderToElf :: SingI a => BSL.ByteString -> BSL.ByteString -> [ElfRBuilder a] -> [Elf a]
+mapRBuilderToElf bs strs l = fmap f l
     where
         f ElfRBuilderHeader{ erbhHeader = HeaderXX{..}, .. } =
             let
@@ -297,7 +299,7 @@ mapRBuilderToElf bs l = fmap f l
                 ElfHeader{..}
         f ElfRBuilderSection{ erbsHeader = SectionXX{..}, ..} =
             let
-                esName      = "name"
+                esName      = getString strs (fromIntegral sName)
                 esType      = sType
                 esFlags     = sFlags
                 esAddr      = sAddr
@@ -313,7 +315,7 @@ mapRBuilderToElf bs l = fmap f l
                 epPhysAddr = pPhysAddr
                 epMemSize  = pMemSize
                 epAlign    = pAlign
-                epData     = mapRBuilderToElf bs erbpData
+                epData     = mapRBuilderToElf bs strs erbpData
             in
                 ElfSegment{..}
         f ElfRBuilderSectionTable{..} = ElfSectionTable
@@ -328,11 +330,14 @@ dropFirstFrom f (x:xs) = if f x then (Just x, xs) else
     in
         (mr, x:nxs)
 
+getString :: BSL.ByteString -> Int64 -> String
+getString bs offset = BSC.unpack $ toStrict $ BSL.takeWhile (/= 0) $ BSL.drop offset bs
+
 cut :: BSL.ByteString -> Int64 -> Int64 -> BSL.ByteString
 cut content offset size = BSL.take size $ BSL.drop offset content
 
-getSectionData :: (MonadCatch m, SingI a) => BSL.ByteString -> SectionXX a -> m BSL.ByteString
-getSectionData bs SectionXX{..} = if o + s > BSL.length bs then $elfError "incorrect offset or length for secrion" else return $ cut bs o s
+getSectionData :: SingI a => BSL.ByteString -> SectionXX a -> BSL.ByteString
+getSectionData bs SectionXX{..} = cut bs o s
     where
         o = wxxToIntegral sOffset
         s = wxxToIntegral sSize
@@ -349,9 +354,11 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
         (maybeStrSection, ssx) = dropFirstFrom findStrSection (Prelude.zip [0 .. ] ss)
 
     maybeStringSection <- sequence $ dstrsection <$> maybeStrSection
-    _maybeStringSectionData <- sequence $ getSectionData bs . snd <$> maybeStrSection
 
     let
+        stringSectionToData = getSectionData bs . erbstrsHeader
+        stringData = maybe BSL.empty stringSectionToData maybeStringSection
+
         (_emptySections, sections) = partitionEithers $ fmap dsection ssx
         (_emptySegments, segments) = partitionEithers $ fmap dsegment (Prelude.zip [0 .. ] ps)
 
@@ -361,15 +368,15 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
         maybeSegmentTable = ElfRBuilderSegmentTable <$> (toNonEmpty $ segmentTableInterval hdr)
 
     rBuilder  <- addRBuilder header
-        =<< maybe return addRBuilder maybeSectionTable
-        =<< maybe return addRBuilder maybeSegmentTable
-        =<< maybe return addRBuilder maybeStringSection
-        =<< addRBuildersToList segments
-        =<< addRBuildersToList sections []
+             =<< maybe return addRBuilder maybeSectionTable
+             =<< maybe return addRBuilder maybeSegmentTable
+             =<< maybe return addRBuilder maybeStringSection
+             =<< addRBuildersToList segments
+             =<< addRBuildersToList sections []
 
     -- FIXME: _emptySections, _emptySegments
 
-    return $ sing :&: ElfList (mapRBuilderToElf bs rBuilder)
+    return $ sing :&: ElfList (mapRBuilderToElf bs stringData rBuilder)
 
 parseElf :: MonadCatch m => BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
 parseElf bs = do

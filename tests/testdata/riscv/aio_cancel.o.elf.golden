@@ -8,42 +8,42 @@ header {
     Entry:      0x00000000
     Flags:      0x00000004
 }
-section name {
+section ".text" {
     Type:      SHT_PROGBITS
     Flags:     0x00000006
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x00000000
 }
-section name {
+section ".rodata.str1.4" {
     Type:      SHT_PROGBITS
     Flags:     0x00000032
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x00000001
 }
-section name {
+section ".comment" {
     Type:      SHT_PROGBITS
     Flags:     0x00000030
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000001
 }
-section name {
+section ".symtab" {
     Type:      SHT_SYMTAB
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x00000010
 }
-section name {
+section ".strtab" {
     Type:      SHT_STRTAB
     Flags:     0x00000000
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
 }
-section name {
+section ".rela.text" {
     Type:      SHT_RELA
     Flags:     0x00000040
     Addr:      0x00000000

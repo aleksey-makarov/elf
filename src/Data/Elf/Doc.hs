@@ -122,12 +122,12 @@ printHeaders' hdr ss ps =
 printHeaders :: Sigma ElfClass (TyCon1 HeadersXX) -> Doc ()
 printHeaders (classS :&: HeadersXX (hdr, ss, ps)) = withSingI classS $ printHeaders' hdr ss ps
 
-formatPairsBlock :: String -> [(String, Doc a)] -> Doc a
-formatPairsBlock name pairs = vsep [ pretty name <+> "{", indent 4 $ formatPairs pairs, "}" ]
+formatPairsBlock :: Doc a -> [(String, Doc a)] -> Doc a
+formatPairsBlock name pairs = vsep [ name <+> "{", indent 4 $ formatPairs pairs, "}" ]
 
 printElf'' :: forall a . SingI a => Elf a -> Doc ()
 printElf'' ElfHeader{..} =
-    (formatPairsBlock "header")
+    formatPairsBlock "header"
         [ ("Class",      viaShow $ fromSing $ sing @a )
         , ("Data",       viaShow ehData       ) -- ElfData
         , ("OSABI",      viaShow ehOSABI      ) -- ElfOSABI
@@ -138,7 +138,7 @@ printElf'' ElfHeader{..} =
         , ("Flags",      printWord32 ehFlags  ) -- Word32
         ]
 printElf'' ElfSection{..} =
-    (formatPairsBlock $ "section " ++ esName)
+    formatPairsBlock ("section" <+> (dquotes $ pretty esName))
         [ ("Type",       viaShow esType       )
         , ("Flags",      printWXX esFlags     )
         , ("Addr",       printWXX esAddr      )
@@ -146,7 +146,7 @@ printElf'' ElfSection{..} =
         , ("EntSize",    printWXX esEntSize   )
         ]
 printElf'' ElfSegment{..} =
-    (formatPairsBlock "segment")
+    formatPairsBlock "segment"
         [ ("Type",       viaShow epType       )
         , ("Flags",      printWord32 epFlags  )
         , ("VirtAddr",   printWXX epVirtAddr  )

@@ -8,147 +8,147 @@ header {
     Entry:      0x0000000000000000
     Flags:      0x00000000
 }
-section name {
+section ".group" {
     Type:      SHT_EXT 17
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000004
 }
-section name {
+section ".group" {
     Type:      SHT_EXT 17
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000004
 }
-section name {
+section ".group" {
     Type:      SHT_EXT 17
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000004
 }
-section name {
+section ".group" {
     Type:      SHT_EXT 17
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000004
 }
-section name {
+section ".text" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000006
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000010
     EntSize:   0x0000000000000000
 }
-section name {
+section ".qtversion" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000202
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
 }
-section name {
+section ".rodata._ZTS15QQmlDebugClient" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000202
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000010
     EntSize:   0x0000000000000000
 }
-section name {
+section ".data.rel.ro._ZTI15QQmlDebugClient" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000203
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
 }
-section name {
+section ".data.rel.ro._ZTV15QQmlDebugClient" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000203
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
 }
-section name {
+section ".data.rel.ro" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000003
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000020
     EntSize:   0x0000000000000000
 }
-section name {
+section ".rodata" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000002
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000020
     EntSize:   0x0000000000000000
 }
-section name {
+section ".comment" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000030
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000001
 }
-section name {
+section ".eh_frame" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000002
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
 }
-section name {
+section ".symtab" {
     Type:      SHT_SYMTAB
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
 }
-section name {
+section ".strtab" {
     Type:      SHT_STRTAB
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
 }
-section name {
+section ".rela.text" {
     Type:      SHT_RELA
     Flags:     0x0000000000000040
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
 }
-section name {
+section ".rela.qtversion" {
     Type:      SHT_RELA
     Flags:     0x0000000000000240
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
 }
-section name {
+section ".rela.data.rel.ro._ZTI15QQmlDebugClient" {
     Type:      SHT_RELA
     Flags:     0x0000000000000240
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
 }
-section name {
+section ".rela.data.rel.ro._ZTV15QQmlDebugClient" {
     Type:      SHT_RELA
     Flags:     0x0000000000000240
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
 }
-section name {
+section ".rela.data.rel.ro" {
     Type:      SHT_RELA
     Flags:     0x0000000000000040
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
 }
-section name {
+section ".rela.eh_frame" {
     Type:      SHT_RELA
     Flags:     0x0000000000000040
     Addr:      0x0000000000000000
