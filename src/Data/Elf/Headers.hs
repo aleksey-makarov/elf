@@ -41,6 +41,7 @@ module Data.Elf.Headers
 
     , SectionXX(..)
     , SegmentXX(..)
+    , SymbolTableEntryXX(..)
 
     ---------------------------------
 
@@ -345,7 +346,6 @@ data SectionXX (c :: ElfClass) =
 getSection :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (SectionXX c)
 getSection classS hData = do
 
-    -- FIXME: this was copypasted
     let
         getE :: (Binary (Le b), Binary (Be b)) => Get b
         getE = getEndian hData
@@ -412,7 +412,6 @@ data SegmentXX (c :: ElfClass) =
 getSegment :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (SegmentXX c)
 getSegment SELFCLASS64 hData = do
 
-    -- FIXME: this was copypasted
     let
         getE :: (Binary (Le b), Binary (Be b)) => Get b
         getE = getEndian hData
@@ -432,7 +431,6 @@ getSegment SELFCLASS64 hData = do
 
 getSegment SELFCLASS32 hData = do
 
-    -- FIXME: this was copypasted
     let
         getE :: (Binary (Le b), Binary (Be b)) => Get b
         getE = getEndian hData
@@ -491,6 +489,34 @@ instance forall (a :: ElfClass) . SingI a => Binary (Be (SegmentXX a)) where
 instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
     put = putSegment sing ELFDATA2LSB . fromLe
     get = Le <$> getSegment sing ELFDATA2LSB
+
+--------------------------------------------------------------------------
+-- symbol table entry
+--------------------------------------------------------------------------
+
+data SymbolTableEntryXX (c :: ElfClass) =
+    SymbolTableEntryXX
+        { stName  :: Word32
+        , stInfo  :: Word8
+        , stOther :: Word8
+        , stShNdx :: Word16
+        , stValue :: WXX c
+        , stSize  :: WXX c
+        }
+
+getSymbolTableEntry :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (SymbolTableEntryXX c)
+getSymbolTableEntry _classS _hData = undefined
+
+putSymbolTableEntry :: forall (c :: ElfClass) . Sing c -> ElfData -> SymbolTableEntryXX c -> Put
+putSymbolTableEntry _classS _hData (SymbolTableEntryXX{..}) = undefined
+
+instance forall (a :: ElfClass) . SingI a => Binary (Be (SymbolTableEntryXX a)) where
+    put = putSymbolTableEntry sing ELFDATA2MSB . fromBe
+    get = Be <$> getSymbolTableEntry sing ELFDATA2MSB
+
+instance forall (a :: ElfClass) . SingI a => Binary (Le (SymbolTableEntryXX a)) where
+    put = putSymbolTableEntry sing ELFDATA2LSB . fromLe
+    get = Le <$> getSymbolTableEntry sing ELFDATA2LSB
 
 --------------------------------------------------------------------------
 -- parseHeaders
