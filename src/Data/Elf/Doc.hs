@@ -15,6 +15,7 @@ module Data.Elf.Doc
     , printElf
     ) where
 
+import Data.List as L
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Text.Prettyprint.Doc as D
@@ -39,8 +40,8 @@ padLeadingZeros :: Int -> String -> String
 padLeadingZeros n s | length s > n = error "padLeadingZeros args"
 padLeadingZeros n s | otherwise = "0x" ++ replicate (n - length s) '0' ++ s
 
--- printWord8 :: Word8 -> Doc ()
--- printWord8 n = pretty $ padLeadingZeros 2 $ showHex n ""
+printWord8 :: Word8 -> Doc ()
+printWord8 n = pretty $ padLeadingZeros 2 $ showHex n ""
 
 printWord16 :: Word16 -> Doc ()
 printWord16 n = pretty $ padLeadingZeros 4 $ showHex n ""
@@ -106,21 +107,47 @@ printSegment SegmentXX{..} =
         , ("Align",    printWXX pAlign    ) -- WXX c
         ]
 
+printSymbolTableEntry :: SingI a => SymbolTableEntryXX a -> Doc ()
+printSymbolTableEntry SymbolTableEntryXX{..} =
+    formatPairs
+        [ ("Name",  printWord32 stName  )
+        , ("Info",  printWord8 stInfo   )
+        , ("Other", printWord8 stOther  )
+        , ("ShNdx", printWord16 stShNdx )
+        , ("Value", printWXX stValue    )
+        , ("Size",  printWXX stSize     )
+        ]
+
+printSymbolTable :: SingI a => [SymbolTableEntryXX a] -> Doc ()
+printSymbolTable sts = formatList $ fmap printSymbolTableEntry sts
+
+printSymbolTables :: SingI a => [[SymbolTableEntryXX a]] -> Doc ()
+printSymbolTables sts = formatList $ fmap printSymbolTable sts
+
+sectionIsSymbolTable :: SingI a => SectionXX a -> Bool
+sectionIsSymbolTable SectionXX{..} = sType `L.elem` [SHT_SYMTAB, SHT_DYNSYM]
+
 printHeaders' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> Doc ()
 printHeaders' hdr ss ps =
     let
-        h = printHeader hdr
-        s = fmap printSection ss
-        p = fmap printSegment ps
+        h  = printHeader hdr
+        s  = fmap printSection ss
+        p  = fmap printSegment ps
+        -- st = fmap printSymbolTables $ fmap getSectionData $ filter sectionIsSymbolTable ss
     in
         formatPairs
-            [ ("Header",   h)
-            , ("Sections", formatList s)
-            , ("Segments", formatList p)
+            [ ("Header",       h)
+            , ("Sections",     formatList s)
+            , ("Segments",     formatList p)
+            -- , ("SymbolTables", formatList st)
             ]
 
 printHeaders :: Sigma ElfClass (TyCon1 HeadersXX) -> Doc ()
 printHeaders (classS :&: HeadersXX (hdr, ss, ps)) = withSingI classS $ printHeaders' hdr ss ps
+
+--------------------------------------------------------------------
+--
+--------------------------------------------------------------------
 
 formatPairsBlock :: Doc a -> [(String, Doc a)] -> Doc a
 formatPairsBlock name pairs = vsep [ name <+> "{", indent 4 $ formatPairs pairs, "}" ]
@@ -154,7 +181,7 @@ printElf'' ElfSegment{..} =
         , ("MemSize",    printWXX epMemSize   )
         , ("Align",      printWXX epAlign     )
         , ("Data",       line <> (indent 4 $ printElf' epData) )
-    ]
+        ]
 printElf'' ElfSectionTable = "section table"
 printElf'' ElfSegmentTable = "segment table"
 printElf'' ElfStringSection = "string section"

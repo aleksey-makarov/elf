@@ -505,10 +505,68 @@ data SymbolTableEntryXX (c :: ElfClass) =
         }
 
 getSymbolTableEntry :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (SymbolTableEntryXX c)
-getSymbolTableEntry _classS _hData = undefined
+getSymbolTableEntry SELFCLASS64 hData = do
+
+    let
+        getE :: (Binary (Le b), Binary (Be b)) => Get b
+        getE = getEndian hData
+
+        getWXXE = getWXX SELFCLASS64 hData
+
+    stName  <- getE
+    stInfo  <- get
+    stOther <- get
+    stShNdx <- getE
+    stValue <- getWXXE
+    stSize  <- getWXXE
+
+    return SymbolTableEntryXX{..}
+
+getSymbolTableEntry SELFCLASS32 hData = do
+
+    let
+        getE :: (Binary (Le b), Binary (Be b)) => Get b
+        getE = getEndian hData
+
+        getWXXE = getWXX SELFCLASS32 hData
+
+    stName  <- getE
+    stValue <- getWXXE
+    stSize  <- getWXXE
+    stInfo  <- get
+    stOther <- get
+    stShNdx <- getE
+
+    return SymbolTableEntryXX{..}
 
 putSymbolTableEntry :: forall (c :: ElfClass) . Sing c -> ElfData -> SymbolTableEntryXX c -> Put
-putSymbolTableEntry _classS _hData (SymbolTableEntryXX{..}) = undefined
+putSymbolTableEntry SELFCLASS64 hData (SymbolTableEntryXX{..}) = do
+    let
+        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
+        putE = putEndian hData
+
+        putWXXE = putWXX SELFCLASS64 hData
+
+    putE stName
+    put stInfo
+    put stOther
+    putE stShNdx
+    putWXXE stValue
+    putWXXE stSize
+
+putSymbolTableEntry SELFCLASS32 hData (SymbolTableEntryXX{..}) = do
+    let
+        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
+        putE = putEndian hData
+
+        putWXXE = putWXX SELFCLASS32 hData
+
+    putE stName
+    putWXXE stValue
+    putWXXE stSize
+    put stInfo
+    put stOther
+    putE stShNdx
 
 instance forall (a :: ElfClass) . SingI a => Binary (Be (SymbolTableEntryXX a)) where
     put = putSymbolTableEntry sing ELFDATA2MSB . fromBe
