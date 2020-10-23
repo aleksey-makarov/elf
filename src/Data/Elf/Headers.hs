@@ -584,25 +584,25 @@ instance forall (a :: ElfClass) . SingI a => Binary (Le (SymbolTableEntryXX a)) 
 newtype HeadersXX a = HeadersXX (HeaderXX a, [SectionXX a], [SegmentXX a])
 -- type ElfHeadersXX a = (HeaderXX a, SectionXX a, SegmentXX a)
 
-elfDecodeOrFail' :: (Binary a, MonadCatch m) => BSL.ByteString -> m (ByteOffset, a)
+elfDecodeOrFail' :: (Binary a, MonadThrow m) => BSL.ByteString -> m (ByteOffset, a)
 elfDecodeOrFail' bs = case decodeOrFail bs of
     Left (_, off, err) -> $elfError $ err ++ " @" ++ show off
     Right (_, off, a) -> return (off, a)
 
-elfDecodeOrFail :: (Binary a, MonadCatch m) => BSL.ByteString -> m a
+elfDecodeOrFail :: (Binary a, MonadThrow m) => BSL.ByteString -> m a
 elfDecodeOrFail bs = snd <$> elfDecodeOrFail' bs
 
-elfDecodeAllOrFail :: (Binary a, MonadCatch m) => BSL.ByteString -> m a
+elfDecodeAllOrFail :: (Binary a, MonadThrow m) => BSL.ByteString -> m a
 elfDecodeAllOrFail bs = do
     (off, a) <- elfDecodeOrFail' bs
     if off == (BSL.length bs) then return a else $elfError $ "leftover != 0 @" ++ show off
 
-parseListA :: (MonadCatch m, Binary (Le a), Binary (Be a)) => ElfData -> BSL.ByteString -> m [a]
+parseListA :: (MonadThrow m, Binary (Le a), Binary (Be a)) => ElfData -> BSL.ByteString -> m [a]
 parseListA d bs = case d of
     ELFDATA2LSB -> fmap fromLe <$> fromBList <$> elfDecodeAllOrFail bs
     ELFDATA2MSB -> fmap fromBe <$> fromBList <$> elfDecodeAllOrFail bs
 
-parseHeaders' :: (SingI a, MonadCatch m) => HeaderXX a -> BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
+parseHeaders' :: (SingI a, MonadThrow m) => HeaderXX a -> BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
 parseHeaders' hxx@HeaderXX{..} bs =
     let
         takeLen off len = BSL.take len $ BSL.drop off bs
@@ -613,7 +613,7 @@ parseHeaders' hxx@HeaderXX{..} bs =
         ps <- parseListA hData bsSegments
         return $ sing :&: HeadersXX (hxx, ss, ps)
 
-parseHeaders :: MonadCatch m => BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
+parseHeaders :: MonadThrow m => BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
 parseHeaders bs = do
     ((classS :&: hxx) :: Header) <- elfDecodeOrFail bs
     withSingI classS $ parseHeaders' hxx bs
