@@ -139,7 +139,7 @@ sectionIsSymbolTable :: SingI a => SectionXX a -> Bool
 sectionIsSymbolTable SectionXX{..} = sType `L.elem` [SHT_SYMTAB, SHT_DYNSYM]
 
 sectionToSymbolTable  :: (SingI a, MonadThrow m) => ElfData -> BSL.ByteString -> SectionXX a -> m [SymbolTableEntryXX a]
-sectionToSymbolTable d bs s = parseSymbolTable d $ getSectionData bs s
+sectionToSymbolTable d bs s = parseListA d $ getSectionData bs s
 
 printHeadersFile :: FilePath -> IO (Doc ())
 printHeadersFile path = do
