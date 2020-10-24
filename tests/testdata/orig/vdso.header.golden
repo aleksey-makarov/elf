@@ -215,3 +215,63 @@ Segments: - Type:     PT_LOAD
             FileSize: 0x000000000000003c
             MemSize:  0x000000000000003c
             Align:    0x0000000000000004
+- - Name:  0x00000000
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_Undef
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000008
+    Info:  0x22
+    Other: 0x00
+    ShNdx: SHN_EXT 12
+    Value: 0x0000000000000a30
+    Size:  0x0000000000000305
+  - Name:  0x00000016
+    Info:  0x12
+    Other: 0x00
+    ShNdx: SHN_EXT 12
+    Value: 0x0000000000000d40
+    Size:  0x00000000000001c1
+  - Name:  0x0000001d
+    Info:  0x22
+    Other: 0x00
+    ShNdx: SHN_EXT 12
+    Value: 0x0000000000000d40
+    Size:  0x00000000000001c1
+  - Name:  0x0000002a
+    Info:  0x12
+    Other: 0x00
+    ShNdx: SHN_EXT 12
+    Value: 0x0000000000000f10
+    Size:  0x0000000000000015
+  - Name:  0x00000031
+    Info:  0x22
+    Other: 0x00
+    ShNdx: SHN_EXT 12
+    Value: 0x0000000000000f10
+    Size:  0x0000000000000015
+  - Name:  0x00000001
+    Info:  0x12
+    Other: 0x00
+    ShNdx: SHN_EXT 12
+    Value: 0x0000000000000a30
+    Size:  0x0000000000000305
+  - Name:  0x00000054
+    Info:  0x11
+    Other: 0x00
+    ShNdx: SHN_Abs
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000036
+    Info:  0x12
+    Other: 0x00
+    ShNdx: SHN_EXT 12
+    Value: 0x0000000000000f30
+    Size:  0x000000000000002a
+  - Name:  0x0000003d
+    Info:  0x22
+    Other: 0x00
+    ShNdx: SHN_EXT 12
+    Value: 0x0000000000000f30
+    Size:  0x000000000000002a

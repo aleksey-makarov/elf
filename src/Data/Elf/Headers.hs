@@ -51,6 +51,7 @@ module Data.Elf.Headers
 
     , HeadersXX (..)
     , parseHeaders
+    , parseSymbolTable
 
     , elfMagic
 
@@ -499,7 +500,7 @@ data SymbolTableEntryXX (c :: ElfClass) =
         { stName  :: Word32
         , stInfo  :: Word8
         , stOther :: Word8
-        , stShNdx :: Word16
+        , stShNdx :: ElfSectionIndex
         , stValue :: WXX c
         , stSize  :: WXX c
         }
@@ -617,3 +618,8 @@ parseHeaders :: MonadThrow m => BSL.ByteString -> m (Sigma ElfClass (TyCon1 Head
 parseHeaders bs = do
     ((classS :&: hxx) :: Header) <- elfDecodeOrFail bs
     withSingI classS $ parseHeaders' hxx bs
+
+parseSymbolTable :: (SingI a, MonadThrow m) => ElfData -> BSL.ByteString -> m [SymbolTableEntryXX a]
+parseSymbolTable d bs = case d of
+    ELFDATA2LSB -> fmap fromLe <$> fromBList <$> elfDecodeAllOrFail bs
+    ELFDATA2MSB -> fmap fromBe <$> fromBList <$> elfDecodeAllOrFail bs

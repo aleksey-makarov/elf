@@ -14,6 +14,7 @@ import Prelude as P
 
 import Control.Arrow
 import Control.Monad
+import Control.Monad.Catch
 import Data.Binary
 import qualified Data.ByteString as BS
 import Data.ByteString.Lazy as BSL
@@ -21,6 +22,7 @@ import Data.ByteString.Lazy as BSL
 import Data.Foldable as F
 -- import Data.Functor.Identity
 import Data.Int
+import Data.List as L
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Text.Prettyprint.Doc as D
@@ -127,12 +129,31 @@ mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
             doc <- formatFunction file
             withFile o WriteMode (\ h -> hPutDoc h doc)
 
+printSymbolTable :: SingI a => [SymbolTableEntryXX a] -> Doc ()
+printSymbolTable sts = formatList $ fmap printSymbolTableEntry sts
+
+printSymbolTables :: SingI a => [[SymbolTableEntryXX a]] -> Doc ()
+printSymbolTables sts = formatList $ fmap printSymbolTable sts
+
+sectionIsSymbolTable :: SingI a => SectionXX a -> Bool
+sectionIsSymbolTable SectionXX{..} = sType `L.elem` [SHT_SYMTAB, SHT_DYNSYM]
+
+sectionToSymbolTable  :: (SingI a, MonadThrow m) => ElfData -> BSL.ByteString -> SectionXX a -> m [SymbolTableEntryXX a]
+sectionToSymbolTable d bs s = parseSymbolTable d $ getSectionData bs s
+
 printHeadersFile :: FilePath -> IO (Doc ())
 printHeadersFile path = do
     bs <- fromStrict <$> BS.readFile path
     case parseHeaders bs of
         Left err -> assertFailure $ show err
-        Right hs -> return $ printHeaders hs
+        Right hs@(classS :&: HeadersXX (HeaderXX{..}, ss, _ps)) -> withSingI classS do
+            let
+                stsections = L.filter sectionIsSymbolTable ss
+                sttables = sequence $ fmap (sectionToSymbolTable hData bs) stsections
+
+            case sttables of
+                Left err -> assertFailure $ show err
+                Right sts -> return $ printHeaders hs <> line <> printSymbolTables sts
 
 printElfFile :: FilePath -> IO (Doc ())
 printElfFile path = do

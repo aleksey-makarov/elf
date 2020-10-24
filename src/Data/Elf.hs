@@ -27,6 +27,7 @@ module Data.Elf
     , Elf (..)
     , ElfList (..)
     , parseElf
+    , getSectionData
     ) where
 
 import Data.Elf.Exception

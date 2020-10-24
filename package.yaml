@@ -84,6 +84,7 @@ tests:
       - bytestring
       - directory
       - elf
+      - exceptions
       - filepath
       - prettyprinter
       - singletons

@@ -114,3 +114,57 @@ Sections: - Name:      0
             AddrAlign: 0x0000000000000001
             EntSize:   0x0000000000000000
 Segments: 
+- - Name:  0x00000000
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_Undef
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 1
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 2
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 3
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 4
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000001
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_EXT 4
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 5
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000001
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_EXT 5
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 6
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000

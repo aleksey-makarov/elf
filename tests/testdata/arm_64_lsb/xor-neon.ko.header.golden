@@ -274,3 +274,279 @@ Sections: - Name:      0
             AddrAlign: 0x0000000000000001
             EntSize:   0x0000000000000000
 Segments: 
+- - Name:  0x00000000
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_Undef
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 1
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 2
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 3
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 4
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 6
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 7
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 9
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 10
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 11
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 13
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 14
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 16
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 17
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 18
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 19
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 20
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 21
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000000
+    Info:  0x03
+    Other: 0x00
+    ShNdx: SHN_EXT 22
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000001
+    Info:  0x04
+    Other: 0x00
+    ShNdx: SHN_Abs
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000010
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_EXT 16
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000013
+    Info:  0x01
+    Other: 0x00
+    ShNdx: SHN_EXT 9
+    Value: 0x0000000000000055
+    Size:  0x0000000000000009
+  - Name:  0x00000029
+    Info:  0x01
+    Other: 0x00
+    ShNdx: SHN_EXT 9
+    Value: 0x000000000000005e
+    Size:  0x0000000000000009
+  - Name:  0x0000003e
+    Info:  0x01
+    Other: 0x00
+    ShNdx: SHN_EXT 9
+    Value: 0x0000000000000067
+    Size:  0x000000000000000e
+  - Name:  0x00000051
+    Info:  0x01
+    Other: 0x00
+    ShNdx: SHN_EXT 9
+    Value: 0x0000000000000075
+    Size:  0x000000000000002d
+  - Name:  0x00000010
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_EXT 2
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000068
+    Info:  0x01
+    Other: 0x00
+    ShNdx: SHN_EXT 2
+    Value: 0x0000000000000000
+    Size:  0x0000000000000018
+  - Name:  0x00000070
+    Info:  0x04
+    Other: 0x00
+    ShNdx: SHN_Abs
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000010
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_EXT 4
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x0000007b
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_EXT 4
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x0000009a
+    Info:  0x01
+    Other: 0x00
+    ShNdx: SHN_EXT 10
+    Value: 0x0000000000000001
+    Size:  0x0000000000000015
+  - Name:  0x000000b9
+    Info:  0x01
+    Other: 0x00
+    ShNdx: SHN_EXT 10
+    Value: 0x0000000000000000
+    Size:  0x0000000000000001
+  - Name:  0x000000da
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_EXT 3
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000010
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_EXT 6
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000010
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_EXT 7
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x000000dd
+    Info:  0x01
+    Other: 0x00
+    ShNdx: SHN_EXT 9
+    Value: 0x0000000000000000
+    Size:  0x000000000000000c
+  - Name:  0x000000f3
+    Info:  0x01
+    Other: 0x00
+    ShNdx: SHN_EXT 9
+    Value: 0x000000000000000c
+    Size:  0x0000000000000021
+  - Name:  0x0000010d
+    Info:  0x01
+    Other: 0x00
+    ShNdx: SHN_EXT 9
+    Value: 0x000000000000002d
+    Size:  0x0000000000000028
+  - Name:  0x00000010
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_EXT 10
+    Value: 0x0000000000000000
+    Size:  0x0000000000000000
+  - Name:  0x00000010
+    Info:  0x00
+    Other: 0x00
+    ShNdx: SHN_EXT 11
+    Value: 0x0000000000000014
+    Size:  0x0000000000000000
+  - Name:  0x00000122
+    Info:  0x11
+    Other: 0x00
+    ShNdx: SHN_EXT 16
+    Value: 0x0000000000000000
+    Size:  0x0000000000000340
+  - Name:  0x00000130
+    Info:  0x12
+    Other: 0x00
+    ShNdx: SHN_EXT 3
+    Value: 0x0000000000000050
+    Size:  0x000000000000006c
+  - Name:  0x00000141
+    Info:  0x12
+    Other: 0x00
+    ShNdx: SHN_EXT 3
+    Value: 0x0000000000000148
+    Size:  0x00000000000000a4
+  - Name:  0x00000085
+    Info:  0x11
+    Other: 0x00
+    ShNdx: SHN_EXT 7
+    Value: 0x0000000000000000
+    Size:  0x0000000000000038
+  - Name:  0x00000152
+    Info:  0x12
+    Other: 0x00
+    ShNdx: SHN_EXT 3
+    Value: 0x0000000000000000
+    Size:  0x0000000000000050
+  - Name:  0x00000163
+    Info:  0x12
+    Other: 0x00
+    ShNdx: SHN_EXT 3
+    Value: 0x00000000000000c0
+    Size:  0x0000000000000088

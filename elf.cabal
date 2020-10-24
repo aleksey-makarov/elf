@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f479d43bf56ce14d1406e186f4c1acdb78052daed47544522286f0109851e687
+-- hash: f45f5948a1c210d784d77890a509e2e1252a08a6008d24df7ac35a8962ad3bc2
 
 name:           elf
 version:        0.31
@@ -64,6 +64,7 @@ test-suite golden
     , bytestring
     , directory
     , elf
+    , exceptions
     , filepath
     , prettyprinter
     , singletons

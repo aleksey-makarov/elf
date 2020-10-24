@@ -8,14 +8,18 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Data.Elf.Doc
-    ( printHeader
+    ( formatPairs
+    , formatList
+    , formatPairsBlock
+    , printHeader
     , printSection
     , printSegment
     , printHeaders
+    , printSymbolTableEntry
     , printElf
     ) where
 
-import Data.List as L
+-- import Data.List as L
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Text.Prettyprint.Doc as D
@@ -113,19 +117,10 @@ printSymbolTableEntry SymbolTableEntryXX{..} =
         [ ("Name",  printWord32 stName  )
         , ("Info",  printWord8 stInfo   )
         , ("Other", printWord8 stOther  )
-        , ("ShNdx", printWord16 stShNdx )
+        , ("ShNdx", viaShow stShNdx     )
         , ("Value", printWXX stValue    )
         , ("Size",  printWXX stSize     )
         ]
-
-printSymbolTable :: SingI a => [SymbolTableEntryXX a] -> Doc ()
-printSymbolTable sts = formatList $ fmap printSymbolTableEntry sts
-
-printSymbolTables :: SingI a => [[SymbolTableEntryXX a]] -> Doc ()
-printSymbolTables sts = formatList $ fmap printSymbolTable sts
-
-sectionIsSymbolTable :: SingI a => SectionXX a -> Bool
-sectionIsSymbolTable SectionXX{..} = sType `L.elem` [SHT_SYMTAB, SHT_DYNSYM]
 
 printHeaders' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> Doc ()
 printHeaders' hdr ss ps =
@@ -133,13 +128,11 @@ printHeaders' hdr ss ps =
         h  = printHeader hdr
         s  = fmap printSection ss
         p  = fmap printSegment ps
-        -- st = fmap printSymbolTables $ fmap getSectionData $ filter sectionIsSymbolTable ss
     in
         formatPairs
             [ ("Header",       h)
             , ("Sections",     formatList s)
             , ("Segments",     formatList p)
-            -- , ("SymbolTables", formatList st)
             ]
 
 printHeaders :: Sigma ElfClass (TyCon1 HeadersXX) -> Doc ()
