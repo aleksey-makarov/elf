@@ -72,12 +72,11 @@ segment {
             AddrAlign: 0x00000004
             EntSize:   0x00000004
         }
-        section ".dynsym" {
-            Type:      SHT_DYNSYM
-            Flags:     0x00000002
-            Addr:      0x080481dc
-            AddrAlign: 0x00000004
-            EntSize:   0x00000010
+        symbol table section ".dynsym" {
+            Type:  SHT_DYNSYM
+            Flags: 0x00000002
+            Data:  
+                
         }
         section ".dynstr" {
             Type:      SHT_STRTAB
@@ -263,12 +262,11 @@ section ".comment" {
     AddrAlign: 0x00000001
     EntSize:   0x00000001
 }
-section ".symtab" {
-    Type:      SHT_SYMTAB
-    Flags:     0x00000000
-    Addr:      0x00000000
-    AddrAlign: 0x00000004
-    EntSize:   0x00000010
+symbol table section ".symtab" {
+    Type:  SHT_SYMTAB
+    Flags: 0x00000000
+    Data:  
+        
 }
 section ".strtab" {
     Type:      SHT_STRTAB

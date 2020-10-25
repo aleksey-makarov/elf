@@ -40,12 +40,11 @@ segment {
             AddrAlign: 0x0000000000000008
             EntSize:   0x0000000000000000
         }
-        section ".dynsym" {
-            Type:      SHT_DYNSYM
-            Flags:     0x0000000000000002
-            Addr:      0x0000000000000890
-            AddrAlign: 0x0000000000000008
-            EntSize:   0x0000000000000018
+        symbol table section ".dynsym" {
+            Type:  SHT_DYNSYM
+            Flags: 0x0000000000000002
+            Data:  
+                
         }
         section ".dynstr" {
             Type:      SHT_STRTAB

@@ -135,9 +135,6 @@ printSymbolTable sts = formatList $ fmap printSymbolTableEntry sts
 printSymbolTables :: SingI a => [[SymbolTableEntryXX a]] -> Doc ()
 printSymbolTables sts = formatList $ fmap printSymbolTable sts
 
-sectionIsSymbolTable :: SingI a => SectionXX a -> Bool
-sectionIsSymbolTable SectionXX{..} = sType `L.elem` [SHT_SYMTAB, SHT_DYNSYM]
-
 sectionToSymbolTable  :: (SingI a, MonadThrow m) => ElfData -> BSL.ByteString -> SectionXX a -> m [SymbolTableEntryXX a]
 sectionToSymbolTable d bs s = parseListA d $ getSectionData bs s
 

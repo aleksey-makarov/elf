@@ -92,12 +92,11 @@ section ".comment" {
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000001
 }
-section ".symtab" {
-    Type:      SHT_SYMTAB
-    Flags:     0x0000000000000000
-    Addr:      0x0000000000000000
-    AddrAlign: 0x0000000000000008
-    EntSize:   0x0000000000000018
+symbol table section ".symtab" {
+    Type:  SHT_SYMTAB
+    Flags: 0x0000000000000000
+    Data:  
+        
 }
 section ".strtab" {
     Type:      SHT_STRTAB

@@ -26,6 +26,7 @@ module Data.Elf
     ( module Data.Elf.Generated
     , Elf (..)
     , ElfList (..)
+    , ElfSymbolTableEntry (..)
     , parseElf
     , getSectionData
     ) where
@@ -234,22 +235,15 @@ addRBuilder t ts =
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
                     $elfError $ intersectMessage t c2
 
-dsection :: SingI a => (Word16, SectionXX a) -> Either (Word16, SectionXX a) (ElfRBuilder a)
-dsection (n, s) = case toNonEmpty $ sectionInterval s of
-    Nothing -> Left (n, s)
-    Just i -> Right $ ElfRBuilderSection s n i
-
-dsegment :: SingI a => (Word16, SegmentXX a) -> Either (Word16, SegmentXX a) (ElfRBuilder a)
-dsegment (n, s) = case toNonEmpty $ segmentInterval s of
-    Nothing -> Left (n, s)
-    Just i -> Right $ ElfRBuilderSegment s n [] i
-
-dstrsection :: (SingI a, MonadThrow m) => (Word16, SectionXX a) -> m (ElfRBuilder a)
-dstrsection (n, s) =
-    -- FIXME: check that this section is a valid stringsection
-    case toNonEmpty $ sectionInterval s of
-        Nothing -> $elfError "empty string section"
-        Just i -> return $ ElfRBuilderStringSection s n i
+data ElfSymbolTableEntry (c :: ElfClass) =
+    ElfSymbolTableEntry
+        { steName  :: String -- NB: different
+        , steBind  :: ElfSymbolBinding
+        , steType  :: ElfSymbolType
+        , steShNdx :: ElfSectionIndex
+        , steValue :: WXX c
+        , steSize  :: WXX c
+        }
 
 data Elf (c :: ElfClass)
     = ElfHeader
@@ -268,6 +262,12 @@ data Elf (c :: ElfClass)
         , esAddr      :: WXX c
         , esAddrAlign :: WXX c
         , esEntSize   :: WXX c
+        }
+    | ElfSymbolTableSection
+        { estName      :: String -- NB: different
+        , estType      :: ElfSectionType
+        , estFlags     :: WXX c
+        , estTable     :: [ElfSymbolTableEntry c]
         }
     | ElfSegment
         { epType     :: ElfSegmentType
@@ -298,16 +298,26 @@ mapRBuilderToElf bs strs l = fmap f l
                 ehFlags      = hFlags
             in
                 ElfHeader{..}
-        f ElfRBuilderSection{ erbsHeader = SectionXX{..}, ..} =
-            let
-                esName      = getString strs (fromIntegral sName)
-                esType      = sType
-                esFlags     = sFlags
-                esAddr      = sAddr
-                esAddrAlign = sAddrAlign
-                esEntSize   = sEntSize
-            in
-                ElfSection{..}
+        f ElfRBuilderSection{ erbsHeader = hdr@SectionXX{..}, ..} =
+            if sectionIsSymbolTable hdr
+                then
+                    let
+                        estName      = getString strs (fromIntegral sName)
+                        estType      = sType
+                        estFlags     = sFlags
+                        estTable     = []
+                    in
+                        ElfSymbolTableSection{..}
+                else
+                    let
+                        esName      = getString strs (fromIntegral sName)
+                        esType      = sType
+                        esFlags     = sFlags
+                        esAddr      = sAddr
+                        esAddrAlign = sAddrAlign
+                        esEntSize   = sEntSize
+                    in
+                        ElfSection{..}
         f ElfRBuilderSegment{ erbpHeader = SegmentXX{..}, ..} =
             let
                 epType     = pType
@@ -342,6 +352,23 @@ getSectionData bs SectionXX{..} = cut bs o s
     where
         o = wxxToIntegral sOffset
         s = wxxToIntegral sSize
+
+dsection :: SingI a => (Word16, SectionXX a) -> Either (Word16, SectionXX a) (ElfRBuilder a)
+dsection (n, s) = case toNonEmpty $ sectionInterval s of
+    Nothing -> Left (n, s)
+    Just i -> Right $ ElfRBuilderSection s n i
+
+dsegment :: SingI a => (Word16, SegmentXX a) -> Either (Word16, SegmentXX a) (ElfRBuilder a)
+dsegment (n, s) = case toNonEmpty $ segmentInterval s of
+    Nothing -> Left (n, s)
+    Just i -> Right $ ElfRBuilderSegment s n [] i
+
+dstrsection :: (SingI a, MonadThrow m) => (Word16, SectionXX a) -> m (ElfRBuilder a)
+dstrsection (n, s) =
+    -- FIXME: check that this section is a valid stringsection
+    case toNonEmpty $ sectionInterval s of
+        Nothing -> $elfError "empty string section"
+        Just i -> return $ ElfRBuilderStringSection s n i
 
 parseElf' :: (MonadCatch m, SingI a) =>
                           HeaderXX a ->

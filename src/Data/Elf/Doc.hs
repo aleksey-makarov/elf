@@ -147,6 +147,19 @@ printHeaders (classS :&: HeadersXX (hdr, ss, ps)) = withSingI classS $ printHead
 formatPairsBlock :: Doc a -> [(String, Doc a)] -> Doc a
 formatPairsBlock name pairs = vsep [ name <+> "{", indent 4 $ formatPairs pairs, "}" ]
 
+printElfSymbolTableEntry :: SingI a => ElfSymbolTableEntry a -> Doc ()
+printElfSymbolTableEntry ElfSymbolTableEntry{..} =
+    formatPairsBlock ("symbol" <+> (dquotes $ pretty steName))
+        [ ("Bind",  viaShow steBind   ) -- ElfSymbolBinding
+        , ("Type",  viaShow steType   ) -- ElfSymbolType
+        , ("ShNdx", viaShow steShNdx  ) -- ElfSectionIndex
+        , ("Value", printWXX steValue ) -- WXX c
+        , ("Size",  printWXX steSize  ) -- WXX c
+        ]
+
+printElfSymbolTable :: SingI a => [ElfSymbolTableEntry a] -> Doc ()
+printElfSymbolTable l = align . vsep $ fmap printElfSymbolTableEntry l
+
 printElf'' :: forall a . SingI a => Elf a -> Doc ()
 printElf'' ElfHeader{..} =
     formatPairsBlock "header"
@@ -166,6 +179,12 @@ printElf'' ElfSection{..} =
         , ("Addr",       printWXX esAddr      )
         , ("AddrAlign",  printWXX esAddrAlign )
         , ("EntSize",    printWXX esEntSize   )
+        ]
+printElf'' ElfSymbolTableSection{..} =
+    formatPairsBlock ("symbol table section" <+> (dquotes $ pretty estName))
+        [ ("Type",       viaShow estType       )
+        , ("Flags",      printWXX estFlags     )
+        , ("Data",       line <> (indent 4 $ printElfSymbolTable estTable) )
         ]
 printElf'' ElfSegment{..} =
     formatPairsBlock "segment"

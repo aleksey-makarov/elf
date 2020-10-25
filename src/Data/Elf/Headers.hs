@@ -45,6 +45,8 @@ module Data.Elf.Headers
 
     ---------------------------------
 
+    , sectionIsSymbolTable
+
     , SElfClass (..)
 
     , splitBits
@@ -490,6 +492,9 @@ instance forall (a :: ElfClass) . SingI a => Binary (Be (SegmentXX a)) where
 instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
     put = putSegment sing ELFDATA2LSB . fromLe
     get = Le <$> getSegment sing ELFDATA2LSB
+
+sectionIsSymbolTable :: SingI a => SectionXX a -> Bool
+sectionIsSymbolTable SectionXX{..} = sType `L.elem` [SHT_SYMTAB, SHT_DYNSYM]
 
 --------------------------------------------------------------------------
 -- symbol table entry
