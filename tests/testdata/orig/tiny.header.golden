@@ -13,7 +13,8 @@ Header:   Class:      ELFCLASS64
           ShEntSize:  0x0040
           ShNum:      3
           ShStrNdx:   2
-Sections: - Name:      0
+Sections: - N:         0
+            Name:      0
             Type:      SHT_NULL
             Flags:     0x0000000000000000
             Addr:      0x0000000000000000
@@ -23,7 +24,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x0000000000000000
             EntSize:   0x0000000000000000
-          - Name:      11
+          - N:         1
+            Name:      11
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
             Addr:      0x00000000004000e0
@@ -33,7 +35,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x0000000000000010
             EntSize:   0x0000000000000000
-          - Name:      1
+          - N:         2
+            Name:      1
             Type:      SHT_STRTAB
             Flags:     0x0000000000000000
             Addr:      0x0000000000000000
@@ -43,7 +46,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x0000000000000001
             EntSize:   0x0000000000000000
-Segments: - Type:     PT_LOAD
+Segments: - N:        0
+            Type:     PT_LOAD
             Flags:    0x00000005
             Offset:   0x0000000000000000
             VirtAddr: 0x0000000000400000
@@ -51,7 +55,8 @@ Segments: - Type:     PT_LOAD
             FileSize: 0x00000000000000ec
             MemSize:  0x00000000000000ec
             Align:    0x0000000000200000
-          - Type:     PT_NOTE
+          - N:        1
+            Type:     PT_NOTE
             Flags:    0x00000004
             Offset:   0x0000000000000000
             VirtAddr: 0x0000000000000000

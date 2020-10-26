@@ -83,10 +83,11 @@ printHeader HeaderXX{..} =
         , ("ShStrNdx",   viaShow hShStrNdx       ) -- Word16
         ]
 
-printSection :: SingI a => SectionXX a -> Doc ()
-printSection SectionXX{..} =
+printSection :: SingI a => (Int, SectionXX a) -> Doc ()
+printSection (n, SectionXX{..}) =
     formatPairs
-        [ ("Name",      viaShow sName       ) -- Word32
+        [ ("N",         viaShow n           )
+        , ("Name",      viaShow sName       ) -- Word32
         , ("Type",      viaShow sType       ) -- ElfSectionType
         , ("Flags",     printWXX sFlags     ) -- WXX c
         , ("Addr",      printWXX sAddr      ) -- WXX c
@@ -98,10 +99,11 @@ printSection SectionXX{..} =
         , ("EntSize",   printWXX sEntSize   ) -- WXX c
         ]
 
-printSegment :: SingI a => SegmentXX a -> Doc ()
-printSegment SegmentXX{..} =
+printSegment :: SingI a => (Int, SegmentXX a) -> Doc ()
+printSegment (n, SegmentXX{..}) =
     formatPairs
-        [ ("Type",     viaShow pType      ) -- ElfSegmentType
+        [ ("N",        viaShow n          )
+        , ("Type",     viaShow pType      ) -- ElfSegmentType
         , ("Flags",    printWord32 pFlags ) -- Word32
         , ("Offset",   printWXX pOffset   ) -- WXX c
         , ("VirtAddr", printWXX pVirtAddr ) -- WXX c
@@ -126,8 +128,8 @@ printHeaders' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> Doc 
 printHeaders' hdr ss ps =
     let
         h  = printHeader hdr
-        s  = fmap printSection ss
-        p  = fmap printSegment ps
+        s  = fmap printSection (Prelude.zip [0 .. ] ss)
+        p  = fmap printSegment (Prelude.zip [0 .. ] ps)
     in
         formatPairs
             [ ("Header",       h)

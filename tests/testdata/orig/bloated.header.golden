@@ -13,7 +13,8 @@ Header:   Class:      ELFCLASS32
           ShEntSize:  0x0028
           ShNum:      31
           ShStrNdx:   28
-Sections: - Name:      0
+Sections: - N:         0
+            Name:      0
             Type:      SHT_NULL
             Flags:     0x00000000
             Addr:      0x00000000
@@ -23,7 +24,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000000
             EntSize:   0x00000000
-          - Name:      27
+          - N:         1
+            Name:      27
             Type:      SHT_PROGBITS
             Flags:     0x00000002
             Addr:      0x08048154
@@ -33,7 +35,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000001
             EntSize:   0x00000000
-          - Name:      35
+          - N:         2
+            Name:      35
             Type:      SHT_NOTE
             Flags:     0x00000002
             Addr:      0x08048168
@@ -43,7 +46,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000000
-          - Name:      49
+          - N:         3
+            Name:      49
             Type:      SHT_NOTE
             Flags:     0x00000002
             Addr:      0x08048188
@@ -53,7 +57,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000000
-          - Name:      68
+          - N:         4
+            Name:      68
             Type:      SHT_EXT 1879048182
             Flags:     0x00000002
             Addr:      0x080481ac
@@ -63,7 +68,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000004
-          - Name:      78
+          - N:         5
+            Name:      78
             Type:      SHT_DYNSYM
             Flags:     0x00000002
             Addr:      0x080481dc
@@ -73,7 +79,8 @@ Sections: - Name:      0
             Info:      1
             AddrAlign: 0x00000004
             EntSize:   0x00000010
-          - Name:      86
+          - N:         6
+            Name:      86
             Type:      SHT_STRTAB
             Flags:     0x00000002
             Addr:      0x080482bc
@@ -83,7 +90,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000001
             EntSize:   0x00000000
-          - Name:      94
+          - N:         7
+            Name:      94
             Type:      SHT_EXT 1879048191
             Flags:     0x00000002
             Addr:      0x08048456
@@ -93,7 +101,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000002
             EntSize:   0x00000002
-          - Name:      107
+          - N:         8
+            Name:      107
             Type:      SHT_EXT 1879048190
             Flags:     0x00000002
             Addr:      0x08048474
@@ -103,7 +112,8 @@ Sections: - Name:      0
             Info:      2
             AddrAlign: 0x00000004
             EntSize:   0x00000000
-          - Name:      122
+          - N:         9
+            Name:      122
             Type:      SHT_REL
             Flags:     0x00000002
             Addr:      0x080484c4
@@ -113,7 +123,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000008
-          - Name:      131
+          - N:         10
+            Name:      131
             Type:      SHT_REL
             Flags:     0x00000042
             Addr:      0x080484d4
@@ -123,7 +134,8 @@ Sections: - Name:      0
             Info:      24
             AddrAlign: 0x00000004
             EntSize:   0x00000008
-          - Name:      140
+          - N:         11
+            Name:      140
             Type:      SHT_PROGBITS
             Flags:     0x00000006
             Addr:      0x0804850c
@@ -133,7 +145,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000000
-          - Name:      135
+          - N:         12
+            Name:      135
             Type:      SHT_PROGBITS
             Flags:     0x00000006
             Addr:      0x08048530
@@ -143,7 +156,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000010
             EntSize:   0x00000004
-          - Name:      146
+          - N:         13
+            Name:      146
             Type:      SHT_PROGBITS
             Flags:     0x00000006
             Addr:      0x080485b0
@@ -153,7 +167,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000008
             EntSize:   0x00000000
-          - Name:      155
+          - N:         14
+            Name:      155
             Type:      SHT_PROGBITS
             Flags:     0x00000006
             Addr:      0x080485c0
@@ -163,7 +178,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000010
             EntSize:   0x00000000
-          - Name:      161
+          - N:         15
+            Name:      161
             Type:      SHT_PROGBITS
             Flags:     0x00000006
             Addr:      0x080487d4
@@ -173,7 +189,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000000
-          - Name:      167
+          - N:         16
+            Name:      167
             Type:      SHT_PROGBITS
             Flags:     0x00000002
             Addr:      0x080487e8
@@ -183,7 +200,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000000
-          - Name:      175
+          - N:         17
+            Name:      175
             Type:      SHT_PROGBITS
             Flags:     0x00000002
             Addr:      0x08048804
@@ -193,7 +211,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000000
-          - Name:      189
+          - N:         18
+            Name:      189
             Type:      SHT_PROGBITS
             Flags:     0x00000002
             Addr:      0x08048840
@@ -203,7 +222,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000000
-          - Name:      199
+          - N:         19
+            Name:      199
             Type:      SHT_EXT 14
             Flags:     0x00000003
             Addr:      0x08049eec
@@ -213,7 +233,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000000
-          - Name:      211
+          - N:         20
+            Name:      211
             Type:      SHT_EXT 15
             Flags:     0x00000003
             Addr:      0x08049ef4
@@ -223,7 +244,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000000
-          - Name:      223
+          - N:         21
+            Name:      223
             Type:      SHT_PROGBITS
             Flags:     0x00000003
             Addr:      0x08049ef8
@@ -233,7 +255,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000000
-          - Name:      228
+          - N:         22
+            Name:      228
             Type:      SHT_DYNAMIC
             Flags:     0x00000003
             Addr:      0x08049efc
@@ -243,7 +266,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000008
-          - Name:      150
+          - N:         23
+            Name:      150
             Type:      SHT_PROGBITS
             Flags:     0x00000003
             Addr:      0x08049ffc
@@ -253,7 +277,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000004
-          - Name:      237
+          - N:         24
+            Name:      237
             Type:      SHT_PROGBITS
             Flags:     0x00000003
             Addr:      0x0804a000
@@ -263,7 +288,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000004
             EntSize:   0x00000004
-          - Name:      246
+          - N:         25
+            Name:      246
             Type:      SHT_PROGBITS
             Flags:     0x00000003
             Addr:      0x0804a028
@@ -273,7 +299,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000001
             EntSize:   0x00000000
-          - Name:      252
+          - N:         26
+            Name:      252
             Type:      SHT_NOBITS
             Flags:     0x00000003
             Addr:      0x0804a040
@@ -283,7 +310,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000020
             EntSize:   0x00000000
-          - Name:      257
+          - N:         27
+            Name:      257
             Type:      SHT_PROGBITS
             Flags:     0x00000030
             Addr:      0x00000000
@@ -293,7 +321,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000001
             EntSize:   0x00000001
-          - Name:      17
+          - N:         28
+            Name:      17
             Type:      SHT_STRTAB
             Flags:     0x00000000
             Addr:      0x00000000
@@ -303,7 +332,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000001
             EntSize:   0x00000000
-          - Name:      1
+          - N:         29
+            Name:      1
             Type:      SHT_SYMTAB
             Flags:     0x00000000
             Addr:      0x00000000
@@ -313,7 +343,8 @@ Sections: - Name:      0
             Info:      50
             AddrAlign: 0x00000004
             EntSize:   0x00000010
-          - Name:      9
+          - N:         30
+            Name:      9
             Type:      SHT_STRTAB
             Flags:     0x00000000
             Addr:      0x00000000
@@ -323,7 +354,8 @@ Sections: - Name:      0
             Info:      0
             AddrAlign: 0x00000001
             EntSize:   0x00000000
-Segments: - Type:     PT_PHDR
+Segments: - N:        0
+            Type:     PT_PHDR
             Flags:    0x00000005
             Offset:   0x00000034
             VirtAddr: 0x08048034
@@ -331,7 +363,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x00000120
             MemSize:  0x00000120
             Align:    0x00000004
-          - Type:     PT_INTERP
+          - N:        1
+            Type:     PT_INTERP
             Flags:    0x00000004
             Offset:   0x00000154
             VirtAddr: 0x08048154
@@ -339,7 +372,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x00000013
             MemSize:  0x00000013
             Align:    0x00000001
-          - Type:     PT_LOAD
+          - N:        2
+            Type:     PT_LOAD
             Flags:    0x00000005
             Offset:   0x00000000
             VirtAddr: 0x08048000
@@ -347,7 +381,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x00000934
             MemSize:  0x00000934
             Align:    0x00001000
-          - Type:     PT_LOAD
+          - N:        3
+            Type:     PT_LOAD
             Flags:    0x00000006
             Offset:   0x00000eec
             VirtAddr: 0x08049eec
@@ -355,7 +390,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x00000140
             MemSize:  0x000001e4
             Align:    0x00001000
-          - Type:     PT_DYNAMIC
+          - N:        4
+            Type:     PT_DYNAMIC
             Flags:    0x00000006
             Offset:   0x00000efc
             VirtAddr: 0x08049efc
@@ -363,7 +399,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x00000100
             MemSize:  0x00000100
             Align:    0x00000004
-          - Type:     PT_NOTE
+          - N:        5
+            Type:     PT_NOTE
             Flags:    0x00000004
             Offset:   0x00000168
             VirtAddr: 0x08048168
@@ -371,7 +408,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x00000044
             MemSize:  0x00000044
             Align:    0x00000004
-          - Type:     PT_EXT 1685382480
+          - N:        6
+            Type:     PT_EXT 1685382480
             Flags:    0x00000004
             Offset:   0x00000804
             VirtAddr: 0x08048804
@@ -379,7 +417,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x0000003c
             MemSize:  0x0000003c
             Align:    0x00000004
-          - Type:     PT_EXT 1685382481
+          - N:        7
+            Type:     PT_EXT 1685382481
             Flags:    0x00000006
             Offset:   0x00000000
             VirtAddr: 0x00000000
@@ -387,7 +426,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x00000000
             MemSize:  0x00000000
             Align:    0x00000010
-          - Type:     PT_EXT 1685382482
+          - N:        8
+            Type:     PT_EXT 1685382482
             Flags:    0x00000004
             Offset:   0x00000eec
             VirtAddr: 0x08049eec

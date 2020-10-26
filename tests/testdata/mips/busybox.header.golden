@@ -14,7 +14,8 @@ Header:   Class:      ELFCLASS32
           ShNum:      0
           ShStrNdx:   0
 Sections: 
-Segments: - Type:     PT_PHDR
+Segments: - N:        0
+            Type:     PT_PHDR
             Flags:    0x00000005
             Offset:   0x00000034
             VirtAddr: 0x00400034
@@ -22,7 +23,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x000000e0
             MemSize:  0x000000e0
             Align:    0x00000004
-          - Type:     PT_INTERP
+          - N:        1
+            Type:     PT_INTERP
             Flags:    0x00000004
             Offset:   0x00000114
             VirtAddr: 0x00400114
@@ -30,7 +32,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x00000014
             MemSize:  0x00000014
             Align:    0x00000001
-          - Type:     PT_LOAD
+          - N:        2
+            Type:     PT_LOAD
             Flags:    0x00000005
             Offset:   0x00000000
             VirtAddr: 0x00400000
@@ -38,7 +41,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x00081b94
             MemSize:  0x00081b94
             Align:    0x00001000
-          - Type:     PT_LOAD
+          - N:        3
+            Type:     PT_LOAD
             Flags:    0x00000006
             Offset:   0x00082000
             VirtAddr: 0x004c2000
@@ -46,7 +50,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x000018bc
             MemSize:  0x00002c68
             Align:    0x00001000
-          - Type:     PT_DYNAMIC
+          - N:        4
+            Type:     PT_DYNAMIC
             Flags:    0x00000007
             Offset:   0x00000128
             VirtAddr: 0x00400128
@@ -54,7 +59,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x00005f34
             MemSize:  0x00005f34
             Align:    0x00000004
-          - Type:     PT_EXT 1685382480
+          - N:        5
+            Type:     PT_EXT 1685382480
             Flags:    0x00000004
             Offset:   0x00081b68
             VirtAddr: 0x00481b68
@@ -62,7 +68,8 @@ Segments: - Type:     PT_PHDR
             FileSize: 0x0000002c
             MemSize:  0x0000002c
             Align:    0x00000004
-          - Type:     PT_EXT 1685382481
+          - N:        6
+            Type:     PT_EXT 1685382481
             Flags:    0x00000007
             Offset:   0x00000000
             VirtAddr: 0x00000000
