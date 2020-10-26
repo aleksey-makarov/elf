@@ -42,7 +42,8 @@ import Data.ByteString.Char8 as BSC
 import Data.ByteString.Lazy as BSL
 import Data.Either
 import Data.Int
--- import Data.List as L
+import Data.List as L
+import Data.Maybe
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Word
@@ -63,6 +64,12 @@ data ElfRBuilder (c :: ElfClass)
         { erbstrsHeader :: SectionXX c
         , erbstrsN      :: Word16
         , bInterval     :: INE.Interval Word64
+        }
+    | ElfRBuilderSymbolTableSection
+        { erbstrsHeader   :: SectionXX c
+        , erbstrsN        :: Word16
+        , bInterval       :: INE.Interval Word64
+        , erbstrsSymTable :: [SymbolTableEntryXX c]
         }
     | ElfRBuilderSegment
         { erbpHeader :: SegmentXX c
@@ -136,6 +143,9 @@ showElfRBuilber' ElfRBuilderStringSection{..} = "string section"
 
 showElfRBuilber :: ElfRBuilder a -> String
 showElfRBuilber v = showElfRBuilber' v ++ " (" ++ (show $ bInterval v) ++ ")"
+
+showSection :: SingI a => SectionXX a -> String
+showSection = undefined
 
 -- showERBList :: [ElfRBuilder a] -> String
 -- showERBList l = "[" ++ (L.concat $ L.intersperse ", " $ fmap showElfRBuilber l) ++ "]"
@@ -333,13 +343,13 @@ mapRBuilderToElf bs strs l = fmap f l
         f ElfRBuilderSegmentTable{..} = ElfSegmentTable
         f ElfRBuilderStringSection{..} = ElfStringSection
 
-dropFirstFrom :: (a -> Bool) -> [a] -> (Maybe a, [a])
-dropFirstFrom _ [] = (Nothing, [])
-dropFirstFrom f (x:xs) = if f x then (Just x, xs) else
-    let
-        (mr, nxs) = dropFirstFrom f xs
-    in
-        (mr, x:nxs)
+-- dropFirstFrom :: (a -> Bool) -> [a] -> (Maybe a, [a])
+-- dropFirstFrom _ [] = (Nothing, [])
+-- dropFirstFrom f (x:xs) = if f x then (Just x, xs) else
+--     let
+--         (mr, nxs) = dropFirstFrom f xs
+--     in
+--         (mr, x:nxs)
 
 getString :: BSL.ByteString -> Int64 -> String
 getString bs offset = BSC.unpack $ toStrict $ BSL.takeWhile (/= 0) $ BSL.drop offset bs
@@ -353,22 +363,9 @@ getSectionData bs SectionXX{..} = cut bs o s
         o = wxxToIntegral sOffset
         s = wxxToIntegral sSize
 
-dsection :: SingI a => (Word16, SectionXX a) -> Either (Word16, SectionXX a) (ElfRBuilder a)
-dsection (n, s) = case toNonEmpty $ sectionInterval s of
-    Nothing -> Left (n, s)
-    Just i -> Right $ ElfRBuilderSection s n i
-
-dsegment :: SingI a => (Word16, SegmentXX a) -> Either (Word16, SegmentXX a) (ElfRBuilder a)
-dsegment (n, s) = case toNonEmpty $ segmentInterval s of
-    Nothing -> Left (n, s)
-    Just i -> Right $ ElfRBuilderSegment s n [] i
-
-dstrsection :: (SingI a, MonadThrow m) => (Word16, SectionXX a) -> m (ElfRBuilder a)
-dstrsection (n, s) =
-    -- FIXME: check that this section is a valid stringsection
-    case toNonEmpty $ sectionInterval s of
-        Nothing -> $elfError "empty string section"
-        Just i -> return $ ElfRBuilderStringSection s n i
+tail' :: [a] -> [a]
+tail' [] = []
+tail' (_ : xs) = xs
 
 parseElf' :: (MonadCatch m, SingI a) =>
                           HeaderXX a ->
@@ -378,31 +375,60 @@ parseElf' :: (MonadCatch m, SingI a) =>
 parseElf' hdr@HeaderXX{..} ss ps bs = do
 
     let
-        findStrSection (n, _) = n == hShStrNdx
-        (maybeStrSection, ssx) = dropFirstFrom findStrSection (Prelude.zip [0 .. ] ss)
+        isStringTable ElfRBuilderStringSection{..} = Just $ getSectionData bs erbstrsHeader
+        isStringTable _ = Nothing
 
-    maybeStringSection <- sequence $ dstrsection <$> maybeStrSection
+        -- let
+        --     findStrSection (n, _) = n == hShStrNdx
+        --     (maybeStrSection, ssx) = dropFirstFrom findStrSection (Prelude.zip [0 .. ] ss)
+
+        -- maybeStringSection <- sequence $ dstrsection <$> maybeStrSection
+
+            -- stringSectionToData = getSectionData bs . erbstrsHeader
+            -- stringData = maybe BSL.empty stringSectionToData maybeStringSection
+
+        -- FIXME: _emptySections, _emptySegments
+        mkRBuilderSection :: (SingI a, MonadCatch m) => (Word16, SectionXX a) -> m (ElfRBuilder a)
+        mkRBuilderSection (n, s) = case toNonEmpty $ sectionInterval s of
+            Nothing -> $elfError $ "empty section " ++ show n
+            Just i ->
+                if sectionIsSymbolTable s
+                    then
+                        ElfRBuilderSymbolTableSection s n i <$> (parseListA hData $ getSectionData bs s)
+                    else if n == hShStrNdx
+                        then
+                            return $ ElfRBuilderStringSection s n i
+                        else
+                            return $ ElfRBuilderSection s n i
+
+        mkRBuilderSegment :: (SingI a, MonadCatch m) => (Word16, SegmentXX a) -> m (ElfRBuilder a)
+        mkRBuilderSegment (n, s) = case toNonEmpty $ segmentInterval s of
+            Nothing -> $elfError $ "empty segment " ++ show n
+            Just i -> return $ ElfRBuilderSegment s n [] i
+
+        -- dstrsection :: (SingI a, MonadThrow m) => (Word16, SectionXX a) -> m (ElfRBuilder a)
+        -- dstrsection (n, s) =
+        --     -- FIXME: check that this section is a valid stringsection
+        --     case toNonEmpty $ sectionInterval s of
+        --         Nothing -> $elfError "empty string section"
+        --         Just i -> return $ ElfRBuilderStringSection s n i
+
+    sections <- mapM mkRBuilderSection $ tail' $ Prelude.zip [0 .. ] ss
+    segments <- mapM mkRBuilderSegment $         Prelude.zip [0 .. ] ps
 
     let
-        stringSectionToData = getSectionData bs . erbstrsHeader
-        stringData = maybe BSL.empty stringSectionToData maybeStringSection
-
-        (_emptySections, sections) = partitionEithers $ fmap dsection ssx
-        (_emptySegments, segments) = partitionEithers $ fmap dsegment (Prelude.zip [0 .. ] ps)
-
+        firstJust f = listToMaybe . mapMaybe f
+        maybeStringData = firstJust isStringTable sections
+        stringData = maybe BSL.empty id maybeStringData
         header = ElfRBuilderHeader hdr $ headerInterval hdr
-
         maybeSectionTable = ElfRBuilderSectionTable <$> (toNonEmpty $ sectionTableInterval hdr)
         maybeSegmentTable = ElfRBuilderSegmentTable <$> (toNonEmpty $ segmentTableInterval hdr)
 
     rBuilder  <- addRBuilder header
              =<< maybe return addRBuilder maybeSectionTable
              =<< maybe return addRBuilder maybeSegmentTable
-             =<< maybe return addRBuilder maybeStringSection
              =<< addRBuildersToList segments
              =<< addRBuildersToList sections []
-
-    -- FIXME: _emptySections, _emptySegments
 
     return $ sing :&: ElfList (mapRBuilderToElf bs stringData rBuilder)
 
