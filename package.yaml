@@ -28,7 +28,6 @@ library:
     - bytestring
     - binary
     - exceptions
-    - intervals
     - lens
     - prettyprinter
     - singletons
@@ -38,6 +37,7 @@ library:
   other-modules:
     - Data.Elf.TH
     - Data.Elf.Generated
+    - Data.Interval
   exposed-modules:
     - Data.Elf
     - Data.Elf.Headers
@@ -110,4 +110,3 @@ tests:
 #     dependencies:
 #       - elf
 #       - binary
-#       - intervals

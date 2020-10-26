@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f45f5948a1c210d784d77890a509e2e1252a08a6008d24df7ac35a8962ad3bc2
+-- hash: b611bf15e2e80e8f1da16a266e5c45b0f985c3507a16643d4bb6857e2b12ca99
 
 name:           elf
 version:        0.31
@@ -34,6 +34,7 @@ library
   other-modules:
       Data.Elf.TH
       Data.Elf.Generated
+      Data.Interval
   hs-source-dirs:
       src
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints
@@ -42,7 +43,6 @@ library
     , binary
     , bytestring
     , exceptions
-    , intervals
     , lens
     , mtl
     , prettyprinter

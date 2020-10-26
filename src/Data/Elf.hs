@@ -34,6 +34,7 @@ module Data.Elf
 import Data.Elf.Exception
 import Data.Elf.Generated
 import Data.Elf.Headers
+import Data.Interval
 
 import Control.Monad
 import Control.Monad.Catch
@@ -47,99 +48,95 @@ import Data.Maybe
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Word
-import Numeric.Interval as I
-import Numeric.Interval.NonEmpty as INE
+-- import Numeric.Interval as I
+-- import Numeric.Interval.NonEmpty as INE
 
-data ElfRBuilder (c :: ElfClass)
-    = ElfRBuilderHeader
-        { erbhHeader :: HeaderXX c
-        , bInterval  :: INE.Interval Word64
-        }
-    | ElfRBuilderSection
-        { erbsHeader :: SectionXX c
-        , erbsN      :: Word16
-        , bInterval  :: INE.Interval Word64
-        }
-    | ElfRBuilderStringSection
-        { erbstrsHeader :: SectionXX c
-        , erbstrsN      :: Word16
-        , bInterval     :: INE.Interval Word64
-        }
-    | ElfRBuilderSymbolTableSection
-        { erbstrsHeader   :: SectionXX c
-        , erbstrsN        :: Word16
-        , bInterval       :: INE.Interval Word64
-        , erbstrsSymTable :: [SymbolTableEntryXX c]
-        }
-    | ElfRBuilderSegment
-        { erbpHeader :: SegmentXX c
-        , erbpN      :: Word16
-        , erbpData   :: [ElfRBuilder c]
-        , bInterval  :: INE.Interval Word64
-        }
-    | ElfRBuilderSectionTable
-        { bInterval  :: INE.Interval Word64
-        }
-    | ElfRBuilderSegmentTable
-        { bInterval  :: INE.Interval Word64
-        }
+headerInterval :: forall a . SingI a => HeaderXX a -> Interval Word64
+headerInterval _ = I 0 $ fromIntegral $ headerSize $ fromSing $ sing @a
 
--- Header can not be empty
-headerInterval :: forall a . SingI a => HeaderXX a -> INE.Interval Word64
-headerInterval _ = 0 INE.... (fromIntegral $ headerSize $ fromSing $ sing @a) - 1
-
-sectionTableInterval :: SingI a => HeaderXX a -> I.Interval Word64
-sectionTableInterval HeaderXX{..} = if (s == 0) then I.empty else o I.... o + s * n - 1
+sectionTableInterval :: SingI a => HeaderXX a -> Interval Word64
+sectionTableInterval HeaderXX{..} = I o (o + s * n - 1)
     where
         o = wxxToIntegral hShOff
         s = fromIntegral  hShEntSize
         n = fromIntegral  hShNum
 
-segmentTableInterval :: SingI a => HeaderXX a -> I.Interval Word64
-segmentTableInterval HeaderXX{..} = if (s == 0) then I.empty else o I.... o + s * n - 1
+segmentTableInterval :: SingI a => HeaderXX a -> Interval Word64
+segmentTableInterval HeaderXX{..} = I o (o + s * n - 1)
     where
         o = wxxToIntegral hPhOff
         s = fromIntegral  hPhEntSize
         n = fromIntegral  hPhNum
 
-sectionInterval :: SingI a => SectionXX a -> I.Interval Word64
-sectionInterval SectionXX{..} = if (sType == SHT_NOBITS) || (s == 0) then I.empty else o I.... o + s - 1
+sectionInterval :: SingI a => SectionXX a -> Interval Word64
+sectionInterval SectionXX{..} = I o s
     where
         o = wxxToIntegral sOffset
-        s = wxxToIntegral sSize
+        s = if (sType == SHT_NOBITS) then 0 else wxxToIntegral sSize
 
-segmentInterval :: SingI a => SegmentXX a -> I.Interval Word64
-segmentInterval SegmentXX{..} = if s == 0 then I.empty else o I.... o + s - 1
+segmentInterval :: SingI a => SegmentXX a -> Interval Word64
+segmentInterval SegmentXX{..} = I o s
     where
         o = wxxToIntegral pOffset
         s = wxxToIntegral pFileSize
 
+data RBuilderSectionData (c :: ElfClass)
+    = RBuilderSectionData BSL.ByteString
+    | RBuilderSectionDataStringtable
+    | RBuilderSectionDataSymbolTable [SymbolTableEntryXX c]
+
+data RBuilder (c :: ElfClass)
+    = RBuilderHeader
+        { erbhHeader :: HeaderXX c
+        }
+    | RBuilderSectionTable
+        { erbstHeader :: HeaderXX c
+        }
+    | RBuilderSegmentTable
+        { erbptHeader :: HeaderXX c
+        }
+    | RBuilderSection
+        { erbsHeader :: SectionXX c
+        , erbsN      :: Word16
+        , erbsData   :: RBuilderSectionData c
+        }
+    | RBuilderSegment
+        { erbpHeader :: SegmentXX c
+        , erbpN      :: Word16
+        , erbpData   :: [RBuilder c]
+        }
+
+rBuilderInterval :: SingI a => RBuilder a -> Interval Word64
+rBuilderInterval RBuilderHeader{..} = headerInterval erbhHeader
+rBuilderInterval RBuilderSectionTable{..} = sectionTableInterval erbhHeader
+rBuilderInterval RBuilderSegmentTable{..} = segmentTableInterval erbhHeader
+rBuilderInterval RBuilderSection{..} = sectionInterval erbsHeader
+rBuilderInterval RBuilderSegment{..} = segmentInterval erbpHeader
+
 data LZip a = LZip [a] (Maybe a) [a]
 
-foldInterval :: LZip a -> [a]
-foldInterval (LZip l         (Just c) r) = foldInterval $ LZip l  Nothing (c : r)
-foldInterval (LZip (l : ls)  Nothing  r) = foldInterval $ LZip ls Nothing (l : r)
-foldInterval (LZip []        Nothing  r) = r
+instance Foldable LZip where
+    foldMap f (LZip l  (Just c) r) = foldMap f $ LZip l Nothing (c : r)
+    foldMap f (LZip l  Nothing  r) = foldMap f $ (L.reverse l) ++ r
 
-findInterval :: Ord t => (a -> INE.Interval t) -> t -> [a] -> LZip a
+findInterval :: Ord t => (a -> Interval t) -> t -> [a] -> LZip a
 findInterval f e list = findInterval' [] list
     where
-        findInterval' l []                            = LZip l Nothing []
-        findInterval' l (x : xs) | INE.member e (f x) = LZip l (Just x) xs
-        findInterval' l (x : xs) | e < INE.inf (f x)  = LZip l Nothing (x : xs)
-        findInterval' l (x : xs) | otherwise          = findInterval' (x : l) xs
+        findInterval' l []                          = LZip l Nothing []
+        findInterval' l (x : xs) | e `member` (f x) = LZip l (Just x) xs
+        findInterval' l (x : xs) | e < offset (f x) = LZip l Nothing (x : xs)
+        findInterval' l (x : xs) | otherwise        = findInterval' (x : l) xs
 
-toNonEmpty :: Ord a => I.Interval a -> Maybe (INE.Interval a)
-toNonEmpty i | I.null i  = Nothing
-toNonEmpty i | otherwise = Just (I.inf i INE.... I.sup i)
+-- toNonEmpty :: Ord a => I.Interval a -> Maybe (INE.Interval a)
+-- toNonEmpty i | I.null i  = Nothing
+-- toNonEmpty i | otherwise = Just (I.inf i INE.... I.sup i)
 
-showElfRBuilber' :: ElfRBuilder a -> String
-showElfRBuilber' ElfRBuilderHeader{..}        = "header"
-showElfRBuilber' ElfRBuilderSection{..}       = "section " ++ show erbsN
-showElfRBuilber' ElfRBuilderSegment{..}       = "segment " ++ show erbpN
-showElfRBuilber' ElfRBuilderSectionTable{..}  = "section table"
-showElfRBuilber' ElfRBuilderSegmentTable{..}  = "segment table"
-showElfRBuilber' ElfRBuilderStringSection{..} = "string section"
+showRBuilber' :: RBuilder a -> String
+showRBuilber' RBuilderHeader{..}        = "header"
+showRBuilber' RBuilderSection{..}       = "section " ++ show erbsN
+showRBuilber' RBuilderSegment{..}       = "segment " ++ show erbpN
+showRBuilber' RBuilderSectionTable{..}  = "section table"
+showRBuilber' RBuilderSegmentTable{..}  = "segment table"
 
 showElfRBuilber :: ElfRBuilder a -> String
 showElfRBuilber v = showElfRBuilber' v ++ " (" ++ (show $ bInterval v) ++ ")"
