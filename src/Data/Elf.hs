@@ -34,22 +34,21 @@ module Data.Elf
 import Data.Elf.Exception
 import Data.Elf.Generated
 import Data.Elf.Headers
-import Data.Interval
+import Data.Interval as I
 
 import Control.Monad
 import Control.Monad.Catch
 -- import Data.Bifunctor
 import Data.ByteString.Char8 as BSC
 import Data.ByteString.Lazy as BSL
-import Data.Either
+-- import Data.Either
+import Data.Foldable
 import Data.Int
 import Data.List as L
 import Data.Maybe
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Word
--- import Numeric.Interval as I
--- import Numeric.Interval.NonEmpty as INE
 
 headerInterval :: forall a . SingI a => HeaderXX a -> Interval Word64
 headerInterval _ = I 0 $ fromIntegral $ headerSize $ fromSing $ sing @a
@@ -80,10 +79,9 @@ segmentInterval SegmentXX{..} = I o s
         o = wxxToIntegral pOffset
         s = wxxToIntegral pFileSize
 
-data RBuilderSectionData (c :: ElfClass)
-    = RBuilderSectionData BSL.ByteString
-    | RBuilderSectionDataStringtable
-    | RBuilderSectionDataSymbolTable [SymbolTableEntryXX c]
+data RBuilderSectionParsedData (c :: ElfClass)
+    = NoData
+    | SymbolTable [SymbolTableEntryXX c]
 
 data RBuilder (c :: ElfClass)
     = RBuilderHeader
@@ -98,7 +96,7 @@ data RBuilder (c :: ElfClass)
     | RBuilderSection
         { erbsHeader :: SectionXX c
         , erbsN      :: Word16
-        , erbsData   :: RBuilderSectionData c
+        , erbsData   :: RBuilderSectionParsedData c
         }
     | RBuilderSegment
         { erbpHeader :: SegmentXX c
@@ -107,11 +105,11 @@ data RBuilder (c :: ElfClass)
         }
 
 rBuilderInterval :: SingI a => RBuilder a -> Interval Word64
-rBuilderInterval RBuilderHeader{..} = headerInterval erbhHeader
-rBuilderInterval RBuilderSectionTable{..} = sectionTableInterval erbhHeader
-rBuilderInterval RBuilderSegmentTable{..} = segmentTableInterval erbhHeader
-rBuilderInterval RBuilderSection{..} = sectionInterval erbsHeader
-rBuilderInterval RBuilderSegment{..} = segmentInterval erbpHeader
+rBuilderInterval RBuilderHeader{..}       = headerInterval erbhHeader
+rBuilderInterval RBuilderSectionTable{..} = sectionTableInterval erbstHeader
+rBuilderInterval RBuilderSegmentTable{..} = segmentTableInterval erbptHeader
+rBuilderInterval RBuilderSection{..}      = sectionInterval erbsHeader
+rBuilderInterval RBuilderSegment{..}      = segmentInterval erbpHeader
 
 data LZip a = LZip [a] (Maybe a) [a]
 
@@ -119,7 +117,7 @@ instance Foldable LZip where
     foldMap f (LZip l  (Just c) r) = foldMap f $ LZip l Nothing (c : r)
     foldMap f (LZip l  Nothing  r) = foldMap f $ (L.reverse l) ++ r
 
-findInterval :: Ord t => (a -> Interval t) -> t -> [a] -> LZip a
+findInterval :: (Ord t, Num t) => (a -> Interval t) -> t -> [a] -> LZip a
 findInterval f e list = findInterval' [] list
     where
         findInterval' l []                          = LZip l Nothing []
@@ -127,68 +125,62 @@ findInterval f e list = findInterval' [] list
         findInterval' l (x : xs) | e < offset (f x) = LZip l Nothing (x : xs)
         findInterval' l (x : xs) | otherwise        = findInterval' (x : l) xs
 
--- toNonEmpty :: Ord a => I.Interval a -> Maybe (INE.Interval a)
--- toNonEmpty i | I.null i  = Nothing
--- toNonEmpty i | otherwise = Just (I.inf i INE.... I.sup i)
-
 showRBuilber' :: RBuilder a -> String
 showRBuilber' RBuilderHeader{..}        = "header"
-showRBuilber' RBuilderSection{..}       = "section " ++ show erbsN
-showRBuilber' RBuilderSegment{..}       = "segment " ++ show erbpN
 showRBuilber' RBuilderSectionTable{..}  = "section table"
 showRBuilber' RBuilderSegmentTable{..}  = "segment table"
+showRBuilber' RBuilderSection{..}       = "section " ++ show erbsN
+showRBuilber' RBuilderSegment{..}       = "segment " ++ show erbpN
 
-showElfRBuilber :: ElfRBuilder a -> String
-showElfRBuilber v = showElfRBuilber' v ++ " (" ++ (show $ bInterval v) ++ ")"
-
-showSection :: SingI a => SectionXX a -> String
-showSection = undefined
+showRBuilber :: SingI a => RBuilder a -> String
+showRBuilber v = showRBuilber' v ++ " (" ++ (show $ rBuilderInterval v) ++ ")"
 
 -- showERBList :: [ElfRBuilder a] -> String
 -- showERBList l = "[" ++ (L.concat $ L.intersperse ", " $ fmap showElfRBuilber l) ++ "]"
 
-intersectMessage :: ElfRBuilder b -> ElfRBuilder b -> String
-intersectMessage x y = showElfRBuilber x ++ " and " ++ showElfRBuilber y ++ " intersect"
+intersectMessage :: SingI a => RBuilder a -> RBuilder a -> String
+intersectMessage x y = showRBuilber x ++ " and " ++ showRBuilber y ++ " intersect"
 
-addRBuildersToList :: MonadCatch m => [ElfRBuilder b] -> [ElfRBuilder b] -> m [ElfRBuilder b]
+addRBuildersToList :: (SingI a, MonadCatch m) => [RBuilder a] -> [RBuilder a] -> m [RBuilder a]
 addRBuildersToList newts l = foldM (flip addRBuilder) l newts
 
-addRBuilders :: MonadCatch m => [ElfRBuilder b] -> ElfRBuilder b -> m (ElfRBuilder b)
+addRBuilders :: (SingI a, MonadCatch m) => [RBuilder a] -> RBuilder a -> m (RBuilder a)
 addRBuilders [] x = return x
-addRBuilders ts ElfRBuilderSegment{..} = do
+addRBuilders ts RBuilderSegment{..} = do
     d <- addRBuildersToList ts erbpData
-    return ElfRBuilderSegment{ erbpData = d, .. }
+    return RBuilderSegment{ erbpData = d, .. }
 addRBuilders (x:_) y = $elfError $ intersectMessage x y
 
-addOneRBuilder :: MonadCatch m => ElfRBuilder b -> ElfRBuilder b -> m (ElfRBuilder b)
-addOneRBuilder ElfRBuilderSegment{..} c | bInterval == Data.Elf.bInterval c = do
+addOneRBuilder :: (SingI a, MonadCatch m) => RBuilder a -> RBuilder a -> m (RBuilder a)
+addOneRBuilder t@RBuilderSegment{..} c | rBuilderInterval t == rBuilderInterval c = do
     d <- addRBuilder c erbpData
-    return ElfRBuilderSegment{ erbpData = d, .. }
-addOneRBuilder t ElfRBuilderSegment{..} = do
+    return RBuilderSegment{ erbpData = d, .. }
+addOneRBuilder t RBuilderSegment{..} = do
     d <- addRBuilder t erbpData
-    return ElfRBuilderSegment{ erbpData = d, .. }
+    return RBuilderSegment{ erbpData = d, .. }
 addOneRBuilder t c = $elfError $ intersectMessage t c
 
-addRBuilder :: MonadCatch m => ElfRBuilder b -> [ElfRBuilder b] -> m [ElfRBuilder b]
+addRBuilder :: (SingI a, MonadCatch m) => RBuilder a -> [RBuilder a] -> m [RBuilder a]
 addRBuilder t ts =
     let
-        (LZip l  c'  r ) = findInterval bInterval (INE.inf ti) ts
-        (LZip l2 c2' r2) = findInterval bInterval (INE.sup ti) r
-        ti = bInterval t
+        ti  = rBuilderInterval t
+        tir = if I.empty ti then offset ti else offset ti + size ti - 1
+        (LZip l  c'  r ) = findInterval rBuilderInterval (offset ti) ts
+        (LZip l2 c2' r2) = findInterval rBuilderInterval tir         r
     in
         case (c', c2') of
             (Just c, _)  ->
                 let
-                    ci = bInterval c
-                in if ci `INE.contains` ti then do
+                    ci = rBuilderInterval c
+                in if ci `contains` ti then do
 
                     -- add this:     .........[t____].................................
                     -- or this:      .....[t___________]..............................
                     -- to this list: .....[c___________]......[___]......[________]...
                     c'' <- $addContext' $ addOneRBuilder t c
-                    return $ foldInterval $ LZip l (Just c'') r
+                    return $ toList $ LZip l (Just c'') r
 
-                else if ti `INE.contains` ci then
+                else if ti `contains` ci then
                     case c2' of
 
                         Nothing -> do
@@ -196,17 +188,17 @@ addRBuilder t ts =
                             -- add this:     ......[t__________________________]...................
                             -- to this list: ......[c__]......[l2__]...[l2__].....[________].......
                             c'' <- $addContext' $ addRBuilders (c : l2) t
-                            return $ foldInterval $ LZip l (Just c'') r2
+                            return $ toList $ LZip l (Just c'') r2
 
                         Just c2 ->
                             let
-                                c2i = bInterval c2
-                            in if ti `INE.contains` c2i then do
+                                c2i = rBuilderInterval c2
+                            in if ti `contains` c2i then do
 
                                 -- add this:     ......[t______________________]........................
                                 -- to this list: ......[c_________]......[c2___]......[________]........
                                 c'' <- $addContext' $ addRBuilders (c : l2 ++ [c2]) t
-                                return $ foldInterval $ LZip l (Just c'') r2
+                                return $ toList $ LZip l (Just c'') r2
                             else
 
                                 -- add this:     ......[t_________________].............................
@@ -224,17 +216,17 @@ addRBuilder t ts =
                 -- or this:      ....[t_________________________]...................
                 -- to this list: .............[l2__]...[l2__].....[________]........
                 c'' <- $addContext' $ addRBuilders l2 t
-                return $ foldInterval $ LZip l (Just c'') r2
+                return $ toList $ LZip l (Just c'') r2
 
             (Nothing, Just c2) ->
                 let
-                    c2i = bInterval c2
-                in if ti `INE.contains` c2i then do
+                    c2i = rBuilderInterval c2
+                in if ti `contains` c2i then do
 
                     -- add this:     ....[t_________________________________]........
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
                     c'' <- $addContext' $ addRBuilders (l2 ++ [c2]) t
-                    return $ foldInterval $ LZip l (Just c'') r2
+                    return $ toList $ LZip l (Just c'') r2
 
                 else
 
@@ -291,10 +283,10 @@ data Elf (c :: ElfClass)
 
 newtype ElfList c = ElfList [Elf c]
 
-mapRBuilderToElf :: SingI a => BSL.ByteString -> BSL.ByteString -> [ElfRBuilder a] -> [Elf a]
+mapRBuilderToElf :: SingI a => BSL.ByteString -> BSL.ByteString -> [RBuilder a] -> [Elf a]
 mapRBuilderToElf bs strs l = fmap f l
     where
-        f ElfRBuilderHeader{ erbhHeader = HeaderXX{..}, .. } =
+        f RBuilderHeader{ erbhHeader = HeaderXX{..}, .. } =
             let
                 ehData       = hData
                 ehOSABI      = hOSABI
@@ -305,7 +297,9 @@ mapRBuilderToElf bs strs l = fmap f l
                 ehFlags      = hFlags
             in
                 ElfHeader{..}
-        f ElfRBuilderSection{ erbsHeader = hdr@SectionXX{..}, ..} =
+        f RBuilderSectionTable{..} = ElfSectionTable
+        f RBuilderSegmentTable{..} = ElfSegmentTable
+        f RBuilderSection{ erbsHeader = hdr@SectionXX{..}, ..} =
             if sectionIsSymbolTable hdr
                 then
                     let
@@ -325,7 +319,7 @@ mapRBuilderToElf bs strs l = fmap f l
                         esEntSize   = sEntSize
                     in
                         ElfSection{..}
-        f ElfRBuilderSegment{ erbpHeader = SegmentXX{..}, ..} =
+        f RBuilderSegment{ erbpHeader = SegmentXX{..}, ..} =
             let
                 epType     = pType
                 epFlags    = pFlags
@@ -336,17 +330,6 @@ mapRBuilderToElf bs strs l = fmap f l
                 epData     = mapRBuilderToElf bs strs erbpData
             in
                 ElfSegment{..}
-        f ElfRBuilderSectionTable{..} = ElfSectionTable
-        f ElfRBuilderSegmentTable{..} = ElfSegmentTable
-        f ElfRBuilderStringSection{..} = ElfStringSection
-
--- dropFirstFrom :: (a -> Bool) -> [a] -> (Maybe a, [a])
--- dropFirstFrom _ [] = (Nothing, [])
--- dropFirstFrom f (x:xs) = if f x then (Just x, xs) else
---     let
---         (mr, nxs) = dropFirstFrom f xs
---     in
---         (mr, x:nxs)
 
 getString :: BSL.ByteString -> Int64 -> String
 getString bs offset = BSC.unpack $ toStrict $ BSL.takeWhile (/= 0) $ BSL.drop offset bs
@@ -372,54 +355,28 @@ parseElf' :: (MonadCatch m, SingI a) =>
 parseElf' hdr@HeaderXX{..} ss ps bs = do
 
     let
-        isStringTable ElfRBuilderStringSection{..} = Just $ getSectionData bs erbstrsHeader
-        isStringTable _ = Nothing
+        mkRBuilderSection :: (SingI a, MonadCatch m) => (Word16, SectionXX a) -> m (RBuilder a)
+        mkRBuilderSection (n, s) = RBuilderSection s n <$>
+            if sectionIsSymbolTable s
+                then SymbolTable <$> (parseListA hData $ getSectionData bs s)
+                else return NoData
 
-        -- let
-        --     findStrSection (n, _) = n == hShStrNdx
-        --     (maybeStrSection, ssx) = dropFirstFrom findStrSection (Prelude.zip [0 .. ] ss)
-
-        -- maybeStringSection <- sequence $ dstrsection <$> maybeStrSection
-
-            -- stringSectionToData = getSectionData bs . erbstrsHeader
-            -- stringData = maybe BSL.empty stringSectionToData maybeStringSection
-
-        -- FIXME: _emptySections, _emptySegments
-        mkRBuilderSection :: (SingI a, MonadCatch m) => (Word16, SectionXX a) -> m (ElfRBuilder a)
-        mkRBuilderSection (n, s) = case toNonEmpty $ sectionInterval s of
-            Nothing -> $elfError $ "empty section " ++ show n
-            Just i ->
-                if sectionIsSymbolTable s
-                    then
-                        ElfRBuilderSymbolTableSection s n i <$> (parseListA hData $ getSectionData bs s)
-                    else if n == hShStrNdx
-                        then
-                            return $ ElfRBuilderStringSection s n i
-                        else
-                            return $ ElfRBuilderSection s n i
-
-        mkRBuilderSegment :: (SingI a, MonadCatch m) => (Word16, SegmentXX a) -> m (ElfRBuilder a)
-        mkRBuilderSegment (n, s) = case toNonEmpty $ segmentInterval s of
-            Nothing -> $elfError $ "empty segment " ++ show n
-            Just i -> return $ ElfRBuilderSegment s n [] i
-
-        -- dstrsection :: (SingI a, MonadThrow m) => (Word16, SectionXX a) -> m (ElfRBuilder a)
-        -- dstrsection (n, s) =
-        --     -- FIXME: check that this section is a valid stringsection
-        --     case toNonEmpty $ sectionInterval s of
-        --         Nothing -> $elfError "empty string section"
-        --         Just i -> return $ ElfRBuilderStringSection s n i
+        mkRBuilderSegment :: (SingI a, MonadCatch m) => (Word16, SegmentXX a) -> m (RBuilder a)
+        mkRBuilderSegment (n, s) = return $ RBuilderSegment s n []
 
     sections <- mapM mkRBuilderSection $ tail' $ Prelude.zip [0 .. ] ss
     segments <- mapM mkRBuilderSegment $         Prelude.zip [0 .. ] ps
 
     let
         firstJust f = listToMaybe . mapMaybe f
+        isStringTable RBuilderSection{..} | erbsN == hShStrNdx = Just $ getSectionData bs erbsHeader
+        isStringTable _                                        = Nothing
         maybeStringData = firstJust isStringTable sections
         stringData = maybe BSL.empty id maybeStringData
-        header = ElfRBuilderHeader hdr $ headerInterval hdr
-        maybeSectionTable = ElfRBuilderSectionTable <$> (toNonEmpty $ sectionTableInterval hdr)
-        maybeSegmentTable = ElfRBuilderSegmentTable <$> (toNonEmpty $ segmentTableInterval hdr)
+
+        header            = RBuilderHeader hdr
+        maybeSectionTable = if hShNum == 0 then Nothing else  Just $ RBuilderSectionTable hdr
+        maybeSegmentTable = if hPhNum == 0 then Nothing else  Just $ RBuilderSegmentTable hdr
 
     rBuilder  <- addRBuilder header
              =<< maybe return addRBuilder maybeSectionTable
