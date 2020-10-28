@@ -43,6 +43,20 @@ section ".text" {
     AddrAlign: 0x0000000000000010
     EntSize:   0x0000000000000000
 }
+section ".data" {
+    Type:      SHT_PROGBITS
+    Flags:     0x0000000000000003
+    Addr:      0x0000000000000000
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
+}
+section ".bss" {
+    Type:      SHT_NOBITS
+    Flags:     0x0000000000000003
+    Addr:      0x0000000000000000
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
+}
 section ".qtversion" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000202
@@ -91,6 +105,13 @@ section ".comment" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000001
+}
+section ".note.GNU-stack" {
+    Type:      SHT_PROGBITS
+    Flags:     0x0000000000000000
+    Addr:      0x0000000000000000
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
 }
 section ".eh_frame" {
     Type:      SHT_PROGBITS

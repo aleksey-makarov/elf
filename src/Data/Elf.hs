@@ -254,6 +254,8 @@ data Elf (c :: ElfClass)
         , ehEntry      :: WXX c
         , ehFlags      :: Word32
         }
+    | ElfSectionTable
+    | ElfSegmentTable
     | ElfSection
         { esName      :: String -- NB: different
         , esType      :: ElfSectionType
@@ -262,6 +264,7 @@ data Elf (c :: ElfClass)
         , esAddrAlign :: WXX c
         , esEntSize   :: WXX c
         }
+    | ElfStringSection
     | ElfSymbolTableSection
         { estName      :: String -- NB: different
         , estType      :: ElfSectionType
@@ -277,59 +280,8 @@ data Elf (c :: ElfClass)
         , epAlign    :: WXX c
         , epData     :: [Elf c]
         }
-    | ElfSectionTable
-    | ElfSegmentTable
-    | ElfStringSection
 
 newtype ElfList c = ElfList [Elf c]
-
-mapRBuilderToElf :: SingI a => BSL.ByteString -> BSL.ByteString -> [RBuilder a] -> [Elf a]
-mapRBuilderToElf bs strs l = fmap f l
-    where
-        f RBuilderHeader{ erbhHeader = HeaderXX{..}, .. } =
-            let
-                ehData       = hData
-                ehOSABI      = hOSABI
-                ehABIVersion = hABIVersion
-                ehType       = hType
-                ehMachine    = hMachine
-                ehEntry      = hEntry
-                ehFlags      = hFlags
-            in
-                ElfHeader{..}
-        f RBuilderSectionTable{..} = ElfSectionTable
-        f RBuilderSegmentTable{..} = ElfSegmentTable
-        f RBuilderSection{ erbsHeader = hdr@SectionXX{..}, ..} =
-            if sectionIsSymbolTable hdr
-                then
-                    let
-                        estName      = getString strs (fromIntegral sName)
-                        estType      = sType
-                        estFlags     = sFlags
-                        estTable     = []
-                    in
-                        ElfSymbolTableSection{..}
-                else
-                    let
-                        esName      = getString strs (fromIntegral sName)
-                        esType      = sType
-                        esFlags     = sFlags
-                        esAddr      = sAddr
-                        esAddrAlign = sAddrAlign
-                        esEntSize   = sEntSize
-                    in
-                        ElfSection{..}
-        f RBuilderSegment{ erbpHeader = SegmentXX{..}, ..} =
-            let
-                epType     = pType
-                epFlags    = pFlags
-                epVirtAddr = pVirtAddr
-                epPhysAddr = pPhysAddr
-                epMemSize  = pMemSize
-                epAlign    = pAlign
-                epData     = mapRBuilderToElf bs strs erbpData
-            in
-                ElfSegment{..}
 
 getString :: BSL.ByteString -> Int64 -> String
 getString bs offset = BSC.unpack $ toStrict $ BSL.takeWhile (/= 0) $ BSL.drop offset bs
@@ -347,11 +299,11 @@ tail' :: [a] -> [a]
 tail' [] = []
 tail' (_ : xs) = xs
 
-parseElf' :: (MonadCatch m, SingI a) =>
-                          HeaderXX a ->
-                       [SectionXX a] ->
-                       [SegmentXX a] ->
-                      BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
+parseElf' :: forall a m . (MonadCatch m, SingI a) =>
+                                       HeaderXX a ->
+                                    [SectionXX a] ->
+                                    [SegmentXX a] ->
+                                   BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
 parseElf' hdr@HeaderXX{..} ss ps bs = do
 
     let
@@ -378,13 +330,57 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
         maybeSectionTable = if hShNum == 0 then Nothing else  Just $ RBuilderSectionTable hdr
         maybeSegmentTable = if hPhNum == 0 then Nothing else  Just $ RBuilderSegmentTable hdr
 
+        rBuilderToElf RBuilderHeader{..} =
+            ElfHeader
+                { ehData       = hData
+                , ehOSABI      = hOSABI
+                , ehABIVersion = hABIVersion
+                , ehType       = hType
+                , ehMachine    = hMachine
+                , ehEntry      = hEntry
+                , ehFlags      = hFlags
+                }
+        rBuilderToElf RBuilderSectionTable{..} = ElfSectionTable
+        rBuilderToElf RBuilderSegmentTable{..} = ElfSegmentTable
+        rBuilderToElf RBuilderSection{ erbsHeader = s@SectionXX{..}, ..} =
+            if sectionIsSymbolTable s
+                then
+                    ElfSymbolTableSection
+                        { estName      = getString stringData $ fromIntegral sName
+                        , estType      = sType
+                        , estFlags     = sFlags
+                        , estTable     = []
+                        }
+                else if erbsN == hShStrNdx
+                    then
+                        ElfStringSection
+                    else
+                        ElfSection
+                            { esName      = getString stringData $ fromIntegral sName
+                            , esType      = sType
+                            , esFlags     = sFlags
+                            , esAddr      = sAddr
+                            , esAddrAlign = sAddrAlign
+                            , esEntSize   = sEntSize
+                            }
+        rBuilderToElf RBuilderSegment{ erbpHeader = SegmentXX{..}, ..} =
+            ElfSegment
+                { epType     = pType
+                , epFlags    = pFlags
+                , epVirtAddr = pVirtAddr
+                , epPhysAddr = pPhysAddr
+                , epMemSize  = pMemSize
+                , epAlign    = pAlign
+                , epData     = L.map rBuilderToElf erbpData
+                }
+
     rBuilder  <- addRBuilder header
              =<< maybe return addRBuilder maybeSectionTable
              =<< maybe return addRBuilder maybeSegmentTable
              =<< addRBuildersToList segments
              =<< addRBuildersToList sections []
 
-    return $ sing :&: ElfList (mapRBuilderToElf bs stringData rBuilder)
+    return $ sing :&: ElfList (L.map rBuilderToElf rBuilder)
 
 parseElf :: MonadCatch m => BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
 parseElf bs = do

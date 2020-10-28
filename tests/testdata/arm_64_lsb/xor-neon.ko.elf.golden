@@ -71,6 +71,13 @@ section ".eh_frame" {
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
 }
+section ".data" {
+    Type:      SHT_PROGBITS
+    Flags:     0x0000000000000003
+    Addr:      0x0000000000000000
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
+}
 section "__patchable_function_entries" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000003
@@ -85,12 +92,47 @@ section ".gnu.linkonce.this_module" {
     AddrAlign: 0x0000000000000040
     EntSize:   0x0000000000000000
 }
+section ".plt" {
+    Type:      SHT_NOBITS
+    Flags:     0x0000000000000003
+    Addr:      0x0000000000000340
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
+}
+section ".init.plt" {
+    Type:      SHT_NOBITS
+    Flags:     0x0000000000000003
+    Addr:      0x0000000000000341
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
+}
+section ".text.ftrace_trampoline" {
+    Type:      SHT_NOBITS
+    Flags:     0x0000000000000003
+    Addr:      0x0000000000000342
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
+}
+section ".bss" {
+    Type:      SHT_NOBITS
+    Flags:     0x0000000000000003
+    Addr:      0x0000000000000000
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
+}
 section ".comment" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000030
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000001
+}
+section ".note.GNU-stack" {
+    Type:      SHT_PROGBITS
+    Flags:     0x0000000000000000
+    Addr:      0x0000000000000000
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
 }
 symbol table section ".symtab" {
     Type:  SHT_SYMTAB

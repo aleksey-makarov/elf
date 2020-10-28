@@ -8,6 +8,27 @@ header {
     Entry:      0x0000000000000000
     Flags:      0x00000000
 }
+section ".text" {
+    Type:      SHT_PROGBITS
+    Flags:     0x0000000000000006
+    Addr:      0x0000000000000000
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
+}
+section ".data" {
+    Type:      SHT_PROGBITS
+    Flags:     0x0000000000000003
+    Addr:      0x0000000000000000
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
+}
+section ".bss" {
+    Type:      SHT_NOBITS
+    Flags:     0x0000000000000003
+    Addr:      0x0000000000000000
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
+}
 section ".init" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000006
@@ -20,6 +41,13 @@ section ".fini" {
     Flags:     0x0000000000000006
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
+    EntSize:   0x0000000000000000
+}
+section ".note.GNU-stack" {
+    Type:      SHT_PROGBITS
+    Flags:     0x0000000000000000
+    Addr:      0x0000000000000000
+    AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
 }
 symbol table section ".symtab" {
