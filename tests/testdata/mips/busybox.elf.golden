@@ -6,6 +6,15 @@ segment {
     MemSize:  0x00081b94
     Align:    0x00001000
     Data:     
+        segment {
+            Type:     PT_EXT 1685382481
+            Flags:    0x00000007
+            VirtAddr: 0x00000000
+            PhysAddr: 0x00000000
+            MemSize:  0x00000000
+            Align:    0x00000004
+            Data:     
+        }
         header {
             Class:      ELFCLASS32
             Data:       ELFDATA2MSB
@@ -34,7 +43,6 @@ segment {
             MemSize:  0x00000014
             Align:    0x00000001
             Data:     
-                
         }
         segment {
             Type:     PT_DYNAMIC
@@ -44,7 +52,6 @@ segment {
             MemSize:  0x00005f34
             Align:    0x00000004
             Data:     
-                
         }
         segment {
             Type:     PT_EXT 1685382480
@@ -54,7 +61,6 @@ segment {
             MemSize:  0x0000002c
             Align:    0x00000004
             Data:     
-                
         }
 }
 segment {
@@ -65,5 +71,4 @@ segment {
     MemSize:  0x00002c68
     Align:    0x00001000
     Data:     
-        
 }

@@ -69,7 +69,6 @@ segment {
             Type:  SHT_DYNSYM
             Flags: 0x00000002
             Data:  
-                
         }
         section ".dynstr" {
             Type:      SHT_STRTAB
@@ -226,6 +225,13 @@ segment {
             AddrAlign: 0x00000004
             EntSize:   0x00000004
         }
+}
+section ".bss" {
+    Type:      SHT_NOBITS
+    Flags:     0x00000003
+    Addr:      0x000182d0
+    AddrAlign: 0x00000004
+    EntSize:   0x00000000
 }
 string section
 section table

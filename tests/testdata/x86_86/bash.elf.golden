@@ -6,6 +6,15 @@ segment {
     MemSize:  0x000000000001efe0
     Align:    0x0000000000001000
     Data:     
+        segment {
+            Type:     PT_EXT 1685382481
+            Flags:    0x00000006
+            VirtAddr: 0x0000000000000000
+            PhysAddr: 0x0000000000000000
+            MemSize:  0x0000000000000000
+            Align:    0x0000000000000010
+            Data:     
+        }
         header {
             Class:      ELFCLASS64
             Data:       ELFDATA2LSB
@@ -76,7 +85,6 @@ segment {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
             Data:  
-                
         }
         section ".dynstr" {
             Type:      SHT_STRTAB
@@ -244,6 +252,13 @@ segment {
             AddrAlign: 0x0000000000000020
             EntSize:   0x0000000000000000
         }
+}
+section ".bss" {
+    Type:      SHT_NOBITS
+    Flags:     0x0000000000000003
+    Addr:      0x00000000000dd1e0
+    AddrAlign: 0x0000000000000020
+    EntSize:   0x0000000000000000
 }
 section ".comment" {
     Type:      SHT_PROGBITS

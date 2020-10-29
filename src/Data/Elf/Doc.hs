@@ -184,7 +184,7 @@ printElf'' ElfSymbolTableSection{..} =
     formatPairsBlock ("symbol table section" <+> (dquotes $ pretty estName))
         [ ("Type",       viaShow estType       )
         , ("Flags",      printWXX estFlags     )
-        , ("Data",       line <> (indent 4 $ printElfSymbolTable estTable) )
+        , ("Data",       if null estTable then "" else line <> (indent 4 $ printElfSymbolTable estTable) )
         ]
 printElf'' ElfSegment{..} =
     formatPairsBlock "segment"
@@ -194,7 +194,7 @@ printElf'' ElfSegment{..} =
         , ("PhysAddr",   printWXX epPhysAddr  )
         , ("MemSize",    printWXX epMemSize   )
         , ("Align",      printWXX epAlign     )
-        , ("Data",       line <> (indent 4 $ printElf' epData) )
+        , ("Data",       if null epData then "" else line <> (indent 4 $ printElf' epData) )
         ]
 printElf'' ElfSectionTable = "section table"
 printElf'' ElfSegmentTable = "segment table"

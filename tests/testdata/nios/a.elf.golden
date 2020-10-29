@@ -55,6 +55,20 @@ segment {
             EntSize:   0x00000000
         }
 }
+section ".sbss" {
+    Type:      SHT_NOBITS
+    Flags:     0x10000003
+    Addr:      0x0000fbe4
+    AddrAlign: 0x00000004
+    EntSize:   0x00000000
+}
+section ".bss" {
+    Type:      SHT_NOBITS
+    Flags:     0x00000003
+    Addr:      0x0000fbfc
+    AddrAlign: 0x00000004
+    EntSize:   0x00000000
+}
 section ".comment" {
     Type:      SHT_PROGBITS
     Flags:     0x00000030
@@ -122,7 +136,6 @@ symbol table section ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x00000000
     Data:  
-        
 }
 section ".strtab" {
     Type:      SHT_STRTAB

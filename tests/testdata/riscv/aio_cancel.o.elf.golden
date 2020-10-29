@@ -47,7 +47,6 @@ symbol table section ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x00000000
     Data:  
-        
 }
 section ".strtab" {
     Type:      SHT_STRTAB

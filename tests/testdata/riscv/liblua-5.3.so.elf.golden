@@ -44,7 +44,6 @@ segment {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
             Data:  
-                
         }
         section ".dynstr" {
             Type:      SHT_STRTAB
@@ -171,6 +170,13 @@ segment {
             AddrAlign: 0x0000000000000008
             EntSize:   0x0000000000000008
         }
+}
+section ".bss" {
+    Type:      SHT_NOBITS
+    Flags:     0x0000000000000003
+    Addr:      0x0000000000028728
+    AddrAlign: 0x0000000000000001
+    EntSize:   0x0000000000000000
 }
 section ".gnu_debuglink" {
     Type:      SHT_PROGBITS

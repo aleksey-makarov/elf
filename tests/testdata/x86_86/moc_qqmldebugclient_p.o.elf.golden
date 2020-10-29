@@ -124,7 +124,6 @@ symbol table section ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
     Data:  
-        
 }
 section ".strtab" {
     Type:      SHT_STRTAB

@@ -54,14 +54,14 @@ headerInterval :: forall a . SingI a => HeaderXX a -> Interval Word64
 headerInterval _ = I 0 $ fromIntegral $ headerSize $ fromSing $ sing @a
 
 sectionTableInterval :: SingI a => HeaderXX a -> Interval Word64
-sectionTableInterval HeaderXX{..} = I o (o + s * n - 1)
+sectionTableInterval HeaderXX{..} = I o (s * n)
     where
         o = wxxToIntegral hShOff
         s = fromIntegral  hShEntSize
         n = fromIntegral  hShNum
 
 segmentTableInterval :: SingI a => HeaderXX a -> Interval Word64
-segmentTableInterval HeaderXX{..} = I o (o + s * n - 1)
+segmentTableInterval HeaderXX{..} = I o (s * n)
     where
         o = wxxToIntegral hPhOff
         s = fromIntegral  hPhEntSize
