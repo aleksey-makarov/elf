@@ -4,6 +4,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DataKinds #-}
 
@@ -22,7 +23,7 @@ import Data.ByteString.Lazy as BSL
 import Data.Foldable as F
 -- import Data.Functor.Identity
 import Data.Int
-import Data.List as L
+-- import Data.List as L
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Text.Prettyprint.Doc as D
@@ -129,28 +130,18 @@ mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
             doc <- formatFunction file
             withFile o WriteMode (\ h -> hPutDoc h doc)
 
-printSymbolTable :: SingI a => [SymbolTableEntryXX a] -> Doc ()
-printSymbolTable sts = formatList $ fmap printSymbolTableEntry sts
-
-printSymbolTables :: SingI a => [[SymbolTableEntryXX a]] -> Doc ()
-printSymbolTables sts = formatList $ fmap printSymbolTable sts
-
-sectionToSymbolTable  :: (SingI a, MonadThrow m) => ElfData -> BSL.ByteString -> SectionXX a -> m [SymbolTableEntryXX a]
-sectionToSymbolTable d bs s = parseListA d $ getSectionData bs s
+sectionParseSymbolTable  :: (SingI a, MonadThrow m) => ElfData -> BSL.ByteString -> SectionXX a -> m (SectionXX a, [SymbolTableEntryXX a])
+sectionParseSymbolTable d bs s = (s, ) <$> if sectionIsSymbolTable s then parseListA d $ getSectionData bs s else return []
 
 printHeadersFile :: FilePath -> IO (Doc ())
 printHeadersFile path = do
     bs <- fromStrict <$> BS.readFile path
     case parseHeaders bs of
         Left err -> assertFailure $ show err
-        Right hs@(classS :&: HeadersXX (HeaderXX{..}, ss, _ps)) -> withSingI classS do
-            let
-                stsections = L.filter sectionIsSymbolTable ss
-                sttables = sequence $ fmap (sectionToSymbolTable hData bs) stsections
-
-            case sttables of
+        Right (classS :&: HeadersXX (hdr@HeaderXX{..}, ss, ps)) -> withSingI classS do
+            case mapM (sectionParseSymbolTable hData bs) ss of
                 Left err -> assertFailure $ show err
-                Right sts -> return $ printHeaders hs <> line <> printSymbolTables sts
+                Right sts -> return $ printHeaders hdr sts ps
 
 printElfFile :: FilePath -> IO (Doc ())
 printElfFile path = do

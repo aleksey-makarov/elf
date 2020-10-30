@@ -83,9 +83,9 @@ printHeader HeaderXX{..} =
         , ("ShStrNdx",   viaShow hShStrNdx       ) -- Word16
         ]
 
-printSection :: SingI a => (Int, SectionXX a) -> Doc ()
-printSection (n, SectionXX{..}) =
-    formatPairs
+printSection :: SingI a => (Int, (SectionXX a, [SymbolTableEntryXX a])) -> Doc ()
+printSection (n, (SectionXX{..}, ss)) =
+    formatPairs $
         [ ("N",         viaShow n           )
         , ("Name",      viaShow sName       ) -- Word32
         , ("Type",      viaShow sType       ) -- ElfSectionType
@@ -97,7 +97,9 @@ printSection (n, SectionXX{..}) =
         , ("Info",      viaShow sInfo       ) -- Word32
         , ("AddrAlign", printWXX sAddrAlign ) -- WXX c
         , ("EntSize",   printWXX sEntSize   ) -- WXX c
-        ]
+        ] ++ if null ss then [] else
+            [ ("Symbols", line <> (indent 4 $ formatList $ fmap printSymbolTableEntry ss))
+            ]
 
 printSegment :: SingI a => (Int, SegmentXX a) -> Doc ()
 printSegment (n, SegmentXX{..}) =
@@ -116,7 +118,7 @@ printSegment (n, SegmentXX{..}) =
 printSymbolTableEntry :: SingI a => SymbolTableEntryXX a -> Doc ()
 printSymbolTableEntry SymbolTableEntryXX{..} =
     formatPairs
-        [ ("Name",  printWord32 stName  )
+        [ ("Name",  viaShow stName      )
         , ("Info",  printWord8 stInfo   )
         , ("Other", printWord8 stOther  )
         , ("ShNdx", viaShow stShNdx     )
@@ -124,8 +126,8 @@ printSymbolTableEntry SymbolTableEntryXX{..} =
         , ("Size",  printWXX stSize     )
         ]
 
-printHeaders' :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> Doc ()
-printHeaders' hdr ss ps =
+printHeaders :: SingI a => HeaderXX a -> [(SectionXX a, [SymbolTableEntryXX a])] -> [SegmentXX a] -> Doc ()
+printHeaders hdr ss ps =
     let
         h  = printHeader hdr
         s  = fmap printSection (Prelude.zip [0 .. ] ss)
@@ -136,9 +138,6 @@ printHeaders' hdr ss ps =
             , ("Sections",     formatList s)
             , ("Segments",     formatList p)
             ]
-
-printHeaders :: Sigma ElfClass (TyCon1 HeadersXX) -> Doc ()
-printHeaders (classS :&: HeadersXX (hdr, ss, ps)) = withSingI classS $ printHeaders' hdr ss ps
 
 --------------------------------------------------------------------
 --

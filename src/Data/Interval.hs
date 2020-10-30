@@ -10,7 +10,7 @@ module Data.Interval
 data Interval a = I { offset :: !a, size :: !a } deriving (Eq, Ord)
 
 instance (Ord a, Num a, Show a) => Show (Interval a) where
-  show (I o s) | s <= 0    = "0@" ++ show o
+  show (I o s) | s <= 0    = "empty @" ++ show o
   show (I o s) | otherwise = show o ++ " ... " ++ show (o + s - 1)
 
 member :: (Ord a, Num a) => a -> Interval a -> Bool
