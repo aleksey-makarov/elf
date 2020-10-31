@@ -27,7 +27,9 @@ module Data.Elf
     , Elf (..)
     , ElfList (..)
     , ElfSymbolTableEntry (..)
+    , RBuilder (..)
     , parseElf
+    , parseRBuilder
     , getSectionData
     ) where
 
@@ -299,12 +301,8 @@ tail' :: [a] -> [a]
 tail' [] = []
 tail' (_ : xs) = xs
 
-parseElf' :: forall a m . (MonadCatch m, SingI a) =>
-                                       HeaderXX a ->
-                                    [SectionXX a] ->
-                                    [SegmentXX a] ->
-                                   BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
-parseElf' hdr@HeaderXX{..} ss ps bs = do
+parseRBuilder :: (MonadCatch m, SingI a) => BSL.ByteString -> HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> m [RBuilder a]
+parseRBuilder bs hdr@HeaderXX{..} ss ps = do
 
     let
         mkRBuilderSection :: (SingI a, MonadCatch m) => (Word16, SectionXX a) -> m (RBuilder a)
@@ -320,15 +318,32 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
     segments <- mapM mkRBuilderSegment $         Prelude.zip [0 .. ] ps
 
     let
-        firstJust f = listToMaybe . mapMaybe f
-        isStringTable RBuilderSection{..} | erbsN == hShStrNdx = Just $ getSectionData bs erbsHeader
-        isStringTable _                                        = Nothing
-        maybeStringData = firstJust isStringTable sections
-        stringData = maybe BSL.empty id maybeStringData
 
         header            = RBuilderHeader hdr
         maybeSectionTable = if hShNum == 0 then Nothing else  Just $ RBuilderSectionTable hdr
         maybeSegmentTable = if hPhNum == 0 then Nothing else  Just $ RBuilderSegmentTable hdr
+
+    addRBuilder header
+        =<< maybe return addRBuilder maybeSectionTable
+        =<< maybe return addRBuilder maybeSegmentTable
+        =<< addRBuildersToList segments
+        =<< addRBuildersToList sections []
+
+parseElf' :: forall a m . (MonadCatch m, SingI a) =>
+                                       HeaderXX a ->
+                                    [SectionXX a] ->
+                                    [SegmentXX a] ->
+                                   BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
+parseElf' hdr@HeaderXX{..} ss ps bs = do
+
+    rbs <- parseRBuilder bs hdr ss ps
+
+    let
+        firstJust f = listToMaybe . mapMaybe f
+        isStringTable (n, s) | n == hShStrNdx = Just $ getSectionData bs s
+        isStringTable _                       = Nothing
+        maybeStringData = firstJust isStringTable $ tail' $ Prelude.zip [0 .. ] ss
+        stringData = maybe BSL.empty id maybeStringData
 
         rBuilderToElf RBuilderHeader{..} =
             ElfHeader
@@ -374,13 +389,7 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                 , epData     = L.map rBuilderToElf erbpData
                 }
 
-    rBuilder  <- addRBuilder header
-             =<< maybe return addRBuilder maybeSectionTable
-             =<< maybe return addRBuilder maybeSegmentTable
-             =<< addRBuildersToList segments
-             =<< addRBuildersToList sections []
-
-    return $ sing :&: ElfList (L.map rBuilderToElf rBuilder)
+    return $ sing :&: ElfList (L.map rBuilderToElf rbs)
 
 parseElf :: MonadCatch m => BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
 parseElf bs = do

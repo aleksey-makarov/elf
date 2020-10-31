@@ -6,6 +6,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Data.Elf.Doc
     ( formatPairs
@@ -16,6 +17,7 @@ module Data.Elf.Doc
     , printSegment
     , printHeaders
     , printSymbolTableEntry
+    , printRBuilder
     , printElf
     ) where
 
@@ -138,6 +140,27 @@ printHeaders hdr ss ps =
             , ("Sections",     formatList s)
             , ("Segments",     formatList p)
             ]
+
+--------------------------------------------------------------------
+--
+--------------------------------------------------------------------
+
+printRBuilderList :: SingI a => [RBuilder a] -> [(WXX a, String, Doc ())]
+printRBuilderList _rbs = [(wxxFromIntegral (0 :: Word32), "", "lalala")]
+    --    where
+    --        f RBuilderHeader{..} =
+    --        f RBuilderSectionTable{..}                           = ElfSectionTable
+    --        f RBuilderSegmentTable{..}                           = ElfSegmentTable
+    --        f RBuilderSection{ erbsHeader = s@SectionXX{..}, ..} =
+    --        f RBuilderSegment{ erbpHeader = SegmentXX{..}, ..}   =
+
+
+printRBuilder :: SingI a => [RBuilder a] -> Doc ()
+printRBuilder rbs = vsep ldoc
+    where
+        l = printRBuilderList rbs
+        ldoc = fmap f l
+        f (pos, g, doc) = printWXX pos <+> pretty g <+> doc
 
 --------------------------------------------------------------------
 --

@@ -133,6 +133,13 @@ mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
 sectionParseSymbolTable  :: (SingI a, MonadThrow m) => ElfData -> BSL.ByteString -> SectionXX a -> m (SectionXX a, [SymbolTableEntryXX a])
 sectionParseSymbolTable d bs s = (s, ) <$> if sectionIsSymbolTable s then parseListA d $ getSectionData bs s else return []
 
+printRBuilderFile :: FilePath -> IO (Doc ())
+printRBuilderFile path = do
+    bs <- fromStrict <$> BS.readFile path
+    case parseHeaders bs of
+        Left err -> assertFailure $ show err
+        Right (classS :&: HeadersXX (hdr@HeaderXX{..}, ss, ps)) -> withSingI classS $ (printRBuilder <$> parseRBuilder bs hdr ss ps)
+
 printHeadersFile :: FilePath -> IO (Doc ())
 printHeadersFile path = do
     bs <- fromStrict <$> BS.readFile path
@@ -158,6 +165,6 @@ main = do
 
     defaultMain $ testGroup "elf" [ testGroup "headers round trip" (mkTest <$> elfs)
                                   , testGroup "headers golden" (mkGoldenTest "header" printHeadersFile <$> elfs)
-                                  -- , testGroup "elf golden" (mkGoldenTest "elf" printElfFile <$> (P.take 1 elfs {-- FIXME: take --} ))
+                                  , testGroup "rbuilder golden" (mkGoldenTest "rbuilder" printRBuilderFile <$> elfs)
                                   , testGroup "elf golden" (mkGoldenTest "elf" printElfFile <$> elfs)
                                   ]
