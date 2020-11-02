@@ -190,13 +190,13 @@ type family WXX (a :: ElfClass) = r | r -> a where
 -- Can not define
 -- instance forall (a :: ElfClass) . SingI a => Binary (Le (WXX a)) where
 -- because WXX is a type family
-getWXX :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (WXX c)
+getWXX :: forall (a :: ElfClass) . Sing a -> ElfData -> Get (WXX a)
 getWXX SELFCLASS64 ELFDATA2LSB = getWord64le
 getWXX SELFCLASS64 ELFDATA2MSB = getWord64be
 getWXX SELFCLASS32 ELFDATA2LSB = getWord32le
 getWXX SELFCLASS32 ELFDATA2MSB = getWord32be
 
-putWXX :: forall (c :: ElfClass) . Sing c -> ElfData -> WXX c -> Put
+putWXX :: forall (a :: ElfClass) . Sing a -> ElfData -> WXX a -> Put
 putWXX SELFCLASS64 ELFDATA2LSB = putWord64le
 putWXX SELFCLASS64 ELFDATA2MSB = putWord64be
 putWXX SELFCLASS32 ELFDATA2LSB = putWord32le

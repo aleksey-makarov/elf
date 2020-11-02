@@ -30,6 +30,7 @@ import Numeric
 
 import Data.Elf
 import Data.Elf.Headers
+import Data.Interval
 
 formatPairs :: [(String, Doc a)] -> Doc a
 formatPairs ls = align $ vsep $ fmap f ls
@@ -145,22 +146,50 @@ printHeaders hdr ss ps =
 --
 --------------------------------------------------------------------
 
-printRBuilderList :: SingI a => [RBuilder a] -> [(WXX a, String, Doc ())]
-printRBuilderList _rbs = [(wxxFromIntegral (0 :: Word32), "", "lalala")]
-    --    where
-    --        f RBuilderHeader{..} =
-    --        f RBuilderSectionTable{..}                           = ElfSectionTable
-    --        f RBuilderSegmentTable{..}                           = ElfSegmentTable
-    --        f RBuilderSection{ erbsHeader = s@SectionXX{..}, ..} =
-    --        f RBuilderSegment{ erbpHeader = SegmentXX{..}, ..}   =
-
+printRBuilder' :: forall a . SingI a => RBuilder a -> [(Word64, String, Doc ())]
+printRBuilder' rb = f rb
+    where
+        i@(I o s) = rBuilderInterval rb
+        f RBuilderHeader{..} =
+            [ (wxxFromIntegral o, " ", "Hb")
+            , (wxxFromIntegral o + s - 1, " ", "He")
+            ]
+        f RBuilderSectionTable{ erbstHeader = HeaderXX{..}, ..} =
+            if hShNum == 0
+                then []
+                else
+                    [ (o, " ", "STb")
+                    , (o + s - 1, " ", "STe")
+                    ]
+        f RBuilderSegmentTable{ erbptHeader = HeaderXX{..}, ..} =
+            if hPhNum == 0
+                then []
+                else
+                    [ (o, " ", "PTb")
+                    , (o + s - 1, " ", "PTe")
+                    ]
+        f RBuilderSection{..} =
+            if empty i
+                then
+                    [(wxxFromIntegral o, "-", "S")]
+                else
+                    [(wxxFromIntegral o, " ", "Sb"), (wxxFromIntegral o + s - 1, " ", "Se")]
+        f RBuilderSegment{..} =
+            if empty i
+                then
+                    [(wxxFromIntegral o, "-", "Pb")]
+                else
+                    let
+                        xs = concat $ fmap printRBuilder' erbpData
+                    in
+                        [(wxxFromIntegral o, " ", "Pb")] ++ xs ++ [(wxxFromIntegral o + s - 1, " ", "Pe")]
 
 printRBuilder :: SingI a => [RBuilder a] -> Doc ()
 printRBuilder rbs = vsep ldoc
     where
-        l = printRBuilderList rbs
-        ldoc = fmap f l
-        f (pos, g, doc) = printWXX pos <+> pretty g <+> doc
+        printRBuilderList = concat $ map printRBuilder' rbs
+        ldoc = fmap f printRBuilderList
+        f (pos, g, doc) = printWord64 pos <+> pretty g <+> doc
 
 --------------------------------------------------------------------
 --
