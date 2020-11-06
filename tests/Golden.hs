@@ -137,7 +137,7 @@ printRBuilderFile :: FilePath -> IO (Doc ())
 printRBuilderFile path = do
     bs <- fromStrict <$> BS.readFile path
     let
-        getString = undefined
+        getString n = ".section_name_@" ++ show n
     case parseHeaders bs of
         Left err -> assertFailure $ show err
         Right (classS :&: HeadersXX (hdr@HeaderXX{..}, ss, ps)) -> withSingI classS $ (printRBuilder getString <$> parseRBuilder bs hdr ss ps)

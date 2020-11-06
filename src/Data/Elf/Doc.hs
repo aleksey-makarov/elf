@@ -147,7 +147,7 @@ printHeaders hdr ss ps =
 --------------------------------------------------------------------
 
 printRBuilder :: SingI a => (Word32 -> String) -> [RBuilder a] -> Doc ()
-printRBuilder _getString rbs = vsep ldoc
+printRBuilder getString rbs = vsep ldoc
 
     where
 
@@ -191,9 +191,12 @@ printRBuilder _getString rbs = vsep ldoc
                             [ (o,         "┎", "Segment table" <+> viaShow hShNum <+> "entrites")
                             , (o + s - 1, "┖", "")
                             ]
-                f RBuilderSection{..} =
+                f RBuilderSection{ erbsHeader = SectionXX{..}, ..} =
                     let
                         doc = "Section"
+                            <+> (dquotes $ pretty $ getString sName)
+                            <+> viaShow sType
+                            <+> (viaShow $ splitBits $ ElfSectionFlag $ wxxToIntegral sFlags)
                     in
                         if empty i
                             then
@@ -201,9 +204,11 @@ printRBuilder _getString rbs = vsep ldoc
                             else
                                 [(o,        "╓", doc),
                                 (o + s - 1, "╙", "")]
-                f RBuilderSegment{..} =
+                f RBuilderSegment{ erbpHeader = SegmentXX{..}, ..} =
                     let
                         doc = "Segment"
+                            <+> viaShow pType
+                            <+> (viaShow $ splitBits $ ElfSegmentFlag $ wxxToIntegral pFlags)
                     in
                         if empty i
                             then
