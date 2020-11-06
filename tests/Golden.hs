@@ -136,9 +136,11 @@ sectionParseSymbolTable d bs s = (s, ) <$> if sectionIsSymbolTable s then parseL
 printRBuilderFile :: FilePath -> IO (Doc ())
 printRBuilderFile path = do
     bs <- fromStrict <$> BS.readFile path
+    let
+        getString = undefined
     case parseHeaders bs of
         Left err -> assertFailure $ show err
-        Right (classS :&: HeadersXX (hdr@HeaderXX{..}, ss, ps)) -> withSingI classS $ (printRBuilder <$> parseRBuilder bs hdr ss ps)
+        Right (classS :&: HeadersXX (hdr@HeaderXX{..}, ss, ps)) -> withSingI classS $ (printRBuilder getString <$> parseRBuilder bs hdr ss ps)
 
 printHeadersFile :: FilePath -> IO (Doc ())
 printHeadersFile path = do

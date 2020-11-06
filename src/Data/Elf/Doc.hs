@@ -146,50 +146,74 @@ printHeaders hdr ss ps =
 --
 --------------------------------------------------------------------
 
-printRBuilder' :: forall a . SingI a => RBuilder a -> [(Word64, String, Doc ())]
-printRBuilder' rb = f rb
-    where
-        i@(I o s) = rBuilderInterval rb
-        f RBuilderHeader{..} =
-            [ (wxxFromIntegral o, " ", "Hb")
-            , (wxxFromIntegral o + s - 1, " ", "He")
-            ]
-        f RBuilderSectionTable{ erbstHeader = HeaderXX{..}, ..} =
-            if hShNum == 0
-                then []
-                else
-                    [ (o, " ", "STb")
-                    , (o + s - 1, " ", "STe")
-                    ]
-        f RBuilderSegmentTable{ erbptHeader = HeaderXX{..}, ..} =
-            if hPhNum == 0
-                then []
-                else
-                    [ (o, " ", "PTb")
-                    , (o + s - 1, " ", "PTe")
-                    ]
-        f RBuilderSection{..} =
-            if empty i
-                then
-                    [(wxxFromIntegral o, "-", "S")]
-                else
-                    [(wxxFromIntegral o, " ", "Sb"), (wxxFromIntegral o + s - 1, " ", "Se")]
-        f RBuilderSegment{..} =
-            if empty i
-                then
-                    [(wxxFromIntegral o, "-", "Pb")]
-                else
-                    let
-                        xs = concat $ fmap printRBuilder' erbpData
-                    in
-                        [(wxxFromIntegral o, " ", "Pb")] ++ xs ++ [(wxxFromIntegral o + s - 1, " ", "Pe")]
+printRBuilder :: SingI a => (Word32 -> String) -> [RBuilder a] -> Doc ()
+printRBuilder getString rbs = vsep ldoc
 
-printRBuilder :: SingI a => [RBuilder a] -> Doc ()
-printRBuilder rbs = vsep ldoc
     where
-        printRBuilderList = concat $ map printRBuilder' rbs
-        ldoc = fmap f printRBuilderList
-        f (pos, g, doc) = printWord64 pos <+> pretty g <+> doc
+
+        mapL f (ix, sx, dx) = (ix, f sx, dx)
+        getS (_, sx, _) = sx
+
+        longest [] = 0
+        longest rbs = maximum $ fmap (length . getS) rbs
+
+        padL n s | length s > n = error "padL"
+        padL n s | otherwise = replicate (n - length s) ' ' ++ s
+
+        equalize l = fmap (mapL (padL l))
+
+        l = longest lines
+
+        printLine (pos, g, doc) = pretty g <+> (printWord32 $ fromIntegral pos) <+> doc
+        lines = concat $ map printRBuilder' rbs
+        ldoc = fmap printLine $ equalize l lines
+
+        printRBuilder' rb = f rb
+            where
+
+                i@(I o s) = rBuilderInterval rb
+
+                f RBuilderHeader{..} =
+                    [ (o,         "┎", "Elf header")
+                    , (o + s - 1, "┖", "")
+                    ]
+                f RBuilderSectionTable{ erbstHeader = HeaderXX{..}, ..} =
+                    if hShNum == 0
+                        then []
+                        else
+                            [ (o,         "┎", "Section table" <+> viaShow hShNum <+> "entrites")
+                            , (o + s - 1, "┖", "")
+                            ]
+                f RBuilderSegmentTable{ erbptHeader = HeaderXX{..}, ..} =
+                    if hPhNum == 0
+                        then []
+                        else
+                            [ (o,         "┎", "Segment table" <+> viaShow hShNum <+> "entrites")
+                            , (o + s - 1, "┖", "")
+                            ]
+                f RBuilderSection{..} =
+                    if empty i
+                        then
+                            [(o, "-", "Section")]
+                        else
+                            [(o,         "┌", "Section"),
+                             (o + s - 1, "└", "")]
+                f RBuilderSegment{..} =
+                    if empty i
+                        then
+                            [(o, "-", "Segment")]
+                        else
+                            let
+                                xs = concat $ fmap printRBuilder' erbpData
+                                l = longest xs
+                                appendSectionBar = fmap (mapL ('║' : ))
+                                xsf = appendSectionBar $ equalize l xs
+                                b = '╓' : ((replicate l '─'))
+                                e = '╙' : ((replicate l '─'))
+                            in
+                                [(o,         b, "Segment")] ++
+                                xsf                         ++
+                                [(o + s - 1, e, "")]
 
 --------------------------------------------------------------------
 --
