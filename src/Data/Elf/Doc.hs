@@ -199,8 +199,8 @@ printRBuilder _getString rbs = vsep ldoc
                             then
                                 [(o, "-", doc)]
                             else
-                                [(o,         "┌", doc),
-                                (o + s - 1, "└", "")]
+                                [(o,        "╓", doc),
+                                (o + s - 1, "╙", "")]
                 f RBuilderSegment{..} =
                     let
                         doc = "Segment"
@@ -212,10 +212,10 @@ printRBuilder _getString rbs = vsep ldoc
                                 let
                                     xs = concat $ fmap printRBuilder' erbpData
                                     l = longest xs
-                                    appendSectionBar = fmap (mapL ('║' : ))
+                                    appendSectionBar = fmap (mapL ('│' : ))
                                     xsf = appendSectionBar $ equalize l xs
-                                    b = '╓' : ((replicate l '─'))
-                                    e = '╙' : ((replicate l '─'))
+                                    b = '┌' : ((replicate l '─'))
+                                    e = '└' : ((replicate l '─'))
                                 in
                                     [(o,         b, doc)] ++
                                     xsf                         ++
