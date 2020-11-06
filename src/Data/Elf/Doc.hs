@@ -147,7 +147,7 @@ printHeaders hdr ss ps =
 --------------------------------------------------------------------
 
 printRBuilder :: SingI a => (Word32 -> String) -> [RBuilder a] -> Doc ()
-printRBuilder getString rbs = vsep ldoc
+printRBuilder _getString rbs = vsep ldoc
 
     where
 
@@ -155,18 +155,18 @@ printRBuilder getString rbs = vsep ldoc
         getS (_, sx, _) = sx
 
         longest [] = 0
-        longest rbs = maximum $ fmap (length . getS) rbs
+        longest rbs' = maximum $ fmap (length . getS) rbs'
 
         padL n s | length s > n = error "padL"
         padL n s | otherwise = replicate (n - length s) ' ' ++ s
 
         equalize l = fmap (mapL (padL l))
 
-        l = longest lines
 
         printLine (pos, g, doc) = pretty g <+> (printWord32 $ fromIntegral pos) <+> doc
-        lines = concat $ map printRBuilder' rbs
-        ldoc = fmap printLine $ equalize l lines
+        ls = concat $ map printRBuilder' rbs
+        len = longest ls
+        ldoc = fmap printLine $ equalize len ls
 
         printRBuilder' rb = f rb
             where
@@ -192,28 +192,34 @@ printRBuilder getString rbs = vsep ldoc
                             , (o + s - 1, "┖", "")
                             ]
                 f RBuilderSection{..} =
-                    if empty i
-                        then
-                            [(o, "-", "Section")]
-                        else
-                            [(o,         "┌", "Section"),
-                             (o + s - 1, "└", "")]
+                    let
+                        doc = "Section"
+                    in
+                        if empty i
+                            then
+                                [(o, "-", doc)]
+                            else
+                                [(o,         "┌", doc),
+                                (o + s - 1, "└", "")]
                 f RBuilderSegment{..} =
-                    if empty i
-                        then
-                            [(o, "-", "Segment")]
-                        else
-                            let
-                                xs = concat $ fmap printRBuilder' erbpData
-                                l = longest xs
-                                appendSectionBar = fmap (mapL ('║' : ))
-                                xsf = appendSectionBar $ equalize l xs
-                                b = '╓' : ((replicate l '─'))
-                                e = '╙' : ((replicate l '─'))
-                            in
-                                [(o,         b, "Segment")] ++
-                                xsf                         ++
-                                [(o + s - 1, e, "")]
+                    let
+                        doc = "Segment"
+                    in
+                        if empty i
+                            then
+                                [(o, "-", doc)]
+                            else
+                                let
+                                    xs = concat $ fmap printRBuilder' erbpData
+                                    l = longest xs
+                                    appendSectionBar = fmap (mapL ('║' : ))
+                                    xsf = appendSectionBar $ equalize l xs
+                                    b = '╓' : ((replicate l '─'))
+                                    e = '╙' : ((replicate l '─'))
+                                in
+                                    [(o,         b, doc)] ++
+                                    xsf                         ++
+                                    [(o + s - 1, e, "")]
 
 --------------------------------------------------------------------
 --
