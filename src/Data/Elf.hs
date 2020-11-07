@@ -31,6 +31,7 @@ module Data.Elf
     , parseElf
     , parseRBuilder
     , getSectionData
+    , getString
     , rBuilderInterval
     ) where
 

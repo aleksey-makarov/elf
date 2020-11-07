@@ -24,6 +24,7 @@ import Data.Foldable as F
 -- import Data.Functor.Identity
 import Data.Int
 -- import Data.List as L
+import Data.Monoid
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Text.Prettyprint.Doc as D
@@ -133,14 +134,42 @@ mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
 sectionParseSymbolTable  :: (SingI a, MonadThrow m) => ElfData -> BSL.ByteString -> SectionXX a -> m (SectionXX a, [SymbolTableEntryXX a])
 sectionParseSymbolTable d bs s = (s, ) <$> if sectionIsSymbolTable s then parseListA d $ getSectionData bs s else return []
 
+findHeader :: SingI a => [RBuilder a] -> Maybe (HeaderXX a)
+findHeader rbs = getFirst $ foldMap f rbs
+    where
+        f RBuilderSegment{..} = First $ findHeader erbpData
+        f RBuilderHeader{ erbhHeader = h@HeaderXX{..}, ..} = First $ Just h
+        f _ = First Nothing
+
+findSection :: SingI a => Word16 -> [RBuilder a] -> Maybe (SectionXX a)
+findSection n rbs = findSection' rbs
+    where
+        findSection' rbs' = getFirst $ foldMap f rbs'
+        f RBuilderSegment{..} = First $ findSection' erbpData
+        f RBuilderSection{..} = if n == erbsN then First $ Just erbsHeader else First Nothing
+        f _ = First Nothing
+
+findStringSection :: SingI a => [RBuilder a] -> Maybe (SectionXX a)
+findStringSection rbs = do
+    HeaderXX{..} <- findHeader rbs
+    findSection hShStrNdx rbs
+
 printRBuilderFile :: FilePath -> IO (Doc ())
 printRBuilderFile path = do
     bs <- fromStrict <$> BS.readFile path
-    let
-        getString n = ".section_name_@" ++ show n
     case parseHeaders bs of
         Left err -> assertFailure $ show err
-        Right (classS :&: HeadersXX (hdr@HeaderXX{..}, ss, ps)) -> withSingI classS $ (printRBuilder getString <$> parseRBuilder bs hdr ss ps)
+        Right (classS :&: HeadersXX (hdr@HeaderXX{..}, ss, ps)) -> withSingI classS do
+            rbs <- parseRBuilder bs hdr ss ps
+            let
+                stringSectionData = getSectionData bs <$> findStringSection rbs
+            case stringSectionData of
+                Nothing -> assertFailure $ "no string table"
+                Just st ->
+                    let
+                        getString' n = getString st $ fromIntegral n
+                    in
+                        return $ printRBuilder getString' rbs
 
 printHeadersFile :: FilePath -> IO (Doc ())
 printHeadersFile path = do
