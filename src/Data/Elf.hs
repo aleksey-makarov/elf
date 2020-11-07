@@ -33,6 +33,7 @@ module Data.Elf
     , getSectionData
     , getString
     , rBuilderInterval
+    , serializeElf
     ) where
 
 import Data.Elf.Exception
@@ -42,6 +43,7 @@ import Data.Interval as I
 
 import Control.Monad
 import Control.Monad.Catch
+import Control.Monad.State
 -- import Data.Bifunctor
 import Data.ByteString.Char8 as BSC
 import Data.ByteString.Lazy as BSL
@@ -404,3 +406,45 @@ parseElf :: MonadCatch m => BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList)
 parseElf bs = do
     classS :&: HeadersXX (hdr, ss, ps) <- parseHeaders bs
     withSingI classS $ parseElf' hdr ss ps bs
+
+-------------------------------------------------------------------------------
+--
+-------------------------------------------------------------------------------
+
+data WBuilderHeader (a :: ElfClass) =
+    WBuilderHeader
+        {
+        }
+
+data WBuilderSection (a :: ElfClass) =
+    WBuilderSection
+        {
+        }
+
+data WBuilderSegment (a :: ElfClass) =
+    WBuilderSegment
+        {
+        }
+
+data WBuilderState (a :: ElfClass) =
+    WBuilderState
+        { wbHeader   :: Maybe (WBuilderHeader a)
+        , wbSections :: [WBuilderSection a]
+        , wbSegments :: [WBuilderSegment a]
+        }
+
+wbStateInit :: WBuilderState a
+wbStateInit = WBuilderState
+    { wbHeader   = Nothing
+    , wbSections = []
+    , wbSegments = []
+    }
+
+wbState2ByteString :: (SingI a, MonadThrow m) => WBuilderState a -> m BSL.ByteString
+wbState2ByteString = undefined
+
+elf2WBuilder :: (SingI a, MonadThrow m, MonadState (WBuilderState a) m) => Elf a -> m ()
+elf2WBuilder = undefined
+
+serializeElf :: (SingI a, MonadThrow m) => [Elf a] -> m BSL.ByteString
+serializeElf elfs = execStateT (mapM elf2WBuilder elfs) wbStateInit >>= wbState2ByteString
