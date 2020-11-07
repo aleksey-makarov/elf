@@ -1,110 +1,74 @@
-sections:
-	- 0  
-	- 1  .interp
-	- 2  .note.gnu.build-id
-	- 3  .note.ABI-tag
-	- 4  .gnu.hash
-	- 5  .dynsym
-	- 6  .dynstr
-	- 7  .gnu.version
-	- 8  .gnu.version_r
-	- 9  .rela.dyn
-	- 10 .init
-	- 11 .text
-	- 12 .fini
-	- 13 .rodata
-	- 14 .eh_frame_hdr
-	- 15 .eh_frame
-	- 16 .init_array
-	- 17 .fini_array
-	- 18 .data.rel.ro
-	- 19 .dynamic
-	- 20 .got
-	- 21 .data
-	- 22 .bss
-	- 23 .comment
-	- 24 .shstrtab
-segments:
-	- 0  PT_PHDR
-	- 1  PT_INTERP
-	- 2  PT_LOAD
-	- 3  PT_LOAD
-	- 4  PT_LOAD
-	- 5  PT_LOAD
-	- 6  PT_DYNAMIC
-	- 7  PT_NOTE
-	- 8  PT_EXT 1685382480
-	- 9  PT_EXT 1685382481
-	- 10 PT_EXT 1685382482
-╓─── 0000000000000000 P 2 type: PT_LOAD; flags: [PF_R]
-║┎── 0000000000000000 H ELF Header
-║┖── 000000000000003f H
-║╓── 0000000000000040 P 0 type: PT_PHDR; flags: [PF_R]
-║║┎─ 0000000000000040 H Segment table
-║║┖─ 00000000000002a7 H
-║╙── 00000000000002a7 P 0
-║╓── 00000000000002a8 P 1 type: PT_INTERP; flags: [PF_R]
-║║┌─ 00000000000002a8 S 1 name: ".interp"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
-║║└─ 00000000000002c3 S 1
-║╙── 00000000000002c3 P 1
-║╓── 00000000000002c4 P 7 type: PT_NOTE; flags: [PF_R]
-║║┌─ 00000000000002c4 S 2 name: ".note.gnu.build-id"; type: SHT_NOTE; flags: [SHF_ALLOC]
-║║└─ 00000000000002e7 S 2
-║║┌─ 00000000000002e8 S 3 name: ".note.ABI-tag"; type: SHT_NOTE; flags: [SHF_ALLOC]
-║║└─ 0000000000000307 S 3
-║╙── 0000000000000307 P 7
-║┌── 0000000000000308 S 4 name: ".gnu.hash"; type: SHT_EXT 1879048182; flags: [SHF_ALLOC]
-║└── 0000000000003407 S 4
-║┌── 0000000000003408 S 5 name: ".dynsym"; type: SHT_DYNSYM; flags: [SHF_ALLOC]
-║└── 000000000000e627 S 5
-║┌── 000000000000e628 S 6 name: ".dynstr"; type: SHT_STRTAB; flags: [SHF_ALLOC]
-║└── 0000000000015653 S 6
-║┌── 0000000000015654 S 7 name: ".gnu.version"; type: SHT_EXT 1879048191; flags: [SHF_ALLOC]
-║└── 000000000001652b S 7
-║┌── 0000000000016530 S 8 name: ".gnu.version_r"; type: SHT_EXT 1879048190; flags: [SHF_ALLOC]
-║└── 00000000000165df S 8
-║┌── 00000000000165e0 S 9 name: ".rela.dyn"; type: SHT_RELA; flags: [SHF_ALLOC]
-║└── 000000000001efdf S 9
-╙─── 000000000001efdf P 2
-╓─── 000000000001f000 P 3 type: PT_LOAD; flags: [PF_X,PF_R]
-║┌── 000000000001f000 S 10 name: ".init"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
-║└── 000000000001f01a S 10
-║┌── 000000000001f020 S 11 name: ".text"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
-║└── 00000000000a8a54 S 11
-║┌── 00000000000a8a58 S 12 name: ".fini"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
-║└── 00000000000a8a64 S 12
-╙─── 00000000000a8a64 P 3
-╓─── 00000000000a9000 P 4 type: PT_LOAD; flags: [PF_R]
-║┌── 00000000000a9000 S 13 name: ".rodata"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
-║└── 00000000000c185f S 13
-║╓── 00000000000c1860 P 8 type: PT_EXT 1685382480; flags: [PF_R]
-║║┌─ 00000000000c1860 S 14 name: ".eh_frame_hdr"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
-║║└─ 00000000000c4afb S 14
-║╙── 00000000000c4afb P 8
-║┌── 00000000000c4b00 S 15 name: ".eh_frame"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
-║└── 00000000000d6867 S 15
-╙─── 00000000000d6867 P 4
-╓─── 00000000000d6cd0 P 5 type: PT_LOAD; flags: [PF_W,PF_R]
-║╓── 00000000000d6cd0 P 10 type: PT_EXT 1685382482; flags: [PF_R]
-║║┌─ 00000000000d6cd0 S 16 name: ".init_array"; type: SHT_EXT 14; flags: [SHF_WRITE,SHF_ALLOC]
-║║└─ 00000000000d6cd7 S 16
-║║┌─ 00000000000d6cd8 S 17 name: ".fini_array"; type: SHT_EXT 15; flags: [SHF_WRITE,SHF_ALLOC]
-║║└─ 00000000000d6cdf S 17
-║║┌─ 00000000000d6ce0 S 18 name: ".data.rel.ro"; type: SHT_PROGBITS; flags: [SHF_WRITE,SHF_ALLOC]
-║║└─ 00000000000d844f S 18
-║║╓─ 00000000000d8450 P 6 type: PT_DYNAMIC; flags: [PF_W,PF_R]
-║║║┌ 00000000000d8450 S 19 name: ".dynamic"; type: SHT_DYNAMIC; flags: [SHF_WRITE,SHF_ALLOC]
-║║║└ 00000000000d861f S 19
-║║╙─ 00000000000d861f P 6
-║║┌─ 00000000000d8620 S 20 name: ".got"; type: SHT_PROGBITS; flags: [SHF_WRITE,SHF_ALLOC]
-║║└─ 00000000000d8fff S 20
-║╙── 00000000000d8fff P 10
-║┌── 00000000000d9000 S 21 name: ".data"; type: SHT_PROGBITS; flags: [SHF_WRITE,SHF_ALLOC]
-║└── 00000000000dc1cf S 21
-╙─── 00000000000dc1cf P 5
-┌─── 00000000000dc1d0 S 23 name: ".comment"; type: SHT_PROGBITS; flags: [SHF_EXT 16,SHF_EXT 32]
-└─── 00000000000dc21b S 23
-┌─── 00000000000dc21c S 24 name: ".shstrtab"; type: SHT_STRTAB; flags: []
-└─── 00000000000dc308 S 24
-┎─── 00000000000dc310 H Section table
-┖─── 00000000000dc94f H
+ ┌── 0x00000000 P PT_LOAD [PF_R]
+ │ - 0x00000000 P PT_EXT 1685382481 [PF_W,PF_R]
+ │ ┎ 0x00000000 H
+ │ ┖ 0x0000003f
+ │┌─ 0x00000040 P PT_PHDR [PF_R]
+ ││┎ 0x00000040 PT (11)
+ ││┖ 0x000002a7
+ │└─ 0x000002a7
+ │┌─ 0x000002a8 P PT_INTERP [PF_R]
+ ││╓ 0x000002a8 S ".interp" SHT_PROGBITS [SHF_ALLOC]
+ ││╙ 0x000002c3
+ │└─ 0x000002c3
+ │┌─ 0x000002c4 P PT_NOTE [PF_R]
+ ││╓ 0x000002c4 S ".note.gnu.build-id" SHT_NOTE [SHF_ALLOC]
+ ││╙ 0x000002e7
+ ││╓ 0x000002e8 S ".note.ABI-tag" SHT_NOTE [SHF_ALLOC]
+ ││╙ 0x00000307
+ │└─ 0x00000307
+ │ ╓ 0x00000308 S ".gnu.hash" SHT_EXT 1879048182 [SHF_ALLOC]
+ │ ╙ 0x00003407
+ │ ╓ 0x00003408 S ".dynsym" SHT_DYNSYM [SHF_ALLOC]
+ │ ╙ 0x0000e627
+ │ ╓ 0x0000e628 S ".dynstr" SHT_STRTAB [SHF_ALLOC]
+ │ ╙ 0x00015653
+ │ ╓ 0x00015654 S ".gnu.version" SHT_EXT 1879048191 [SHF_ALLOC]
+ │ ╙ 0x0001652b
+ │ ╓ 0x00016530 S ".gnu.version_r" SHT_EXT 1879048190 [SHF_ALLOC]
+ │ ╙ 0x000165df
+ │ ╓ 0x000165e0 S ".rela.dyn" SHT_RELA [SHF_ALLOC]
+ │ ╙ 0x0001efdf
+ └── 0x0001efdf
+  ┌─ 0x0001f000 P PT_LOAD [PF_X,PF_R]
+  │╓ 0x0001f000 S ".init" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
+  │╙ 0x0001f01a
+  │╓ 0x0001f020 S ".text" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
+  │╙ 0x000a8a54
+  │╓ 0x000a8a58 S ".fini" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
+  │╙ 0x000a8a64
+  └─ 0x000a8a64
+ ┌── 0x000a9000 P PT_LOAD [PF_R]
+ │ ╓ 0x000a9000 S ".rodata" SHT_PROGBITS [SHF_ALLOC]
+ │ ╙ 0x000c185f
+ │┌─ 0x000c1860 P PT_EXT 1685382480 [PF_R]
+ ││╓ 0x000c1860 S ".eh_frame_hdr" SHT_PROGBITS [SHF_ALLOC]
+ ││╙ 0x000c4afb
+ │└─ 0x000c4afb
+ │ ╓ 0x000c4b00 S ".eh_frame" SHT_PROGBITS [SHF_ALLOC]
+ │ ╙ 0x000d6867
+ └── 0x000d6867
+┌─── 0x000d6cd0 P PT_LOAD [PF_W,PF_R]
+│┌── 0x000d6cd0 P PT_EXT 1685382482 [PF_R]
+││ ╓ 0x000d6cd0 S ".init_array" SHT_EXT 14 [SHF_WRITE,SHF_ALLOC]
+││ ╙ 0x000d6cd7
+││ ╓ 0x000d6cd8 S ".fini_array" SHT_EXT 15 [SHF_WRITE,SHF_ALLOC]
+││ ╙ 0x000d6cdf
+││ ╓ 0x000d6ce0 S ".data.rel.ro" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
+││ ╙ 0x000d844f
+││┌─ 0x000d8450 P PT_DYNAMIC [PF_W,PF_R]
+│││╓ 0x000d8450 S ".dynamic" SHT_DYNAMIC [SHF_WRITE,SHF_ALLOC]
+│││╙ 0x000d861f
+││└─ 0x000d861f
+││ ╓ 0x000d8620 S ".got" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
+││ ╙ 0x000d8fff
+│└── 0x000d8fff
+│  ╓ 0x000d9000 S ".data" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
+│  ╙ 0x000dc1cf
+└─── 0x000dc1cf
+   - 0x000dc1d0 S ".bss" SHT_NOBITS [SHF_WRITE,SHF_ALLOC]
+   ╓ 0x000dc1d0 S ".comment" SHT_PROGBITS [SHF_EXT 16,SHF_EXT 32]
+   ╙ 0x000dc21b
+   ╓ 0x000dc21c S ".shstrtab" SHT_STRTAB []
+   ╙ 0x000dc308
+   ┎ 0x000dc310 ST (25)
+   ┖ 0x000dc94f

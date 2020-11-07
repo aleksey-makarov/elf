@@ -196,6 +196,6 @@ main = do
 
     defaultMain $ testGroup "elf" [ testGroup "headers round trip" (mkTest <$> elfs)
                                   , testGroup "headers golden" (mkGoldenTest "header" printHeadersFile <$> elfs)
-                                  , testGroup "rbuilder golden" (mkGoldenTest "rbuilder" printRBuilderFile <$> elfs)
+                                  , testGroup "layout golden" (mkGoldenTest "layout" printRBuilderFile <$> elfs)
                                   , testGroup "elf golden" (mkGoldenTest "elf" printElfFile <$> elfs)
                                   ]

@@ -1,69 +1,46 @@
-sections:
-	- 0  
-	- 1  .hash
-	- 2  .gnu.hash
-	- 3  .dynsym
-	- 4  .dynstr
-	- 5  .gnu.version
-	- 6  .gnu.version_d
-	- 7  .dynamic
-	- 8  .rodata
-	- 9  .note
-	- 10 .eh_frame_hdr
-	- 11 .eh_frame
-	- 12 .text
-	- 13 .altinstructions
-	- 14 .altinstr_replacement
-	- 15 .comment
-	- 16 .shstrtab
-segments:
-	- 0  PT_LOAD
-	- 1  PT_DYNAMIC
-	- 2  PT_NOTE
-	- 3  PT_EXT 1685382480
-╓── 0000000000000000 P 0 type: PT_LOAD; flags: [PF_X,PF_R]
-║┎─ 0000000000000000 H ELF Header
-║┖─ 000000000000003f H
-║┎─ 0000000000000040 H Segment table
-║┖─ 000000000000011f H
-║┌─ 0000000000000120 S 1 name: ".hash"; type: SHT_HASH; flags: [SHF_ALLOC]
-║└─ 000000000000015b S 1
-║┌─ 0000000000000160 S 2 name: ".gnu.hash"; type: SHT_EXT 1879048182; flags: [SHF_ALLOC]
-║└─ 00000000000001a7 S 2
-║┌─ 00000000000001a8 S 3 name: ".dynsym"; type: SHT_DYNSYM; flags: [SHF_ALLOC]
-║└─ 0000000000000297 S 3
-║┌─ 0000000000000298 S 4 name: ".dynstr"; type: SHT_STRTAB; flags: [SHF_ALLOC]
-║└─ 00000000000002f5 S 4
-║┌─ 00000000000002f6 S 5 name: ".gnu.version"; type: SHT_EXT 1879048191; flags: [SHF_ALLOC]
-║└─ 0000000000000309 S 5
-║┌─ 0000000000000310 S 6 name: ".gnu.version_d"; type: SHT_EXT 1879048189; flags: [SHF_ALLOC]
-║└─ 0000000000000347 S 6
-║╓─ 0000000000000348 P 1 type: PT_DYNAMIC; flags: [PF_R]
-║║┌ 0000000000000348 S 7 name: ".dynamic"; type: SHT_DYNAMIC; flags: [SHF_WRITE,SHF_ALLOC]
-║║└ 0000000000000467 S 7
-║╙─ 0000000000000467 P 1
-║┌─ 0000000000000468 S 8 name: ".rodata"; type: SHT_PROGBITS; flags: [SHF_WRITE,SHF_ALLOC]
-║└─ 00000000000007a7 S 8
-║╓─ 00000000000007a8 P 2 type: PT_NOTE; flags: [PF_R]
-║║┌ 00000000000007a8 S 9 name: ".note"; type: SHT_NOTE; flags: [SHF_ALLOC]
-║║└ 00000000000007e3 S 9
-║╙─ 00000000000007e3 P 2
-║╓─ 00000000000007e4 P 3 type: PT_EXT 1685382480; flags: [PF_R]
-║║┌ 00000000000007e4 S 10 name: ".eh_frame_hdr"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
-║║└ 000000000000081f S 10
-║╙─ 000000000000081f P 3
-║┌─ 0000000000000820 S 11 name: ".eh_frame"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
-║└─ 0000000000000967 S 11
-║┌─ 0000000000000970 S 12 name: ".text"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
-║└─ 0000000000000f59 S 12
-║┌─ 0000000000000f5a S 13 name: ".altinstructions"; type: SHT_PROGBITS; flags: [SHF_ALLOC]
-║└─ 0000000000000fe8 S 13
-║┌─ 0000000000000fe9 S 14 name: ".altinstr_replacement"; type: SHT_PROGBITS; flags: [SHF_ALLOC,SHF_EXECINSTR]
-║└─ 000000000000100a S 14
-╙── 000000000000100a P 0
-┌── 000000000000100b S 15 name: ".comment"; type: SHT_PROGBITS; flags: [SHF_EXT 16,SHF_EXT 32]
-└── 000000000000102e S 15
-┌── 000000000000102f S 16 name: ".shstrtab"; type: SHT_STRTAB; flags: []
-└── 00000000000010d4 S 16
-┎── 00000000000010d8 H Section table
-┖── 0000000000001517 H
+┌── 0x00000000 P PT_LOAD [PF_X,PF_R]
+│ ┎ 0x00000000 H
+│ ┖ 0x0000003f
+│ ┎ 0x00000040 PT (4)
+│ ┖ 0x0000011f
+│ ╓ 0x00000120 S ".hash" SHT_HASH [SHF_ALLOC]
+│ ╙ 0x0000015b
+│ ╓ 0x00000160 S ".gnu.hash" SHT_EXT 1879048182 [SHF_ALLOC]
+│ ╙ 0x000001a7
+│ ╓ 0x000001a8 S ".dynsym" SHT_DYNSYM [SHF_ALLOC]
+│ ╙ 0x00000297
+│ ╓ 0x00000298 S ".dynstr" SHT_STRTAB [SHF_ALLOC]
+│ ╙ 0x000002f5
+│ ╓ 0x000002f6 S ".gnu.version" SHT_EXT 1879048191 [SHF_ALLOC]
+│ ╙ 0x00000309
+│ ╓ 0x00000310 S ".gnu.version_d" SHT_EXT 1879048189 [SHF_ALLOC]
+│ ╙ 0x00000347
+│┌─ 0x00000348 P PT_DYNAMIC [PF_R]
+││╓ 0x00000348 S ".dynamic" SHT_DYNAMIC [SHF_WRITE,SHF_ALLOC]
+││╙ 0x00000467
+│└─ 0x00000467
+│ ╓ 0x00000468 S ".rodata" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
+│ ╙ 0x000007a7
+│┌─ 0x000007a8 P PT_NOTE [PF_R]
+││╓ 0x000007a8 S ".note" SHT_NOTE [SHF_ALLOC]
+││╙ 0x000007e3
+│└─ 0x000007e3
+│┌─ 0x000007e4 P PT_EXT 1685382480 [PF_R]
+││╓ 0x000007e4 S ".eh_frame_hdr" SHT_PROGBITS [SHF_ALLOC]
+││╙ 0x0000081f
+│└─ 0x0000081f
+│ ╓ 0x00000820 S ".eh_frame" SHT_PROGBITS [SHF_ALLOC]
+│ ╙ 0x00000967
+│ ╓ 0x00000970 S ".text" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
+│ ╙ 0x00000f59
+│ ╓ 0x00000f5a S ".altinstructions" SHT_PROGBITS [SHF_ALLOC]
+│ ╙ 0x00000fe8
+│ ╓ 0x00000fe9 S ".altinstr_replacement" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
+│ ╙ 0x0000100a
+└── 0x0000100a
+  ╓ 0x0000100b S ".comment" SHT_PROGBITS [SHF_EXT 16,SHF_EXT 32]
+  ╙ 0x0000102e
+  ╓ 0x0000102f S ".shstrtab" SHT_STRTAB []
+  ╙ 0x000010d4
+  ┎ 0x000010d8 ST (17)
+  ┖ 0x00001517

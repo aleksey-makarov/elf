@@ -1,0 +1,44 @@
+┌─ 0x00000000 P PT_LOAD [PF_X,PF_R]
+│┎ 0x00000000 H
+│┖ 0x00000033
+│┎ 0x00000034 PT (2)
+│┖ 0x00000073
+│╓ 0x00000078 S ".text" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
+│╙ 0x0000cc17
+│╓ 0x0000cc18 S ".rodata" SHT_PROGBITS [SHF_ALLOC]
+│╙ 0x0000d23b
+└─ 0x0000d23b
+┌─ 0x0000d23c P PT_LOAD [PF_W,PF_R]
+│╓ 0x0000d23c S ".data" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
+│╙ 0x0000dbd3
+│╓ 0x0000dbd4 S ".sdata" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC,SHF_EXT 268435456]
+│╙ 0x0000dbe3
+└─ 0x0000dbe3
+ - 0x0000dbe4 S ".sbss" SHT_NOBITS [SHF_WRITE,SHF_ALLOC,SHF_EXT 268435456]
+ - 0x0000dbe4 S ".bss" SHT_NOBITS [SHF_WRITE,SHF_ALLOC]
+ ╓ 0x0000dbe4 S ".comment" SHT_PROGBITS [SHF_EXT 16,SHF_EXT 32]
+ ╙ 0x0000dc0f
+ ╓ 0x0000dc10 S ".debug_aranges" SHT_PROGBITS []
+ ╙ 0x0000e7cf
+ ╓ 0x0000e7d0 S ".debug_info" SHT_PROGBITS []
+ ╙ 0x00044c7d
+ ╓ 0x00044c7e S ".debug_abbrev" SHT_PROGBITS []
+ ╙ 0x0004fcc4
+ ╓ 0x0004fcc5 S ".debug_line" SHT_PROGBITS []
+ ╙ 0x0006486a
+ ╓ 0x0006486c S ".debug_frame" SHT_PROGBITS []
+ ╙ 0x0006601b
+ ╓ 0x0006601c S ".debug_str" SHT_PROGBITS [SHF_EXT 16,SHF_EXT 32]
+ ╙ 0x000691a1
+ ╓ 0x000691a2 S ".debug_loc" SHT_PROGBITS []
+ ╙ 0x0008630b
+ ╓ 0x0008630c S ".debug_ranges" SHT_PROGBITS []
+ ╙ 0x00087fdb
+ ╓ 0x00087fdc S ".symtab" SHT_SYMTAB []
+ ╙ 0x0008915b
+ ╓ 0x0008915c S ".strtab" SHT_STRTAB []
+ ╙ 0x00089ba6
+ ╓ 0x00089ba7 S ".shstrtab" SHT_STRTAB []
+ ╙ 0x00089c56
+ ┎ 0x00089c58 ST (19)
+ ┖ 0x00089f4f

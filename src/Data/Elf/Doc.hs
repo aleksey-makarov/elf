@@ -163,7 +163,7 @@ printRBuilder getStr rbs = vsep ldoc
         equalize l = fmap (mapL (padL l))
 
 
-        printLine (pos, g, doc) = pretty g <+> (printWord32 $ fromIntegral pos) <+> doc
+        printLine (pos, g, doc) = hsep $ pretty g : printWord32 (fromIntegral pos) : doc
         ls = concat $ map printRBuilder' rbs
         len = longest ls
         ldoc = fmap printLine $ equalize len ls
@@ -174,41 +174,43 @@ printRBuilder getStr rbs = vsep ldoc
                 i@(I o s) = rBuilderInterval rb
 
                 f RBuilderHeader{..} =
-                    [ (o,         "┎", "H")
-                    , (o + s - 1, "┖", "")
+                    [ (o,         "┎", ["H"])
+                    , (o + s - 1, "┖", [])
                     ]
                 f RBuilderSectionTable{ erbstHeader = HeaderXX{..}, ..} =
                     if hShNum == 0
                         then []
                         else
-                            [ (o,         "┎", "ST" <+> (parens $ viaShow hShNum))
-                            , (o + s - 1, "┖", "")
+                            [ (o,         "┎", ["ST", parens $ viaShow hShNum])
+                            , (o + s - 1, "┖", [])
                             ]
                 f RBuilderSegmentTable{ erbptHeader = HeaderXX{..}, ..} =
                     if hPhNum == 0
                         then []
                         else
-                            [ (o,         "┎", "PT" <+> (parens $ viaShow hPhNum))
-                            , (o + s - 1, "┖", "")
+                            [ (o,         "┎", ["PT", parens $ viaShow hPhNum])
+                            , (o + s - 1, "┖", [])
                             ]
                 f RBuilderSection{ erbsHeader = SectionXX{..}, ..} =
                     let
-                        doc = "S"
-                            <+> (dquotes $ pretty $ getStr sName)
-                            <+> viaShow sType
-                            <+> (viaShow $ splitBits $ ElfSectionFlag $ wxxToIntegral sFlags)
+                        doc = [ "S"
+                              , dquotes $ pretty $ getStr sName
+                              , viaShow sType
+                              , viaShow $ splitBits $ ElfSectionFlag $ wxxToIntegral sFlags
+                              ]
                     in
                         if empty i
                             then
                                 [(o, "-", doc)]
                             else
                                 [(o,        "╓", doc),
-                                (o + s - 1, "╙", "")]
+                                (o + s - 1, "╙", [])]
                 f RBuilderSegment{ erbpHeader = SegmentXX{..}, ..} =
                     let
-                        doc = "P"
-                            <+> viaShow pType
-                            <+> (viaShow $ splitBits $ ElfSegmentFlag $ wxxToIntegral pFlags)
+                        doc = [ "P"
+                              , viaShow pType
+                              , viaShow $ splitBits $ ElfSegmentFlag $ wxxToIntegral pFlags
+                              ]
                     in
                         if empty i
                             then
@@ -224,7 +226,7 @@ printRBuilder getStr rbs = vsep ldoc
                                 in
                                     [(o,         b, doc)] ++
                                     xsf                         ++
-                                    [(o + s - 1, e, "")]
+                                    [(o + s - 1, e, [])]
 
 --------------------------------------------------------------------
 --
