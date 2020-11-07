@@ -1,4 +1,13 @@
 segment {
+    Type:     PT_EXT 1685382481
+    Flags:    0x00000006
+    VirtAddr: 0x0000000000000000
+    PhysAddr: 0x0000000000000000
+    MemSize:  0x0000000000000000
+    Align:    0x0000000000000010
+    Data:     
+}
+segment {
     Type:     PT_LOAD
     Flags:    0x00000005
     VirtAddr: 0x0000000000000000
@@ -44,7 +53,6 @@ segment {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
             Data:  
-                
         }
         section ".dynstr" {
             Type:      SHT_STRTAB
@@ -147,6 +155,22 @@ segment {
             EntSize:   0x0000000000000000
         }
 }
+section ".tbss" {
+    Type:      SHT_NOBITS
+    Flags:     0x0000000000000403
+    Addr:      0x0000000000029910
+    AddrAlign: 0x0000000000000004
+    EntSize:   0x0000000000000000
+}
+segment {
+    Type:     PT_EXT 7
+    Flags:    0x00000004
+    VirtAddr: 0x0000000000029910
+    PhysAddr: 0x0000000000029910
+    MemSize:  0x0000000000000004
+    Align:    0x0000000000000004
+    Data:     
+}
 segment {
     Type:     PT_LOAD
     Flags:    0x00000006
@@ -215,6 +239,13 @@ segment {
             AddrAlign: 0x0000000000000008
             EntSize:   0x0000000000000000
         }
+}
+section ".bss" {
+    Type:      SHT_NOBITS
+    Flags:     0x0000000000000003
+    Addr:      0x000000000002a008
+    AddrAlign: 0x0000000000000004
+    EntSize:   0x0000000000000000
 }
 section ".comment" {
     Type:      SHT_PROGBITS

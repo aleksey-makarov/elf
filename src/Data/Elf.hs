@@ -176,13 +176,20 @@ addRBuilder t ts =
             (Just c, _)  ->
                 let
                     ci = rBuilderInterval c
-                in if ci `contains` ti then do
+                in if ci `contains` ti then
 
-                    -- add this:     .........[t____].................................
-                    -- or this:      .....[t___________]..............................
-                    -- to this list: .....[c___________]......[___]......[________]...
-                    c'' <- $addContext' $ addOneRBuilder t c
-                    return $ toList $ LZip l (Just c'') r
+                    if I.empty ti && offset ti == offset ci
+                        then
+
+                            return $ toList $ LZip (t : l) c' r
+
+                        else do
+
+                            -- add this:     .........[t____].................................
+                            -- or this:      .....[t___________]..............................
+                            -- to this list: .....[c___________]......[___]......[________]...
+                            c'' <- $addContext' $ addOneRBuilder t c
+                            return $ toList $ LZip l (Just c'') r
 
                 else if ti `contains` ci then
                     case c2' of
