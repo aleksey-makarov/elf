@@ -163,13 +163,10 @@ printRBuilderFile path = do
             rbs <- parseRBuilder bs hdr ss ps
             let
                 stringSectionData = getSectionData bs <$> findStringSection rbs
-            case stringSectionData of
-                Nothing -> assertFailure $ "no string table"
-                Just st ->
-                    let
-                        getString' n = getString st $ fromIntegral n
-                    in
-                        return $ printRBuilder getString' rbs
+                getString' n = case stringSectionData of
+                    Nothing -> error "no string table"
+                    Just st -> getString st $ fromIntegral n
+            return $ printRBuilder getString' rbs
 
 printHeadersFile :: FilePath -> IO (Doc ())
 printHeadersFile path = do
@@ -191,11 +188,10 @@ printElfFile path = do
 main :: IO ()
 main = do
 
-    -- binDir <- getBinDir
     elfs <- traverseDir "testdata" isElf
 
     defaultMain $ testGroup "elf" [ testGroup "headers round trip" (mkTest <$> elfs)
-                                  , testGroup "headers golden" (mkGoldenTest "header" printHeadersFile <$> elfs)
-                                  , testGroup "layout golden" (mkGoldenTest "layout" printRBuilderFile <$> elfs)
-                                  , testGroup "elf golden" (mkGoldenTest "elf" printElfFile <$> elfs)
+                                  , testGroup "headers golden"     (mkGoldenTest "header" printHeadersFile  <$> elfs)
+                                  , testGroup "layout golden"      (mkGoldenTest "layout" printRBuilderFile <$> elfs)
+                                  , testGroup "elf golden"         (mkGoldenTest "elf"    printElfFile      <$> elfs)
                                   ]

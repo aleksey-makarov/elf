@@ -162,7 +162,6 @@ printRBuilder getStr rbs = vsep ldoc
 
         equalize l = fmap (mapL (padL l))
 
-
         printLine (pos, g, doc) = hsep $ pretty g : printWord32 (fromIntegral pos) : doc
         ls = concat $ map printRBuilder' rbs
         len = longest ls
