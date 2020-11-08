@@ -413,7 +413,13 @@ parseElf bs = do
 
 data WBuilderHeader (a :: ElfClass) =
     WBuilderHeader
-        {
+        { wbhData       :: ElfData
+        , wbhOSABI      :: ElfOSABI
+        , wbhABIVersion :: Word8
+        , wbhType       :: ElfType
+        , wbhMachine    :: ElfMachine
+        , wbhEntry      :: WXX a
+        , wbhFlags      :: Word32
         }
 
 data WBuilderSection (a :: ElfClass) =
@@ -443,8 +449,17 @@ wbStateInit = WBuilderState
 wbState2ByteString :: (SingI a, MonadThrow m) => WBuilderState a -> m BSL.ByteString
 wbState2ByteString = undefined
 
+elf2WBuilder' :: (SingI a, MonadThrow m) => Elf a -> WBuilderState a -> m (WBuilderState a)
+elf2WBuilder' ElfHeader{..}             WBuilderState{..} = undefined
+elf2WBuilder' ElfSectionTable           WBuilderState{..} = undefined
+elf2WBuilder' ElfSegmentTable           WBuilderState{..} = undefined
+elf2WBuilder' ElfSection{..}            WBuilderState{..} = undefined
+elf2WBuilder' ElfStringSection          WBuilderState{..} = undefined
+elf2WBuilder' ElfSymbolTableSection{..} WBuilderState{..} = undefined
+elf2WBuilder' ElfSegment{..}            WBuilderState{..} = undefined
+
 elf2WBuilder :: (SingI a, MonadThrow m, MonadState (WBuilderState a) m) => Elf a -> m ()
-elf2WBuilder = undefined
+elf2WBuilder elf = get >>= elf2WBuilder' elf >>= put
 
 serializeElf :: (SingI a, MonadThrow m) => [Elf a] -> m BSL.ByteString
 serializeElf elfs = execStateT (mapM elf2WBuilder elfs) wbStateInit >>= wbState2ByteString
