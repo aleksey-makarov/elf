@@ -137,16 +137,16 @@ sectionParseSymbolTable d bs s = (s, ) <$> if sectionIsSymbolTable s then parseL
 findHeader :: SingI a => [RBuilder a] -> Maybe (HeaderXX a)
 findHeader rbs = getFirst $ foldMap f rbs
     where
-        f RBuilderSegment{..} = First $ findHeader erbpData
-        f RBuilderHeader{ erbhHeader = h@HeaderXX{..}, ..} = First $ Just h
+        f RBuilderSegment{..} = First $ findHeader rbpData
+        f RBuilderHeader{ rbhHeader = h@HeaderXX{..}, ..} = First $ Just h
         f _ = First Nothing
 
 findSection :: SingI a => Word16 -> [RBuilder a] -> Maybe (SectionXX a)
 findSection n rbs = findSection' rbs
     where
         findSection' rbs' = getFirst $ foldMap f rbs'
-        f RBuilderSegment{..} = First $ findSection' erbpData
-        f RBuilderSection{..} = if n == erbsN then First $ Just erbsHeader else First Nothing
+        f RBuilderSegment{..} = First $ findSection' rbpData
+        f RBuilderSection{..} = if n == rbsN then First $ Just rbsHeader else First Nothing
         f _ = First Nothing
 
 findStringSection :: SingI a => [RBuilder a] -> Maybe (SectionXX a)

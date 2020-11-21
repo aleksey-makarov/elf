@@ -91,31 +91,35 @@ data RBuilderSectionParsedData (c :: ElfClass)
 
 data RBuilder (c :: ElfClass)
     = RBuilderHeader
-        { erbhHeader :: HeaderXX c
+        { rbhHeader :: HeaderXX c
         }
     | RBuilderSectionTable
-        { erbstHeader :: HeaderXX c
+        { rbstHeader :: HeaderXX c
         }
     | RBuilderSegmentTable
-        { erbptHeader :: HeaderXX c
+        { rbptHeader :: HeaderXX c
         }
     | RBuilderSection
-        { erbsHeader :: SectionXX c
-        , erbsN      :: Word16
-        , erbsData   :: RBuilderSectionParsedData c
+        { rbsHeader :: SectionXX c
+        , rbsN      :: Word16
+        , rbsData   :: RBuilderSectionParsedData c
         }
     | RBuilderSegment
-        { erbpHeader :: SegmentXX c
-        , erbpN      :: Word16
-        , erbpData   :: [RBuilder c]
+        { rbpHeader :: SegmentXX c
+        , rbpN      :: Word16
+        , rbpData   :: [RBuilder c]
+        }
+    | RBuilderRawData
+        { rbrdInterval :: Interval Word64
         }
 
 rBuilderInterval :: SingI a => RBuilder a -> Interval Word64
-rBuilderInterval RBuilderHeader{..}       = headerInterval erbhHeader
-rBuilderInterval RBuilderSectionTable{..} = sectionTableInterval erbstHeader
-rBuilderInterval RBuilderSegmentTable{..} = segmentTableInterval erbptHeader
-rBuilderInterval RBuilderSection{..}      = sectionInterval erbsHeader
-rBuilderInterval RBuilderSegment{..}      = segmentInterval erbpHeader
+rBuilderInterval RBuilderHeader{..}       = headerInterval rbhHeader
+rBuilderInterval RBuilderSectionTable{..} = sectionTableInterval rbstHeader
+rBuilderInterval RBuilderSegmentTable{..} = segmentTableInterval rbptHeader
+rBuilderInterval RBuilderSection{..}      = sectionInterval rbsHeader
+rBuilderInterval RBuilderSegment{..}      = segmentInterval rbpHeader
+rBuilderInterval RBuilderRawData{..}      = rbrdInterval
 
 data LZip a = LZip [a] (Maybe a) [a]
 
@@ -135,8 +139,9 @@ showRBuilber' :: RBuilder a -> String
 showRBuilber' RBuilderHeader{..}        = "header"
 showRBuilber' RBuilderSectionTable{..}  = "section table"
 showRBuilber' RBuilderSegmentTable{..}  = "segment table"
-showRBuilber' RBuilderSection{..}       = "section " ++ show erbsN
-showRBuilber' RBuilderSegment{..}       = "segment " ++ show erbpN
+showRBuilber' RBuilderSection{..}       = "section " ++ show rbsN
+showRBuilber' RBuilderSegment{..}       = "segment " ++ show rbpN
+showRBuilber' RBuilderRawData{..}       = "raw data" -- should not be called
 
 showRBuilber :: SingI a => RBuilder a -> String
 showRBuilber v = showRBuilber' v ++ " (" ++ (show $ rBuilderInterval v) ++ ")"
@@ -153,17 +158,17 @@ addRBuildersToList newts l = foldM (flip addRBuilder) l newts
 addRBuilders :: (SingI a, MonadCatch m) => [RBuilder a] -> RBuilder a -> m (RBuilder a)
 addRBuilders [] x = return x
 addRBuilders ts RBuilderSegment{..} = do
-    d <- addRBuildersToList ts erbpData
-    return RBuilderSegment{ erbpData = d, .. }
+    d <- addRBuildersToList ts rbpData
+    return RBuilderSegment{ rbpData = d, .. }
 addRBuilders (x:_) y = $elfError $ intersectMessage x y
 
 addOneRBuilder :: (SingI a, MonadCatch m) => RBuilder a -> RBuilder a -> m (RBuilder a)
 addOneRBuilder t@RBuilderSegment{..} c | rBuilderInterval t == rBuilderInterval c = do
-    d <- addRBuilder c erbpData
-    return RBuilderSegment{ erbpData = d, .. }
+    d <- addRBuilder c rbpData
+    return RBuilderSegment{ rbpData = d, .. }
 addOneRBuilder t RBuilderSegment{..} = do
-    d <- addRBuilder t erbpData
-    return RBuilderSegment{ erbpData = d, .. }
+    d <- addRBuilder t rbpData
+    return RBuilderSegment{ rbpData = d, .. }
 addOneRBuilder t c = $elfError $ intersectMessage t c
 
 addRBuilder :: (SingI a, MonadCatch m) => RBuilder a -> [RBuilder a] -> m [RBuilder a]
@@ -294,6 +299,9 @@ data Elf (c :: ElfClass)
         , epAlign    :: WXX c
         , epData     :: [Elf c]
         }
+    | ElfRawData
+        { erData :: BSL.ByteString
+        }
 
 newtype ElfList c = ElfList [Elf c]
 
@@ -312,6 +320,32 @@ getSectionData bs SectionXX{..} = cut bs o s
 tail' :: [a] -> [a]
 tail' [] = []
 tail' (_ : xs) = xs
+
+fixRbuilder :: SingI a => RBuilder a -> RBuilder a
+fixRbuilder p                     | I.empty $ rBuilderInterval p = p
+fixRbuilder p@RBuilderSegment{..} | otherwise                    = RBuilderSegment{ rbpData = addRaw b newRbpData newE, ..}
+    where
+        (I b s) = rBuilderInterval p
+        -- e, e' and e'' stand for the first occupied symbol after the place being fixed
+        e = b + s
+        fixedRbpData = fmap fixRbuilder rbpData
+        (newRbpData, newE) = L.foldr f ([], e) fixedRbpData
+
+        f rb (rbs, e') =
+            let
+                i@(I o' s') = rBuilderInterval rb
+                (e'', b'') = if I.empty i then (o', o') else (o', o' + s')
+                rbs' = addRaw b'' rbs e'
+            in
+                (rb : rbs', e'')
+
+        addRaw :: SingI a => Word64 -> [RBuilder a] -> Word64 -> [RBuilder a]
+        addRaw b' rbs e' = case compare b' e' of
+            LT -> RBuilderRawData (I b' (b' - e')) : rbs
+            EQ -> rbs
+            GT -> error "internal error" -- FIXME: add context
+
+fixRbuilder x = x
 
 parseRBuilder :: (MonadCatch m, SingI a) => BSL.ByteString -> HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> m [RBuilder a]
 parseRBuilder bs hdr@HeaderXX{..} ss ps = do
@@ -335,11 +369,11 @@ parseRBuilder bs hdr@HeaderXX{..} ss ps = do
         maybeSectionTable = if hShNum == 0 then Nothing else  Just $ RBuilderSectionTable hdr
         maybeSegmentTable = if hPhNum == 0 then Nothing else  Just $ RBuilderSegmentTable hdr
 
-    addRBuilder header
+    fmap fixRbuilder <$> (addRBuilder header
         =<< maybe return addRBuilder maybeSectionTable
         =<< maybe return addRBuilder maybeSegmentTable
         =<< addRBuildersToList segments
-        =<< addRBuildersToList sections []
+        =<< addRBuildersToList sections [])
 
 parseElf' :: forall a m . (MonadCatch m, SingI a) =>
                                        HeaderXX a ->
@@ -369,7 +403,7 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                 }
         rBuilderToElf RBuilderSectionTable{..} = ElfSectionTable
         rBuilderToElf RBuilderSegmentTable{..} = ElfSegmentTable
-        rBuilderToElf RBuilderSection{ erbsHeader = s@SectionXX{..}, ..} =
+        rBuilderToElf RBuilderSection{ rbsHeader = s@SectionXX{..}, ..} =
             if sectionIsSymbolTable s
                 then
                     ElfSymbolTableSection
@@ -378,7 +412,7 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                         , estFlags     = sFlags
                         , estTable     = []
                         }
-                else if erbsN == hShStrNdx
+                else if rbsN == hShStrNdx
                     then
                         ElfStringSection
                     else
@@ -391,7 +425,7 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                             , esEntSize   = sEntSize
                             , esData      = getSectionData bs s
                             }
-        rBuilderToElf RBuilderSegment{ erbpHeader = SegmentXX{..}, ..} =
+        rBuilderToElf RBuilderSegment{ rbpHeader = SegmentXX{..}, ..} =
             ElfSegment
                 { epType     = pType
                 , epFlags    = pFlags
@@ -399,8 +433,9 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                 , epPhysAddr = pPhysAddr
                 , epMemSize  = pMemSize
                 , epAlign    = pAlign
-                , epData     = L.map rBuilderToElf erbpData
+                , epData     = L.map rBuilderToElf rbpData
                 }
+        rBuilderToElf RBuilderRawData{ rbrdInterval = I o s } = ElfRawData $ cut bs (fromIntegral o) (fromIntegral s)
 
     return $ sing :&: ElfList (L.map rBuilderToElf rbs)
 

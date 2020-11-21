@@ -181,21 +181,21 @@ printRBuilder getStr rbs = vsep ldoc
                     [ (o,         "┎", ["H"])
                     , (o + s - 1, "┖", [])
                     ]
-                f RBuilderSectionTable{ erbstHeader = HeaderXX{..}, ..} =
+                f RBuilderSectionTable{ rbstHeader = HeaderXX{..}, ..} =
                     if hShNum == 0
                         then []
                         else
                             [ (o,         "┎", ["ST", parens $ viaShow hShNum])
                             , (o + s - 1, "┖", [])
                             ]
-                f RBuilderSegmentTable{ erbptHeader = HeaderXX{..}, ..} =
+                f RBuilderSegmentTable{ rbptHeader = HeaderXX{..}, ..} =
                     if hPhNum == 0
                         then []
                         else
                             [ (o,         "┎", ["PT", parens $ viaShow hPhNum])
                             , (o + s - 1, "┖", [])
                             ]
-                f RBuilderSection{ erbsHeader = SectionXX{..}, ..} =
+                f RBuilderSection{ rbsHeader = SectionXX{..}, ..} =
                     let
                         doc = [ "S"
                               , dquotes $ pretty $ getStr sName
@@ -210,7 +210,7 @@ printRBuilder getStr rbs = vsep ldoc
                                 [(o,         "╓", doc)
                                 ,(o + s - 1, "╙", [])
                                 ]
-                f RBuilderSegment{ erbpHeader = SegmentXX{..}, ..} =
+                f RBuilderSegment{ rbpHeader = SegmentXX{..}, ..} =
                     let
                         doc = [ "P"
                               , viaShow pType
@@ -222,7 +222,7 @@ printRBuilder getStr rbs = vsep ldoc
                                 [(o, "-", doc)]
                             else
                                 let
-                                    xs = concat $ fmap printRBuilder' erbpData
+                                    xs = concat $ fmap printRBuilder' rbpData
                                     l = longest xs
                                     appendSectionBar = fmap (mapL ('│' : ))
                                     xsf = appendSectionBar $ equalize l xs
@@ -232,6 +232,7 @@ printRBuilder getStr rbs = vsep ldoc
                                     [(o,         b, doc)] ++
                                     xsf                         ++
                                     [(o + s - 1, e, [])]
+                f RBuilderRawData{..} = []
 
 --------------------------------------------------------------------
 --
@@ -332,6 +333,10 @@ printElf'' ElfSegment{..} =
 printElf'' ElfSectionTable = "section table"
 printElf'' ElfSegmentTable = "segment table"
 printElf'' ElfStringSection = "string section"
+printElf'' ElfRawData{..} =
+    formatPairsBlock "raw data"
+        [ ("Data",       printData erData)
+        ]
 
 printElf' :: SingI a => [Elf a] -> Doc ()
 printElf' l = align . vsep $ fmap printElf'' l
