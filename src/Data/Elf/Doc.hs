@@ -202,8 +202,9 @@ printRBuilder getStr rbs = vsep ldoc
                             then
                                 [(o, "-", doc)]
                             else
-                                [(o,        "╓", doc),
-                                (o + s - 1, "╙", [])]
+                                [(o,         "╓", doc)
+                                ,(o + s - 1, "╙", [])
+                                ]
                 f RBuilderSegment{ erbpHeader = SegmentXX{..}, ..} =
                     let
                         doc = [ "P"
