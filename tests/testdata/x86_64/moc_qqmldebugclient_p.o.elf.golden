@@ -14,6 +14,7 @@ section ".group" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000004
+    Data:      01 00 00 00 09 00 00 00 0a 00 00 00             # ............
 }
 section ".group" {
     Type:      SHT_EXT 17
@@ -21,6 +22,7 @@ section ".group" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000004
+    Data:      01 00 00 00 0b 00 00 00                         # ........
 }
 section ".group" {
     Type:      SHT_EXT 17
@@ -28,6 +30,7 @@ section ".group" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000004
+    Data:      01 00 00 00 0c 00 00 00 0d 00 00 00             # ............
 }
 section ".group" {
     Type:      SHT_EXT 17
@@ -35,6 +38,7 @@ section ".group" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000004
+    Data:      01 00 00 00 0e 00 00 00 0f 00 00 00             # ............
 }
 section ".text" {
     Type:      SHT_PROGBITS
@@ -42,6 +46,10 @@ section ".text" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000010
     EntSize:   0x0000000000000000
+    Data:      48 8b 7f 08 48 83 7f 28 00 74 0d ff 25 00 00 00 # H...H..(.t..%...
+               00 0f 1f 80 00 00 00 00 48 8d 05 00 00 00 00 c3 # ........H.......
+               ...
+               e7 89 44 24 0c e8 99 fe ff ff 8b 44 24 0c eb c5 # ..D$.......D$...
 }
 section ".data" {
     Type:      SHT_PROGBITS
@@ -49,6 +57,7 @@ section ".data" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      
 }
 section ".bss" {
     Type:      SHT_NOBITS
@@ -56,6 +65,7 @@ section ".bss" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      
 }
 section ".qtversion" {
     Type:      SHT_PROGBITS
@@ -63,6 +73,7 @@ section ".qtversion" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
+    Data:      00 00 00 00 00 00 00 00 02 0e 05 00 00 00 00 00 # ................
 }
 section ".rodata._ZTS15QQmlDebugClient" {
     Type:      SHT_PROGBITS
@@ -70,6 +81,8 @@ section ".rodata._ZTS15QQmlDebugClient" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000010
     EntSize:   0x0000000000000000
+    Data:      31 35 51 51 6d 6c 44 65 62 75 67 43 6c 69 65 6e # 15QQmlDebugClien
+               74 00                                           # t.
 }
 section ".data.rel.ro._ZTI15QQmlDebugClient" {
     Type:      SHT_PROGBITS
@@ -77,6 +90,8 @@ section ".data.rel.ro._ZTI15QQmlDebugClient" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
+    Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               00 00 00 00 00 00 00 00                         # ........
 }
 section ".data.rel.ro._ZTV15QQmlDebugClient" {
     Type:      SHT_PROGBITS
@@ -84,6 +99,10 @@ section ".data.rel.ro._ZTV15QQmlDebugClient" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
+    Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               ...
+               00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
 }
 section ".data.rel.ro" {
     Type:      SHT_PROGBITS
@@ -91,6 +110,10 @@ section ".data.rel.ro" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000020
     EntSize:   0x0000000000000000
+    Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               ...
+               00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
 }
 section ".rodata" {
     Type:      SHT_PROGBITS
@@ -98,6 +121,10 @@ section ".rodata" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000020
     EntSize:   0x0000000000000000
+    Data:      08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               01 00 00 00 0e 00 00 00 00 00 00 00 00 00 00 00 # ................
+               ...
+               61 74 65 00 73 74 61 74 65 00 00 00 00 00 00 00 # ate.state.......
 }
 section ".comment" {
     Type:      SHT_PROGBITS
@@ -105,6 +132,10 @@ section ".comment" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000001
+    Data:      00 47 43 43 3a 20 28 41 72 63 68 20 4c 69 6e 75 # .GCC: (Arch Linu
+               78 20 39 2e 33 2e 30 2d 31 29 20 39 2e 33 2e 30 # x 9.3.0-1) 9.3.0
+               ...
+               20 39 2e 33 2e 30 2d 31 29 20 39 2e 33 2e 30 00 #  9.3.0-1) 9.3.0.
 }
 section ".note.GNU-stack" {
     Type:      SHT_PROGBITS
@@ -112,6 +143,7 @@ section ".note.GNU-stack" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      
 }
 section ".eh_frame" {
     Type:      SHT_PROGBITS
@@ -119,6 +151,10 @@ section ".eh_frame" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
+    Data:      14 00 00 00 00 00 00 00 01 7a 52 00 01 78 10 01 # .........zR..x..
+               1b 0c 07 08 90 01 00 00 10 00 00 00 1c 00 00 00 # ................
+               ...
+               0e 18 41 0e 10 42 0e 08 43 0b 00 00 00 00 00 00 # ..A..B..C.......
 }
 symbol table section ".symtab" {
     Type:  SHT_SYMTAB
@@ -131,6 +167,10 @@ section ".strtab" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      00 5f 5a 4e 31 35 51 51 6d 6c 44 65 62 75 67 43 # ._ZN15QQmlDebugC
+               6c 69 65 6e 74 31 38 71 74 5f 73 74 61 74 69 63 # lient18qt_static
+               ...
+               61 74 69 63 4d 65 74 61 4f 62 6a 65 63 74 45 00 # aticMetaObjectE.
 }
 section ".rela.text" {
     Type:      SHT_RELA
@@ -138,6 +178,10 @@ section ".rela.text" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
+    Data:      0d 00 00 00 00 00 00 00 29 00 00 00 17 00 00 00 # ........).......
+               fc ff ff ff ff ff ff ff 1b 00 00 00 00 00 00 00 # ................
+               ...
+               29 00 00 00 21 00 00 00 fc ff ff ff ff ff ff ff # )...!...........
 }
 section ".rela.qtversion" {
     Type:      SHT_RELA
@@ -145,6 +189,8 @@ section ".rela.qtversion" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
+    Data:      00 00 00 00 00 00 00 00 1b 00 00 00 15 00 00 00 # ................
+               00 00 00 00 00 00 00 00                         # ........
 }
 section ".rela.data.rel.ro._ZTI15QQmlDebugClient" {
     Type:      SHT_RELA
@@ -152,6 +198,10 @@ section ".rela.data.rel.ro._ZTI15QQmlDebugClient" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
+    Data:      00 00 00 00 00 00 00 00 01 00 00 00 24 00 00 00 # ............$...
+               10 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 # ................
+               ...
+               01 00 00 00 25 00 00 00 00 00 00 00 00 00 00 00 # ....%...........
 }
 section ".rela.data.rel.ro._ZTV15QQmlDebugClient" {
     Type:      SHT_RELA
@@ -159,6 +209,10 @@ section ".rela.data.rel.ro._ZTV15QQmlDebugClient" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
+    Data:      08 00 00 00 00 00 00 00 01 00 00 00 23 00 00 00 # ............#...
+               00 00 00 00 00 00 00 00 10 00 00 00 00 00 00 00 # ................
+               ...
+               01 00 00 00 30 00 00 00 00 00 00 00 00 00 00 00 # ....0...........
 }
 section ".rela.data.rel.ro" {
     Type:      SHT_RELA
@@ -166,6 +220,10 @@ section ".rela.data.rel.ro" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
+    Data:      00 00 00 00 00 00 00 00 01 00 00 00 31 00 00 00 # ............1...
+               00 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 # ................
+               ...
+               01 00 00 00 1c 00 00 00 00 00 00 00 00 00 00 00 # ................
 }
 section ".rela.eh_frame" {
     Type:      SHT_RELA
@@ -173,6 +231,10 @@ section ".rela.eh_frame" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
+    Data:      20 00 00 00 00 00 00 00 02 00 00 00 01 00 00 00 #  ...............
+               00 00 00 00 00 00 00 00 34 00 00 00 00 00 00 00 # ........4.......
+               ...
+               02 00 00 00 01 00 00 00 90 01 00 00 00 00 00 00 # ................
 }
 string section
 section table

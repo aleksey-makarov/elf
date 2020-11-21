@@ -14,6 +14,7 @@ section ".text" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      
 }
 section ".data" {
     Type:      SHT_PROGBITS
@@ -21,6 +22,7 @@ section ".data" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      
 }
 section ".bss" {
     Type:      SHT_NOBITS
@@ -28,6 +30,7 @@ section ".bss" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      
 }
 section ".init" {
     Type:      SHT_PROGBITS
@@ -35,6 +38,7 @@ section ".init" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
+    Data:      fd 7b c1 a8 c0 03 5f d6                         # .{...._.
 }
 section ".fini" {
     Type:      SHT_PROGBITS
@@ -42,6 +46,7 @@ section ".fini" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
+    Data:      fd 7b c1 a8 c0 03 5f d6                         # .{...._.
 }
 section ".note.GNU-stack" {
     Type:      SHT_PROGBITS
@@ -49,6 +54,7 @@ section ".note.GNU-stack" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      
 }
 symbol table section ".symtab" {
     Type:  SHT_SYMTAB
@@ -61,6 +67,7 @@ section ".strtab" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      00 24 78 00                                     # .$x.
 }
 string section
 section table

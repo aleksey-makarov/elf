@@ -14,6 +14,10 @@ section ".note.gnu.build-id" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
+    Data:      04 00 00 00 14 00 00 00 03 00 00 00 47 4e 55 00 # ............GNU.
+               d8 39 b1 9b cf bd 00 a6 e9 19 9c 02 a1 d8 47 30 # .9............G0
+               ...
+               cf bd 00 a6 e9 19 9c 02 a1 d8 47 30 ed f1 40 c4 # ..........G0..@.
 }
 section ".note.Linux" {
     Type:      SHT_NOTE
@@ -21,6 +25,8 @@ section ".note.Linux" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
+    Data:      06 00 00 00 01 00 00 00 00 01 00 00 4c 69 6e 75 # ............Linu
+               78 00 00 00 00 00 00 00                         # x.......
 }
 section ".text" {
     Type:      SHT_PROGBITS
@@ -28,6 +34,10 @@ section ".text" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
+    Data:      1f 20 03 d5 1f 20 03 d5 00 fc 46 d3 1f 20 03 d5 # . ... ....F.. ..
+               43 08 40 ad 00 04 00 d1 27 18 40 ad 1f 00 00 f1 # C.@.....'.@.....
+               ...
+               21 00 01 ad 21 00 01 91 ac fb ff 54 c0 03 5f d6 # !...!......T.._.
 }
 section "__ksymtab" {
     Type:      SHT_PROGBITS
@@ -35,6 +45,7 @@ section "__ksymtab" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
+    Data:      00 00 00 00 00 00 00 00 00 00 00 00             # ............
 }
 section ".rodata.str1.8" {
     Type:      SHT_PROGBITS
@@ -42,6 +53,7 @@ section ".rodata.str1.8" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000001
+    Data:      5f 5f 69 6e 6e 65 72 5f 6e 65 6f 6e 5f 5f 00    # __inner_neon__.
 }
 section ".rodata" {
     Type:      SHT_PROGBITS
@@ -49,6 +61,10 @@ section ".rodata" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
+    Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               ...
+               00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
 }
 section ".modinfo" {
     Type:      SHT_PROGBITS
@@ -56,6 +72,10 @@ section ".modinfo" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      6c 69 63 65 6e 73 65 3d 47 50 4c 00 64 65 73 63 # license=GPL.desc
+               72 69 70 74 69 6f 6e 3d 41 52 4d 76 38 20 58 4f # ription=ARMv8 XO
+               ...
+               5f 75 6e 6c 6f 61 64 20 61 61 72 63 68 36 34 00 # _unload aarch64.
 }
 section "__ksymtab_strings" {
     Type:      SHT_PROGBITS
@@ -63,6 +83,8 @@ section "__ksymtab_strings" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      00 78 6f 72 5f 62 6c 6f 63 6b 5f 69 6e 6e 65 72 # .xor_block_inner
+               5f 6e 65 6f 6e 00                               # _neon.
 }
 section ".eh_frame" {
     Type:      SHT_PROGBITS
@@ -70,6 +92,10 @@ section ".eh_frame" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
+    Data:      10 00 00 00 00 00 00 00 01 7a 52 00 04 78 1e 01 # .........zR..x..
+               1b 0c 1f 00 10 00 00 00 18 00 00 00 00 00 00 00 # ................
+               ...
+               54 00 00 00 00 00 00 00 9c 00 00 00 00 00 00 00 # T...............
 }
 section ".data" {
     Type:      SHT_PROGBITS
@@ -77,6 +103,7 @@ section ".data" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      
 }
 section "__patchable_function_entries" {
     Type:      SHT_PROGBITS
@@ -84,6 +111,8 @@ section "__patchable_function_entries" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
 }
 section ".gnu.linkonce.this_module" {
     Type:      SHT_PROGBITS
@@ -91,6 +120,10 @@ section ".gnu.linkonce.this_module" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000040
     EntSize:   0x0000000000000000
+    Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               00 00 00 00 00 00 00 00 78 6f 72 5f 6e 65 6f 6e # ........xor_neon
+               ...
+               00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
 }
 section ".plt" {
     Type:      SHT_NOBITS
@@ -98,6 +131,7 @@ section ".plt" {
     Addr:      0x0000000000000340
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      00                                              # .
 }
 section ".init.plt" {
     Type:      SHT_NOBITS
@@ -105,6 +139,7 @@ section ".init.plt" {
     Addr:      0x0000000000000341
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      00                                              # .
 }
 section ".text.ftrace_trampoline" {
     Type:      SHT_NOBITS
@@ -112,6 +147,7 @@ section ".text.ftrace_trampoline" {
     Addr:      0x0000000000000342
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      00                                              # .
 }
 section ".bss" {
     Type:      SHT_NOBITS
@@ -119,6 +155,7 @@ section ".bss" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      
 }
 section ".comment" {
     Type:      SHT_PROGBITS
@@ -126,6 +163,10 @@ section ".comment" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000001
+    Data:      00 47 43 43 3a 20 28 63 72 6f 73 73 74 6f 6f 6c # .GCC: (crosstool
+               2d 4e 47 20 31 2e 32 33 2e 30 2e 34 31 38 2d 64 # -NG 1.23.0.418-d
+               ...
+               34 31 38 2d 64 35 39 30 29 20 39 2e 32 2e 30 00 # 418-d590) 9.2.0.
 }
 section ".note.GNU-stack" {
     Type:      SHT_PROGBITS
@@ -133,6 +174,7 @@ section ".note.GNU-stack" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      
 }
 symbol table section ".symtab" {
     Type:  SHT_SYMTAB
@@ -145,6 +187,10 @@ section ".strtab" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
+    Data:      00 78 6f 72 2d 6e 65 6f 6e 2e 6d 6f 64 2e 63 00 # .xor-neon.mod.c.
+               24 64 00 5f 5f 55 4e 49 51 55 45 5f 49 44 5f 64 # $d.__UNIQUE_ID_d
+               ...
+               6f 72 5f 61 72 6d 36 34 5f 6e 65 6f 6e 5f 34 00 # or_arm64_neon_4.
 }
 section ".rela__ksymtab" {
     Type:      SHT_RELA
@@ -152,6 +198,10 @@ section ".rela__ksymtab" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
+    Data:      00 00 00 00 00 00 00 00 05 01 00 00 2b 00 00 00 # ............+...
+               00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 # ................
+               ...
+               05 01 00 00 08 00 00 00 00 00 00 00 00 00 00 00 # ................
 }
 section ".rela.rodata" {
     Type:      SHT_RELA
@@ -159,6 +209,10 @@ section ".rela.rodata" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
+    Data:      08 00 00 00 00 00 00 00 01 01 00 00 05 00 00 00 # ................
+               00 00 00 00 00 00 00 00 18 00 00 00 00 00 00 00 # ................
+               ...
+               01 01 00 00 2a 00 00 00 00 00 00 00 00 00 00 00 # ....*...........
 }
 section ".rela.eh_frame" {
     Type:      SHT_RELA
@@ -166,6 +220,10 @@ section ".rela.eh_frame" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
+    Data:      1c 00 00 00 00 00 00 00 05 01 00 00 03 00 00 00 # ................
+               08 00 00 00 00 00 00 00 30 00 00 00 00 00 00 00 # ........0.......
+               ...
+               05 01 00 00 03 00 00 00 50 01 00 00 00 00 00 00 # ........P.......
 }
 section ".rela__patchable_function_entries" {
     Type:      SHT_RELA
@@ -173,6 +231,10 @@ section ".rela__patchable_function_entries" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000018
+    Data:      00 00 00 00 00 00 00 00 01 01 00 00 03 00 00 00 # ................
+               00 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 # ................
+               ...
+               01 01 00 00 03 00 00 00 48 01 00 00 00 00 00 00 # ........H.......
 }
 string section
 section table

@@ -33,7 +33,7 @@ module Data.Elf
     , getSectionData
     , getString
     , rBuilderInterval
-    , serializeElf
+    -- , serializeElf
     ) where
 
 import Data.Elf.Exception
@@ -43,7 +43,7 @@ import Data.Interval as I
 
 import Control.Monad
 import Control.Monad.Catch
-import Control.Monad.State
+-- import Control.Monad.State
 -- import Data.Bifunctor
 import Data.ByteString.Char8 as BSC
 import Data.ByteString.Lazy as BSL
@@ -276,6 +276,7 @@ data Elf (c :: ElfClass)
         , esAddr      :: WXX c
         , esAddrAlign :: WXX c
         , esEntSize   :: WXX c
+        , esData      :: BSL.ByteString
         }
     | ElfStringSection
     | ElfSymbolTableSection
@@ -388,6 +389,7 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                             , esAddr      = sAddr
                             , esAddrAlign = sAddrAlign
                             , esEntSize   = sEntSize
+                            , esData      = getSectionData bs s
                             }
         rBuilderToElf RBuilderSegment{ erbpHeader = SegmentXX{..}, ..} =
             ElfSegment
@@ -410,6 +412,8 @@ parseElf bs = do
 -------------------------------------------------------------------------------
 --
 -------------------------------------------------------------------------------
+
+{--
 
 data WBuilderHeader (a :: ElfClass) =
     WBuilderHeader
@@ -463,3 +467,5 @@ elf2WBuilder elf = get >>= elf2WBuilder' elf >>= put
 
 serializeElf :: (SingI a, MonadThrow m) => [Elf a] -> m BSL.ByteString
 serializeElf elfs = execStateT (mapM elf2WBuilder elfs) wbStateInit >>= wbState2ByteString
+
+--}

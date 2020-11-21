@@ -14,6 +14,10 @@ section ".text" {
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x00000000
+    Data:      13 01 01 fd 23 2a 51 01 97 0a 00 00 83 aa 0a 00 # ....#*Q.........
+               83 a7 0a 00 23 22 91 02 93 84 05 00 93 05 30 00 # ....#"........0.
+               ...
+               23 a0 e7 00 6f f0 5f e4 97 00 00 00 e7 80 00 00 # #...o._.........
 }
 section ".data" {
     Type:      SHT_PROGBITS
@@ -21,6 +25,7 @@ section ".data" {
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
+    Data:      
 }
 section ".bss" {
     Type:      SHT_NOBITS
@@ -28,6 +33,7 @@ section ".bss" {
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
+    Data:      
 }
 section ".rodata.str1.4" {
     Type:      SHT_PROGBITS
@@ -35,6 +41,10 @@ section ".rodata.str1.4" {
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x00000001
+    Data:      2e 2e 2f 73 79 73 64 65 70 73 2f 70 74 68 72 65 # ../sysdeps/pthre
+               61 64 2f 61 69 6f 5f 63 61 6e 63 65 6c 2e 63 00 # ad/aio_cancel.c.
+               ...
+               65 64 00 00 00 61 69 6f 5f 63 61 6e 63 65 6c 00 # ed...aio_cancel.
 }
 section ".comment" {
     Type:      SHT_PROGBITS
@@ -42,6 +52,8 @@ section ".comment" {
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000001
+    Data:      00 47 43 43 3a 20 28 47 65 6e 74 6f 6f 20 37 2e # .GCC: (Gentoo 7.
+               32 2e 30 20 70 31 2e 31 29 20 37 2e 32 2e 30 00 # 2.0 p1.1) 7.2.0.
 }
 symbol table section ".symtab" {
     Type:  SHT_SYMTAB
@@ -54,6 +66,10 @@ section ".strtab" {
     Addr:      0x00000000
     AddrAlign: 0x00000001
     EntSize:   0x00000000
+    Data:      00 2e 4c 30 20 00 5f 5f 50 52 45 54 54 59 5f 46 # ..L0 .__PRETTY_F
+               55 4e 43 54 49 4f 4e 5f 5f 2e 38 30 35 35 00 2e # UNCTION__.8055..
+               ...
+               69 6c 00 61 69 6f 5f 63 61 6e 63 65 6c 36 34 00 # il.aio_cancel64.
 }
 section ".rela.text" {
     Type:      SHT_RELA
@@ -61,6 +77,10 @@ section ".rela.text" {
     Addr:      0x00000000
     AddrAlign: 0x00000004
     EntSize:   0x0000000c
+    Data:      08 00 00 00 14 97 00 00 00 00 00 00 0c 00 00 00 # ................
+               18 40 00 00 00 00 00 00 0c 00 00 00 33 00 00 00 # .@..........3...
+               ...
+               00 00 00 00 44 02 00 00 11 58 00 00 00 00 00 00 # ....D....X......
 }
 string section
 section table

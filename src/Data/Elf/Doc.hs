@@ -21,7 +21,12 @@ module Data.Elf.Doc
     , printElf
     ) where
 
--- import Data.List as L
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BC8
+import qualified Data.ByteString.Lazy as BSL
+import Data.Char
+import Data.Int
+import Data.List as L
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Text.Prettyprint.Doc as D
@@ -248,6 +253,45 @@ printElfSymbolTableEntry ElfSymbolTableEntry{..} =
 printElfSymbolTable :: SingI a => [ElfSymbolTableEntry a] -> Doc ()
 printElfSymbolTable l = align . vsep $ fmap printElfSymbolTableEntry l
 
+splitBy :: Int64 -> BSL.ByteString -> [BSL.ByteString]
+splitBy n = L.unfoldr f
+    where
+        f s | BSL.null s = Nothing
+        f s | otherwise  = Just $ BSL.splitAt n s
+
+formatChar :: Char -> Doc ()
+formatChar c = pretty $ if isAscii c && not (isControl c) then c else '.'
+
+formatHex :: Word8 -> Doc ()
+formatHex w = pretty $ case showHex w "" of
+    [ d ] -> [ '0', d ]
+    ww -> ww
+
+formatBytestringChar :: BS.ByteString -> Doc ()
+formatBytestringChar = hcat . L.map formatChar . BC8.unpack
+
+formatBytestringHex :: BS.ByteString -> Doc ()
+formatBytestringHex = hsep . L.map formatHex . BS.unpack
+
+formatBytestringLine :: BSL.ByteString -> Doc ()
+formatBytestringLine s = (fill (16 * 2 + 15) $ formatBytestringHex sl)
+                      <+> pretty '#'
+                      <+> formatBytestringChar sl
+    where
+        sl = BSL.toStrict s
+
+printData :: BSL.ByteString -> Doc ()
+printData bs = align $ vsep $
+    case splitBy 16 bs of
+        (c1 : c2 : _ : _) -> [ formatBytestringLine c1
+                             , formatBytestringLine c2
+                             , "..."
+                             , formatBytestringLine cl
+                             ]
+        chunks -> L.map formatBytestringLine chunks
+    where
+        cl = BSL.drop (BSL.length bs - 16) bs
+
 printElf'' :: forall a . SingI a => Elf a -> Doc ()
 printElf'' ElfHeader{..} =
     formatPairsBlock "header"
@@ -267,6 +311,7 @@ printElf'' ElfSection{..} =
         , ("Addr",       printWXX esAddr      )
         , ("AddrAlign",  printWXX esAddrAlign )
         , ("EntSize",    printWXX esEntSize   )
+        , ("Data",       printData esData     )
         ]
 printElf'' ElfSymbolTableSection{..} =
     formatPairsBlock ("symbol table section" <+> (dquotes $ pretty estName))
