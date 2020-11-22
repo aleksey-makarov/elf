@@ -120,6 +120,9 @@ segment {
                        ...
                        01 00 00 00 01 00 01 00 01 00 01 00 00 00 01 00 # ................
         }
+        raw data {
+            Data: 00 00 00 00                                     # ....
+        }
         section ".gnu.version_r" {
             Type:      SHT_EXT 1879048190
             Flags:     0x0000000000000002
@@ -160,6 +163,9 @@ segment {
             Data:      f3 0f 1e fa 48 83 ec 08 48 8b 05 e1 aa 0b 00 48 # ....H...H......H
                        85 c0 74 02 ff d0 48 83 c4 08 c3                # ..t...H....
         }
+        raw data {
+            Data: 00 00 00 00 00                                  # .....
+        }
         section ".text" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
@@ -170,6 +176,9 @@ segment {
                        0f 0b 8b 04 25 28 00 00 00 0f 0b 0f b6 04 25 00 # ....%(........%.
                        ...
                        66 66 2e 0f 1f 84 00 00 00 00 00 f3 0f 1e fa c3 # ff..............
+        }
+        raw data {
+            Data: 00 00 00                                        # ...
         }
         section ".fini" {
             Type:      SHT_PROGBITS
@@ -218,6 +227,9 @@ segment {
                                ...
                                80 71 fe ff a8 4f 01 00 f0 71 fe ff f0 4f 01 00 # .q...O...q...O..
                 }
+        }
+        raw data {
+            Data: 00 00 00 00                                     # ....
         }
         section ".eh_frame" {
             Type:      SHT_PROGBITS

@@ -37,6 +37,9 @@ segment {
                                f3 5e ff fe 6d ee 19 37 2d d5 06 93 5d 18 bd 34 # .^..m..7-...]..4
                 }
         }
+        raw data {
+            Data: 00 00 00 00                                     # ....
+        }
         section ".gnu.hash" {
             Type:      SHT_EXT 1879048182
             Flags:     0x0000000000000002
@@ -47,6 +50,9 @@ segment {
                        40 16 00 d0 44 80 20 00 18 82 e0 19 04 10 a2 20 # @...D. ........ 
                        ...
                        58 8f 79 34 cf bf c4 c2 e5 d3 c5 1d d9 68 1d 71 # X.y4.........h.q
+        }
+        raw data {
+            Data: 00 00 00 00                                     # ....
         }
         symbol table section ".dynsym" {
             Type:  SHT_DYNSYM
@@ -129,6 +135,9 @@ segment {
                        63 89 a7 00 17 03 02 00 03 33 43 7d 63 03 03 00 # c........3C}c...
                        ...
                        e2 64 42 69 a2 69 02 6a 45 61 82 80 01 45 82 80 # .dBi.i.jEa...E..
+        }
+        raw data {
+            Data: 00 00 00 00 00 00                               # ......
         }
         section ".rodata" {
             Type:      SHT_PROGBITS

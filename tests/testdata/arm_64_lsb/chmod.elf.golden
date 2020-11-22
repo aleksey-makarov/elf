@@ -53,6 +53,9 @@ segment {
                                72 63 68 36 34 2e 73 6f 2e 31 00                # rch64.so.1.
                 }
         }
+        raw data {
+            Data: 00                                              # .
+        }
         segment {
             Type:     PT_NOTE
             Flags:    0x00000004
@@ -91,6 +94,9 @@ segment {
             Data:      01 00 00 00 01 00 00 00 01 00 00 00 00 00 00 00 # ................
                        00 00 00 00 00 00 00 00 00 00 00 00             # ............
         }
+        raw data {
+            Data: 00 00 00 00                                     # ....
+        }
         symbol table section ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
@@ -117,6 +123,9 @@ segment {
                        02 00 02 00 02 00 02 00 00 00 02 00 02 00 02 00 # ................
                        ...
                        02 00 02 00 02 00 02 00 02 00 02 00 02 00 02 00 # ................
+        }
+        raw data {
+            Data: 00 00 00 00                                     # ....
         }
         section ".gnu.version_r" {
             Type:      SHT_EXT 1879048190
@@ -159,6 +168,9 @@ segment {
             EntSize:   0x0000000000000000
             Data:      fd 7b bf a9 fd 03 00 91 2f 04 00 94 fd 7b c1 a8 # .{....../....{..
                        c0 03 5f d6                                     # .._.
+        }
+        raw data {
+            Data: 00 00 00 00                                     # ....
         }
         section ".plt" {
             Type:      SHT_PROGBITS
@@ -220,6 +232,9 @@ segment {
                                ...
                                d0 ec ff ff fc 1b 00 00 d8 ec ff ff 10 1c 00 00 # ................
                 }
+        }
+        raw data {
+            Data: 00 00 00 00                                     # ....
         }
         section ".eh_frame" {
             Type:      SHT_PROGBITS

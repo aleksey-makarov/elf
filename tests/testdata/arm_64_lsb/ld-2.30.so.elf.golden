@@ -46,6 +46,9 @@ segment {
                                40 34 d5 b2 39 8d d0 9b a3 a0 63 a0 0e 88 42 8a # @4..9.....c...B.
                 }
         }
+        raw data {
+            Data: 00 00 00 00                                     # ....
+        }
         section ".hash" {
             Type:      SHT_HASH
             Flags:     0x0000000000000002
@@ -67,6 +70,9 @@ segment {
                        20 04 41 00 1d 20 00 34 89 82 20 c4 05 17 80 04 #  .A.. .4.. .....
                        ...
                        6b 80 3c b2 54 a9 a5 42 3d ad 39 0d 4f 2c d4 ab # k.<.T..B=.9.O,..
+        }
+        raw data {
+            Data: 00 00 00 00                                     # ....
         }
         symbol table section ".dynsym" {
             Type:  SHT_DYNSYM
@@ -106,6 +112,9 @@ segment {
                        ...
                        22 02 00 00 08 00 00 00 17 02 00 00 00 00 00 00 # "...............
         }
+        raw data {
+            Data: 00 00 00 00                                     # ....
+        }
         section ".rela.dyn" {
             Type:      SHT_RELA
             Flags:     0x0000000000000002
@@ -138,6 +147,12 @@ segment {
                        20 02 1f d6 1f 20 03 d5 1f 20 03 d5 1f 20 03 d5 #  .... ... ... ..
                        ...
                        70 01 00 d0 11 de 47 f9 10 e2 3e 91 20 02 1f d6 # p.....G...>. ...
+        }
+        raw data {
+            Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                  ...
+                  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
         }
         section ".text" {
             Type:      SHT_PROGBITS
@@ -181,6 +196,9 @@ segment {
                                60 be ff ff 70 2d 00 00 20 bf ff ff 84 2d 00 00 # `...p-.. ....-..
                 }
         }
+        raw data {
+            Data: 00 00 00 00                                     # ....
+        }
         section ".eh_frame" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
@@ -219,6 +237,9 @@ segment {
                                70 bd 01 00 00 00 00 00 10 0a 0f 43 00 00 00 00 # p..........C....
                                ...
                                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                }
+                raw data {
+                    Data: 00 00 00 00                                     # ....
                 }
                 segment {
                     Type:     PT_DYNAMIC

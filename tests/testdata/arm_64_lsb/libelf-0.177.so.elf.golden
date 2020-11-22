@@ -46,6 +46,9 @@ segment {
                                9b a9 21 fd 20 33 ea 52 55 34 fa b3 eb 4a a8 5a # ..!. 3.RU4...J.Z
                 }
         }
+        raw data {
+            Data: 00 00 00 00                                     # ....
+        }
         section ".gnu.hash" {
             Type:      SHT_EXT 1879048182
             Flags:     0x0000000000000002
@@ -73,6 +76,9 @@ segment {
                        ...
                        5f 31 2e 37 00 47 4c 49 42 43 5f 32 2e 31 37 00 # _1.7.GLIBC_2.17.
         }
+        raw data {
+            Data: 00                                              # .
+        }
         section ".gnu.version" {
             Type:      SHT_EXT 1879048191
             Flags:     0x0000000000000002
@@ -83,6 +89,9 @@ segment {
                        00 00 00 00 0b 00 0b 00 0b 00 0b 00 0b 00 00 00 # ................
                        ...
                        02 00 02 00 06 00 0a 00 06 00 02 00 02 00 02 00 # ................
+        }
+        raw data {
+            Data: 00 00 00 00 00 00                               # ......
         }
         section ".gnu.version_d" {
             Type:      SHT_EXT 1879048189
@@ -137,6 +146,9 @@ segment {
             Data:      fd 7b bf a9 fd 03 00 91 1a 00 00 94 fd 7b c1 a8 # .{...........{..
                        c0 03 5f d6                                     # .._.
         }
+        raw data {
+            Data: 00 00 00 00 00 00 00 00 00 00 00 00             # ............
+        }
         section ".plt" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
@@ -166,6 +178,9 @@ segment {
             AddrAlign: 0x0000000000000004
             EntSize:   0x0000000000000000
             Data:      fd 7b bf a9 fd 03 00 91 fd 7b c1 a8 c0 03 5f d6 # .{.......{...._.
+        }
+        raw data {
+            Data: 00 00 00 00                                     # ....
         }
         section ".rodata" {
             Type:      SHT_PROGBITS
@@ -197,6 +212,9 @@ segment {
                                ...
                                a8 e2 ff ff f8 34 00 00 80 e6 ff ff a8 35 00 00 # .....4.......5..
                 }
+        }
+        raw data {
+            Data: 00 00 00 00                                     # ....
         }
         section ".eh_frame" {
             Type:      SHT_PROGBITS

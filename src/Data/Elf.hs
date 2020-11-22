@@ -326,7 +326,7 @@ fixRbuilder p                     | I.empty $ rBuilderInterval p = p
 fixRbuilder p@RBuilderSegment{..} | otherwise                    = RBuilderSegment{ rbpData = addRaw b newRbpData newE, ..}
     where
         (I b s) = rBuilderInterval p
-        -- e, e' and e'' stand for the first occupied symbol after the place being fixed
+        -- e, e' and e'' stand for the first occupied byte after the place being fixed
         e = b + s
         fixedRbpData = fmap fixRbuilder rbpData
         (newRbpData, newE) = L.foldr f ([], e) fixedRbpData
@@ -341,7 +341,7 @@ fixRbuilder p@RBuilderSegment{..} | otherwise                    = RBuilderSegme
 
         addRaw :: SingI a => Word64 -> [RBuilder a] -> Word64 -> [RBuilder a]
         addRaw b' rbs e' = case compare b' e' of
-            LT -> RBuilderRawData (I b' (b' - e')) : rbs
+            LT -> RBuilderRawData (I b' (e' - b')) : rbs
             EQ -> rbs
             GT -> error "internal error" -- FIXME: add context
 

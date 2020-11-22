@@ -53,6 +53,9 @@ segment {
                                2e 33 00                                        # .3.
                 }
         }
+        raw data {
+            Data: 00                                              # .
+        }
         segment {
             Type:     PT_NOTE
             Flags:    0x00000004
@@ -119,6 +122,9 @@ segment {
                        02 00 02 00 02 00 02 00 02 00 02 00 02 00 02 00 # ................
                        ...
                        02 00 02 00 02 00 02 00 02 00 02 00 02 00 02 00 # ................
+        }
+        raw data {
+            Data: 00 00                                           # ..
         }
         section ".gnu.version_r" {
             Type:      SHT_EXT 1879048190

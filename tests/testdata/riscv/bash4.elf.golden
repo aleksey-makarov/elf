@@ -46,6 +46,9 @@ segment {
                                63 76 36 34 2d 6c 70 36 34 64 2e 73 6f 2e 31 00 # cv64-lp64d.so.1.
                 }
         }
+        raw data {
+            Data: 00                                              # .
+        }
         segment {
             Type:     PT_NOTE
             Flags:    0x00000004
@@ -86,6 +89,9 @@ segment {
                        ...
                        70 bb 5b bb 69 5b 28 e0 94 38 34 8c bb e3 92 7c # p.[.i[(..84....|
         }
+        raw data {
+            Data: 00 00 00 00                                     # ....
+        }
         symbol table section ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
@@ -102,6 +108,9 @@ segment {
                        ...
                        72 61 6d 65 00 47 4c 49 42 43 5f 32 2e 32 37 00 # rame.GLIBC_2.27.
         }
+        raw data {
+            Data: 00                                              # .
+        }
         section ".gnu.version" {
             Type:      SHT_EXT 1879048191
             Flags:     0x0000000000000002
@@ -112,6 +121,9 @@ segment {
                        01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 # ................
                        ...
                        00 00 01 00 01 00 01 00 01 00 00 00 02 00 01 00 # ................
+        }
+        raw data {
+            Data: 00 00 00 00                                     # ....
         }
         section ".gnu.version_r" {
             Type:      SHT_EXT 1879048190
@@ -196,6 +208,9 @@ segment {
                     Data:      01 1b 03 3b 14 00 00 00 01 00 00 00 58 b5 f9 ff # ...;........X...
                                2c 00 00 00                                     # ,...
                 }
+        }
+        raw data {
+            Data: 00 00 00 00                                     # ....
         }
         section ".eh_frame" {
             Type:      SHT_PROGBITS
