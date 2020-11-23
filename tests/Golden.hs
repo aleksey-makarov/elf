@@ -117,6 +117,26 @@ mkTest' bs = do
 mkTest :: FilePath -> TestTree
 mkTest p = testCase p $ withBinaryFile p ReadMode (BSL.hGetContents >=> mkTest')
 
+compareElfs :: Elf' -> Elf' -> IO ()
+compareElfs _ _ = return ()
+
+mkTestElf :: FilePath -> TestTree
+mkTestElf p = testCase p do
+    bs <- fromStrict <$> BS.readFile p
+    -- fixme: use monad syntax instead of the ladder
+    case parseElf bs of
+        Left err1 -> assertFailure $ show err1
+        Right elf -> case serializeElf elf of
+            Left err2 -> assertFailure $ show err2
+            Right bs' -> do
+                let bs'strict = toStrict bs'
+                BS.writeFile outFileName bs'strict
+                case parseElf bs' of
+                    Left err3 -> assertFailure $ show err3
+                    Right elf' -> compareElfs elf elf'
+    where
+        outFileName = "tests" </> p <.> "copy"
+
 mkGoldenTest :: String -> (FilePath -> IO (Doc ())) -> FilePath -> TestTree
 mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
     where
@@ -194,4 +214,5 @@ main = do
                                   , testGroup "headers golden"     (mkGoldenTest "header" printHeadersFile  <$> elfs)
                                   , testGroup "layout golden"      (mkGoldenTest "layout" printRBuilderFile <$> elfs)
                                   , testGroup "elf golden"         (mkGoldenTest "elf"    printElfFile      <$> elfs)
+                                  , testGroup "elf round trip"     (mkTestElf <$> P.take 2 elfs)
                                   ]
