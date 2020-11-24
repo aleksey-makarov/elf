@@ -123,17 +123,13 @@ compareElfs _ _ = return ()
 mkTestElf :: FilePath -> TestTree
 mkTestElf p = testCase p do
     bs <- fromStrict <$> BS.readFile p
-    -- fixme: use monad syntax instead of the ladder
-    case parseElf bs of
-        Left err1 -> assertFailure $ show err1
-        Right elf -> case serializeElf elf of
-            Left err2 -> assertFailure $ show err2
-            Right bs' -> do
-                let bs'strict = toStrict bs'
-                BS.writeFile outFileName bs'strict
-                case parseElf bs' of
-                    Left err3 -> assertFailure $ show err3
-                    Right elf' -> compareElfs elf elf'
+    elf <- parseElf bs
+    bs' <- serializeElf elf
+    let bs'strict = toStrict bs'
+    BS.writeFile outFileName bs'strict
+    elf' <- parseElf bs'
+    compareElfs elf elf'
+
     where
         outFileName = "tests" </> p <.> "copy"
 
