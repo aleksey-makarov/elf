@@ -470,30 +470,67 @@ data WBuilderData (a :: ElfClass)
 
 data WBuilderState (a :: ElfClass) =
     WBuilderState
-        { wbSections     :: [WBuilderSection a]
-        , wbSegments     :: [WBuilderSegment a]
-        , wbDataReversed :: [WBuilderData a]
+        { wbsSectionsReversed :: [WBuilderSection a]
+        , wbsSegmentsReversed :: [WBuilderSegment a]
+        , wbsDataReversed     :: [WBuilderData a]
         }
 
 wbStateInit :: WBuilderState a
 wbStateInit = WBuilderState
-    { wbSections = []
-    , wbSegments = []
-    , wbDataReversed = []
+    { wbsSectionsReversed = []
+    , wbsSegmentsReversed = []
+    , wbsDataReversed     = []
     }
 
 serializeElf' :: (SingI a, MonadThrow m) => [Elf a] -> m BSL.ByteString
 serializeElf' elfs = do
 
     let
-        elf2WBuilder' ElfHeader{..}             s@WBuilderState{..} = return s
-        elf2WBuilder' ElfSectionTable           s@WBuilderState{..} = return s
-        elf2WBuilder' ElfSegmentTable           s@WBuilderState{..} = return s
-        elf2WBuilder' ElfSection{..}            s@WBuilderState{..} = return s
-        elf2WBuilder' ElfStringSection          s@WBuilderState{..} = return s
+        elf2WBuilder' ElfHeader{..} WBuilderState{..} =
+            return WBuilderState
+                { wbsDataReversed = WBuilderDataHeader : wbsDataReversed
+                , ..
+                }
+        elf2WBuilder' ElfSectionTable WBuilderState{..} =
+            return WBuilderState
+                { wbsDataReversed = WBuilderDataSectionTable : wbsDataReversed
+                , ..
+                }
+        elf2WBuilder' ElfSegmentTable WBuilderState{..} =
+            return WBuilderState
+                { wbsDataReversed = WBuilderDataSegmentTable : wbsDataReversed
+                , ..
+                }
+        elf2WBuilder' ElfSection{..} WBuilderState{..} =
+            let
+                d = WBuilderDataByteStream
+                s = WBuilderSection
+            in
+                return WBuilderState
+                    { wbsDataReversed = d : wbsDataReversed
+                    , wbsSectionsReversed = s : wbsSectionsReversed
+                    , ..
+                    }
+        elf2WBuilder' ElfStringSection s@WBuilderState{..} = return s
         elf2WBuilder' ElfSymbolTableSection{..} s@WBuilderState{..} = return s
-        elf2WBuilder' ElfSegment{..}            s@WBuilderState{..} = return s
-        elf2WBuilder' ElfRawData{..}            s@WBuilderState{..} = return s
+        elf2WBuilder' ElfSegment{..} WBuilderState{..} =
+            let
+                ds = []
+                p = WBuilderSegment
+            in
+                return WBuilderState
+                    { wbsDataReversed = ds ++ wbsDataReversed
+                    , wbsSegmentsReversed = p : wbsSegmentsReversed
+                    , ..
+                    }
+        elf2WBuilder' ElfRawData{..} WBuilderState{..} =
+            let
+                bs = WBuilderDataByteStream
+            in
+                return WBuilderState
+                    { wbsDataReversed = bs : wbsDataReversed
+                    , ..
+                    }
 
         elf2WBuilder elf = get >>= elf2WBuilder' elf >>= put
 
