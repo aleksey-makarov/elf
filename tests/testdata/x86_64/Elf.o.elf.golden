@@ -18,6 +18,7 @@ section ".text" {
                48 8d 45 f0 4c 39 f8 72 3a 48 83 ec 08 4c 89 e8 # H.E.L9.r:H...L..
                ...
                00 02 00 00 00 04 00 00 00 48 83 c3 05 ff 65 00 # .........H....e.
+               total: 43175
 }
 section ".data" {
     Type:      SHT_PROGBITS
@@ -29,6 +30,7 @@ section ".data" {
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                ...
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               total: 5000
 }
 section ".bss" {
     Type:      SHT_NOBITS
@@ -48,6 +50,7 @@ section ".rodata.str" {
                72 62 70 48 65 61 64 65 72 00 65 72 62 73 4e 00 # rbpHeader.erbsN.
                ...
                64 65 72 53 65 67 6d 65 6e 74 54 61 62 6c 65 00 # derSegmentTable.
+               total: 1393
 }
 section ".note.GNU-stack" {
     Type:      SHT_PROGBITS
@@ -69,6 +72,29 @@ symbol table section ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
     Data:  
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_Section
+            ShNdx: SHN_EXT 1
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        ...
+        symbol "elfzm0zi31zmI4tXZZPXzzZZs0GF67yXELdbG_DataziElf_ElfRBuilderSegmentTable_closure" {
+            Bind:  STB_Global
+            Type:  STT_Object
+            ShNdx: SHN_EXT 3
+            Value: 0x0000000000001380
+            Size:  0x0000000000000000
+        }
+        total: 288
 }
 section ".strtab" {
     Type:      SHT_STRTAB
@@ -80,6 +106,7 @@ section ".strtab" {
                58 5a 5a 50 58 7a 7a 5a 5a 73 30 47 46 36 37 79 # XZZPXzzZZs0GF67y
                ...
                6e 74 54 61 62 6c 65 5f 63 6c 6f 73 75 72 65 00 # ntTable_closure.
+               total: 16713
 }
 section ".rela.text" {
     Type:      SHT_RELA
@@ -91,6 +118,7 @@ section ".rela.text" {
                fc ff ff ff ff ff ff ff 29 00 00 00 00 00 00 00 # ........).......
                ...
                04 00 00 00 a3 00 00 00 fc ff ff ff ff ff ff ff # ................
+               total: 37656
 }
 section ".rela.data" {
     Type:      SHT_RELA
@@ -102,6 +130,7 @@ section ".rela.data" {
                00 00 00 00 00 00 00 00 20 00 00 00 00 00 00 00 # ........ .......
                ...
                01 00 00 00 01 00 00 00 10 a7 00 00 00 00 00 00 # ................
+               total: 8448
 }
 string section
 section table

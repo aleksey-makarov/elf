@@ -60,6 +60,29 @@ symbol table section ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
     Data:  
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_Section
+            ShNdx: SHN_EXT 1
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        ...
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_Section
+            ShNdx: SHN_EXT 6
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        total: 9
 }
 section ".strtab" {
     Type:      SHT_STRTAB

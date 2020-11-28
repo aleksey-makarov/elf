@@ -44,6 +44,7 @@ segment {
                                72 69 73 63 76 36 34 2d 6c 70 36 34 64 2e 73 6f # riscv64-lp64d.so
                                ...
                                63 76 36 34 2d 6c 70 36 34 64 2e 73 6f 2e 31 00 # cv64-lp64d.so.1.
+                               total: 35
                 }
         }
         raw data {
@@ -76,6 +77,7 @@ segment {
                                19 a8 e5 aa b5 c9 86 24 01 c5 14 52 84 2f 05 35 # .......$...R./.5
                                ...
                                b5 c9 86 24 01 c5 14 52 84 2f 05 35 66 f2 f9 e6 # ...$...R./.5f...
+                               total: 36
                 }
         }
         section ".gnu.hash" {
@@ -88,6 +90,7 @@ segment {
                        01 30 00 02 0c 00 02 01 04 03 a1 ca 05 01 00 04 # .0..............
                        ...
                        70 bb 5b bb 69 5b 28 e0 94 38 34 8c bb e3 92 7c # p.[.i[(..84....|
+                       total: 13412
         }
         raw data {
             Data: 00 00 00 00                                     # ....
@@ -96,6 +99,29 @@ segment {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
             Data:  
+                symbol "" {
+                    Bind:  STB_Local
+                    Type:  STT_NoType
+                    ShNdx: SHN_Undef
+                    Value: 0x0000000000000000
+                    Size:  0x0000000000000000
+                }
+                symbol "_ITM_deregisterTMCloneTable" {
+                    Bind:  STB_Weak
+                    Type:  STT_NoType
+                    ShNdx: SHN_Undef
+                    Value: 0x0000000000000000
+                    Size:  0x0000000000000000
+                }
+                ...
+                symbol "_end" {
+                    Bind:  STB_Global
+                    Type:  STT_NoType
+                    ShNdx: SHN_EXT 25
+                    Value: 0x00000000000a10c0
+                    Size:  0x0000000000000000
+                }
+                total: 1827
         }
         section ".dynstr" {
             Type:      SHT_STRTAB
@@ -107,6 +133,7 @@ segment {
                        37 00 5f 49 54 4d 5f 64 65 72 65 67 69 73 74 65 # 7._ITM_deregiste
                        ...
                        72 61 6d 65 00 47 4c 49 42 43 5f 32 2e 32 37 00 # rame.GLIBC_2.27.
+                       total: 27573
         }
         raw data {
             Data: 00                                              # .
@@ -121,6 +148,7 @@ segment {
                        01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 # ................
                        ...
                        00 00 01 00 01 00 01 00 01 00 00 00 02 00 01 00 # ................
+                       total: 3654
         }
         raw data {
             Data: 00 00 00 00                                     # ....
@@ -135,6 +163,7 @@ segment {
                        87 91 96 06 00 00 04 00 aa 6b 00 00 00 00 00 00 # .........k......
                        ...
                        87 91 96 06 00 00 02 00 aa 6b 00 00 00 00 00 00 # .........k......
+                       total: 96
         }
         section ".rela.dyn" {
             Type:      SHT_RELA
@@ -146,6 +175,7 @@ segment {
                        00 00 00 00 00 00 00 00 70 41 09 00 00 00 00 00 # ........pA......
                        ...
                        04 00 00 00 21 03 00 00 00 00 00 00 00 00 00 00 # ....!...........
+                       total: 1752
         }
         section ".rela.plt" {
             Type:      SHT_RELA
@@ -157,6 +187,7 @@ segment {
                        00 00 00 00 00 00 00 00 40 2d 09 00 00 00 00 00 # ........@-......
                        ...
                        05 00 00 00 24 00 00 00 00 00 00 00 00 00 00 00 # ....$...........
+                       total: 6624
         }
         section ".plt" {
             Type:      SHT_PROGBITS
@@ -168,6 +199,7 @@ segment {
                        93 82 83 ff 13 53 13 00 83 b2 82 00 67 00 0e 00 # .....S......g...
                        ...
                        17 ae 06 00 03 3e 0e 75 67 03 0e 00 13 00 00 00 # .....>.ug.......
+                       total: 4448
         }
         section ".text" {
             Type:      SHT_PROGBITS
@@ -179,6 +211,7 @@ segment {
                        2e e0 13 05 05 c1 81 45 86 fe a2 fa a6 f6 ca f2 # .......E........
                        ...
                        a2 74 02 79 e2 69 42 6a a2 6a 21 61 82 80 82 80 # .t.y.iBj.j!a....
+                       total: 364928
         }
         section ".rodata" {
             Type:      SHT_PROGBITS
@@ -190,6 +223,7 @@ segment {
                        a6 93 02 00 a6 93 02 00 a6 93 02 00 a6 93 02 00 # ................
                        ...
                        08 08 08 08 08 08 08 08 08 08 08 08 08 08 08 08 # ................
+                       total: 51696
         }
         segment {
             Type:     PT_EXT 1685382480
@@ -222,6 +256,7 @@ segment {
                        1b 0d 02 00 10 00 00 00 18 00 00 00 24 b5 f9 ff # ............$...
                        ...
                        24 b5 f9 ff 2c 00 00 00 00 00 00 00 00 00 00 00 # $...,...........
+                       total: 44
         }
 }
 segment {
@@ -290,6 +325,7 @@ segment {
                                        01 00 00 00 00 00 00 00 18 0c 00 00 00 00 00 00 # ................
                                        ...
                                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                                       total: 512
                         }
                 }
         }
@@ -303,6 +339,7 @@ segment {
                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                        ...
                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                       total: 11560
         }
         section ".got" {
             Type:      SHT_PROGBITS
@@ -314,6 +351,7 @@ segment {
                        30 7d 02 00 00 00 00 00 30 7d 02 00 00 00 00 00 # 0}......0}......
                        ...
                        00 fe 08 00 00 00 00 00 00 e9 08 00 00 00 00 00 # ................
+                       total: 2240
         }
         section ".sdata" {
             Type:      SHT_PROGBITS
@@ -325,6 +363,7 @@ segment {
                        01 00 00 20 00 00 00 10 02 00 00 00 10 00 00 50 # ... ...........P
                        ...
                        01 00 00 00 ff ff ff ff ff ff ff ff ff ff ff ff # ................
+                       total: 460
         }
 }
 section ".sbss" {
@@ -337,6 +376,7 @@ section ".sbss" {
                00 2e 64 61 74 61 00 2e 72 6f 64 61 74 61 00 2e # ..data..rodata..
                ...
                01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               total: 2084
 }
 section ".bss" {
     Type:      SHT_NOBITS
@@ -348,6 +388,7 @@ section ".bss" {
                00 2e 64 61 74 61 00 2e 72 6f 64 61 74 61 00 2e # ..data..rodata..
                ...
                01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               total: 2084
 }
 section ".gnu_debuglink" {
     Type:      SHT_PROGBITS

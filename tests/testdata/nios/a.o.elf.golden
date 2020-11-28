@@ -18,6 +18,7 @@ section ".text" {
                34 00 00 01 04 00 00 21 00 00 00 00 3a 88 05 00 # 4......!....:...
                ...
                17 01 c0 df 17 00 00 df 04 02 c0 de 3a 28 00 f8 # ............:(..
+               total: 52
 }
 section ".data" {
     Type:      SHT_PROGBITS
@@ -53,6 +54,7 @@ section ".debug_info" {
                0c 61 2e 63 00 00 00 00 00 00 00 00 00 34 00 00 # .a.c.........4..
                ...
                05 5d 00 00 00 00 00 00 00 34 00 00 00 01 9c 00 # .].......4......
+               total: 2343
 }
 section ".debug_abbrev" {
     Type:      SHT_PROGBITS
@@ -64,6 +66,7 @@ section ".debug_abbrev" {
                17 00 00 02 24 00 0b 0b 3e 0b 03 0e 00 00 03 24 # ....$...>......$
                ...
                39 0b 49 13 11 01 12 06 40 18 96 42 19 00 00 00 # 9.I.....@..B....
+               total: 461
 }
 section ".debug_aranges" {
     Type:      SHT_PROGBITS
@@ -84,6 +87,7 @@ section ".debug_line" {
                01 01 01 01 00 00 00 01 00 00 01 2f 6e 66 73 2f # .........../nfs/
                ...
                00 14 05 05 f3 05 0c bb 05 01 4b 02 14 00 01 01 # ..........K.....
+               total: 379
 }
 section ".debug_str" {
     Type:      SHT_PROGBITS
@@ -95,6 +99,7 @@ section ".debug_str" {
                43 31 37 20 39 2e 33 2e 31 20 32 30 32 30 30 34 # C17 9.3.1 202004
                ...
                00 6d 61 69 6e 00 5f 5f 74 6d 5f 6d 64 61 79 00 # .main.__tm_mday.
+               total: 1204
 }
 section ".comment" {
     Type:      SHT_PROGBITS
@@ -106,6 +111,7 @@ section ".comment" {
                2e 33 20 42 75 69 6c 64 20 31 30 37 29 20 39 2e # .3 Build 107) 9.
                ...
                20 39 2e 33 2e 31 20 32 30 32 30 30 34 32 30 00 #  9.3.1 20200420.
+               total: 45
 }
 section ".debug_frame" {
     Type:      SHT_PROGBITS
@@ -117,11 +123,35 @@ section ".debug_frame" {
                24 00 00 00 00 00 00 00 00 00 00 00 34 00 00 00 # $...........4...
                ...
                44 0d 1c 54 0d 1b 44 df 44 dc 44 0e 00 00 00 00 # D..T..D.D.D.....
+               total: 56
 }
 symbol table section ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x00000000
     Data:  
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x00000000
+            Size:  0x00000000
+        }
+        symbol "a.c" {
+            Bind:  STB_Local
+            Type:  STT_File
+            ShNdx: SHN_Abs
+            Value: 0x00000000
+            Size:  0x00000000
+        }
+        ...
+        symbol "printf" {
+            Bind:  STB_Global
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x00000000
+            Size:  0x00000000
+        }
+        total: 15
 }
 section ".strtab" {
     Type:      SHT_STRTAB
@@ -142,6 +172,7 @@ section ".rela.text" {
                0a 05 00 00 00 00 00 00 18 00 00 00 04 0e 00 00 # ................
                ...
                00 00 00 00 18 00 00 00 04 0e 00 00 00 00 00 00 # ................
+               total: 36
 }
 section ".rela.debug_info" {
     Type:      SHT_RELA
@@ -153,6 +184,7 @@ section ".rela.debug_info" {
                0c 0a 00 00 0c 00 00 00 15 00 00 00 0c 0a 00 00 # ................
                ...
                a5 04 00 00 1c 09 00 00 0c 02 00 00 00 00 00 00 # ................
+               total: 1584
 }
 section ".rela.debug_aranges" {
     Type:      SHT_RELA

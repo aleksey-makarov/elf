@@ -30,6 +30,7 @@ segment {
                        44 00 00 01 40 a7 0d 00 04 fe ff de 3a 88 0b 00 # D...@.......:...
                        ...
                        15 01 40 94 06 e8 3f 00 3a e8 3e 30 06 ed 3f 00 # ..@...?.:.>0..?.
+                       total: 52128
         }
         section ".rodata" {
             Type:      SHT_PROGBITS
@@ -41,6 +42,7 @@ segment {
                        69 6e 66 00 4e 41 4e 00 6e 61 6e 00 30 31 32 33 # inf.NAN.nan.0123
                        ...
                        08 08 08 08 08 08 08 08 08 08 08 08 08 08 08 08 # ................
+                       total: 1572
         }
 }
 segment {
@@ -61,6 +63,7 @@ segment {
                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                        ...
                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                       total: 2456
         }
         section ".sdata" {
             Type:      SHT_PROGBITS
@@ -90,6 +93,7 @@ section ".bss" {
                33 20 42 75 69 6c 64 20 31 30 37 29 20 39 2e 33 # 3 Build 107) 9.3
                ...
                31 30 37 29 20 39 2e 33 2e 31 20 32 30 32 30 30 # 107) 9.3.1 20200
+               total: 40
 }
 section ".comment" {
     Type:      SHT_PROGBITS
@@ -101,6 +105,7 @@ section ".comment" {
                33 20 42 75 69 6c 64 20 31 30 37 29 20 39 2e 33 # 3 Build 107) 9.3
                ...
                20 39 2e 33 2e 31 20 32 30 32 30 30 34 32 30 00 #  9.3.1 20200420.
+               total: 44
 }
 section ".debug_aranges" {
     Type:      SHT_PROGBITS
@@ -112,6 +117,7 @@ section ".debug_aranges" {
                f8 10 00 00 34 00 00 00 00 00 00 00 00 00 00 00 # ....4...........
                ...
                f8 da 00 00 20 01 00 00 00 00 00 00 00 00 00 00 # .... ...........
+               total: 3008
 }
 section ".debug_info" {
     Type:      SHT_PROGBITS
@@ -123,6 +129,7 @@ section ".debug_info" {
                0c 61 2e 63 00 8b 03 00 00 f8 10 00 00 34 00 00 # .a.c.........4..
                ...
                00 00 00 0f 04 aa 02 00 00 0f 04 12 02 00 00 00 # ................
+               total: 222382
 }
 section ".debug_abbrev" {
     Type:      SHT_PROGBITS
@@ -134,6 +141,7 @@ section ".debug_abbrev" {
                17 00 00 02 24 00 0b 0b 3e 0b 03 0e 00 00 03 24 # ....$...>......$
                ...
                01 00 00 2b 8a 82 01 00 02 18 91 42 18 00 00 00 # ...+.......B....
+               total: 45127
 }
 section ".debug_line" {
     Type:      SHT_PROGBITS
@@ -145,6 +153,7 @@ section ".debug_line" {
                01 01 01 01 00 00 00 01 00 00 01 2f 6e 66 73 2f # .........../nfs/
                ...
                05 06 06 03 10 82 05 07 06 01 4a 02 04 00 01 01 # ..........J.....
+               total: 84902
 }
 section ".debug_frame" {
     Type:      SHT_PROGBITS
@@ -156,6 +165,7 @@ section ".debug_frame" {
                24 00 00 00 00 00 00 00 f8 10 00 00 34 00 00 00 # $...........4...
                ...
                44 d3 44 d2 44 d1 44 d0 44 0e 00 44 0b 00 00 00 # D.D.D.D.D..D....
+               total: 6064
 }
 section ".debug_str" {
     Type:      SHT_PROGBITS
@@ -167,6 +177,7 @@ section ".debug_str" {
                43 31 37 20 39 2e 33 2e 31 20 32 30 32 30 30 34 # C17 9.3.1 202004
                ...
                72 65 63 75 72 73 69 76 65 5f 6d 75 74 65 78 00 # recursive_mutex.
+               total: 12678
 }
 section ".debug_loc" {
     Type:      SHT_PROGBITS
@@ -178,6 +189,7 @@ section ".debug_loc" {
                54 84 11 00 00 87 11 00 00 01 00 55 87 11 00 00 # T..........U....
                ...
                00 18 dc 00 00 01 00 67 00 00 00 00 00 00 00 00 # .......g........
+               total: 119146
 }
 section ".debug_ranges" {
     Type:      SHT_PROGBITS
@@ -189,11 +201,35 @@ section ".debug_ranges" {
                00 00 00 00 00 00 00 00 e8 11 00 00 f4 11 00 00 # ................
                ...
                f8 da 00 00 18 dc 00 00 00 00 00 00 00 00 00 00 # ................
+               total: 7376
 }
 symbol table section ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x00000000
     Data:  
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x00000000
+            Size:  0x00000000
+        }
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_Section
+            ShNdx: SHN_EXT 1
+            Value: 0x00001078
+            Size:  0x00000000
+        }
+        ...
+        symbol "_Bfree" {
+            Bind:  STB_Global
+            Type:  STT_Func
+            ShNdx: SHN_EXT 1
+            Value: 0x00006680
+            Size:  0x00000024
+        }
+        total: 280
 }
 section ".strtab" {
     Type:      SHT_STRTAB
@@ -205,6 +241,7 @@ section ".strtab" {
                66 2e 63 00 5f 5f 73 62 70 72 69 6e 74 66 00 62 # f.c.__sbprintf.b
                ...
                5f 6d 75 6c 74 61 64 64 00 5f 42 66 72 65 65 00 # _multadd._Bfree.
+               total: 2635
 }
 string section
 section table

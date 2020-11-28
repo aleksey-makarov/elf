@@ -18,6 +18,7 @@ section ".text" {
                83 a7 0a 00 23 22 91 02 93 84 05 00 93 05 30 00 # ....#"........0.
                ...
                23 a0 e7 00 6f f0 5f e4 97 00 00 00 e7 80 00 00 # #...o._.........
+               total: 592
 }
 section ".data" {
     Type:      SHT_PROGBITS
@@ -45,6 +46,7 @@ section ".rodata.str1.4" {
                61 64 2f 61 69 6f 5f 63 61 6e 63 65 6c 2e 63 00 # ad/aio_cancel.c.
                ...
                65 64 00 00 00 61 69 6f 5f 63 61 6e 63 65 6c 00 # ed...aio_cancel.
+               total: 91
 }
 section ".comment" {
     Type:      SHT_PROGBITS
@@ -59,6 +61,29 @@ symbol table section ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x00000000
     Data:  
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x00000000
+            Size:  0x00000000
+        }
+        symbol ".L0 " {
+            Bind:  STB_Local
+            Type:  STT_NoType
+            ShNdx: SHN_EXT 1
+            Value: 0x00000000
+            Size:  0x00000000
+        }
+        ...
+        symbol "aio_cancel64" {
+            Bind:  STB_Weak
+            Type:  STT_Func
+            ShNdx: SHN_EXT 1
+            Value: 0x00000000
+            Size:  0x00000250
+        }
+        total: 164
 }
 section ".strtab" {
     Type:      SHT_STRTAB
@@ -70,6 +95,7 @@ section ".strtab" {
                55 4e 43 54 49 4f 4e 5f 5f 2e 38 30 35 35 00 2e # UNCTION__.8055..
                ...
                69 6c 00 61 69 6f 5f 63 61 6e 63 65 6c 36 34 00 # il.aio_cancel64.
+               total: 691
 }
 section ".rela.text" {
     Type:      SHT_RELA
@@ -81,6 +107,7 @@ section ".rela.text" {
                18 40 00 00 00 00 00 00 0c 00 00 00 33 00 00 00 # .@..........3...
                ...
                00 00 00 00 44 02 00 00 11 58 00 00 00 00 00 00 # ....D....X......
+               total: 924
 }
 string section
 section table

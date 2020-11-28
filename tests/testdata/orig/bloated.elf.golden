@@ -83,6 +83,7 @@ segment {
                                58 e3 4f e8 bc 03 f9 db 4b 07 fa e5 03 1e fd d0 # X.O.....K.......
                                ...
                                bc 03 f9 db 4b 07 fa e5 03 1e fd d0 88 97 6f 88 # ....K.........o.
+                               total: 36
                 }
         }
         section ".gnu.hash" {
@@ -95,11 +96,35 @@ segment {
                        01 23 10 20 00 00 00 00 0a 00 00 00 0c 00 00 00 # .#. ............
                        ...
                        ac 4b e3 c0 21 fd f4 09 28 45 d5 4c 15 98 0c 43 # .K..!...(E.L...C
+                       total: 48
         }
         symbol table section ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x00000002
             Data:  
+                symbol "" {
+                    Bind:  STB_Local
+                    Type:  STT_NoType
+                    ShNdx: SHN_Undef
+                    Value: 0x00000000
+                    Size:  0x00000000
+                }
+                symbol "__cxa_atexit" {
+                    Bind:  STB_Global
+                    Type:  STT_Func
+                    ShNdx: SHN_Undef
+                    Value: 0x00000000
+                    Size:  0x00000000
+                }
+                ...
+                symbol "_ZSt4cout" {
+                    Bind:  STB_Global
+                    Type:  STT_Object
+                    ShNdx: SHN_EXT 26
+                    Value: 0x0804a040
+                    Size:  0x0000008c
+                }
+                total: 14
         }
         section ".dynstr" {
             Type:      SHT_STRTAB
@@ -111,6 +136,7 @@ segment {
                        5f 5f 67 6d 6f 6e 5f 73 74 61 72 74 5f 5f 00 5f # __gmon_start__._
                        ...
                        32 2e 30 00 47 4c 49 42 43 5f 32 2e 31 2e 33 00 # 2.0.GLIBC_2.1.3.
+                       total: 409
         }
         raw data {
             Data: 00                                              # .
@@ -137,6 +163,7 @@ segment {
                        74 29 92 08 00 00 03 00 77 01 00 00 00 00 00 00 # t)......w.......
                        ...
                        73 1f 69 09 00 00 02 00 8d 01 00 00 00 00 00 00 # s.i.............
+                       total: 80
         }
         section ".rel.dyn" {
             Type:      SHT_REL
@@ -156,6 +183,7 @@ segment {
                        14 a0 04 08 07 05 00 00 18 a0 04 08 07 0c 00 00 # ................
                        ...
                        20 a0 04 08 07 09 00 00 24 a0 04 08 07 0b 00 00 #  .......$.......
+                       total: 56
         }
         section ".init" {
             Type:      SHT_PROGBITS
@@ -167,6 +195,7 @@ segment {
                        83 fc ff ff ff 85 c0 74 05 e8 86 00 00 00 83 c4 # .......t........
                        ...
                        ff ff 85 c0 74 05 e8 86 00 00 00 83 c4 08 5b c3 # ....t.........[.
+                       total: 35
         }
         raw data {
             Data: 00                                              # .
@@ -181,6 +210,7 @@ segment {
                        ff 25 0c a0 04 08 68 00 00 00 00 e9 e0 ff ff ff # .%....h.........
                        ...
                        ff 25 24 a0 04 08 68 30 00 00 00 e9 80 ff ff ff # .%$...h0........
+                       total: 128
         }
         section ".plt.got" {
             Type:      SHT_PROGBITS
@@ -203,6 +233,7 @@ segment {
                        7c ff ff ff 8d 05 70 85 04 08 8d 0d cd a0 04 08 # |.....p.........
                        ...
                        fe 75 e3 83 c4 0c 5b 5e 5f 5d c3 8d 76 00 f3 c3 # .u....[^_]..v...
+                       total: 530
         }
         raw data {
             Data: 00 00                                           # ..
@@ -246,6 +277,7 @@ segment {
                                54 00 00 00 bc fd ff ff 78 00 00 00 fc fd ff ff # T.......x.......
                                ...
                                6c ff ff ff cc 00 00 00 cc ff ff ff 18 01 00 00 # l...............
+                               total: 60
                 }
         }
         section ".eh_frame" {
@@ -258,6 +290,7 @@ segment {
                        1b 0c 04 04 88 01 00 00 20 00 00 00 1c 00 00 00 # ........ .......
                        ...
                        ac fe ff ff 02 00 00 00 00 00 00 00 00 00 00 00 # ................
+                       total: 244
         }
 }
 segment {
@@ -318,6 +351,7 @@ segment {
                                        01 00 00 00 31 01 00 00 01 00 00 00 3f 01 00 00 # ....1.......?...
                                        ...
                                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+                                       total: 256
                         }
                 }
                 section ".got" {
@@ -339,6 +373,7 @@ segment {
                        56 85 04 08 66 85 04 08 76 85 04 08 86 85 04 08 # V...f...v.......
                        ...
                        76 85 04 08 86 85 04 08 96 85 04 08 a6 85 04 08 # v...............
+                       total: 40
         }
         section ".data" {
             Type:      SHT_PROGBITS
@@ -359,6 +394,7 @@ section ".bss" {
                20 32 30 31 36 31 32 32 31 20 28 52 65 64 20 48 #  20161221 (Red H
                ...
                68 81 04 08 00 00 00 00 03 00 02 00 00 00 00 00 # h...............
+               total: 144
 }
 section ".comment" {
     Type:      SHT_PROGBITS
@@ -370,11 +406,35 @@ section ".comment" {
                20 32 30 31 36 31 32 32 31 20 28 52 65 64 20 48 #  20161221 (Red H
                ...
                45 41 53 45 5f 33 38 31 2f 66 69 6e 61 6c 29 00 # EASE_381/final).
+               total: 89
 }
 symbol table section ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x00000000
     Data:  
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x00000000
+            Size:  0x00000000
+        }
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_Section
+            ShNdx: SHN_EXT 1
+            Value: 0x08048154
+            Size:  0x00000000
+        }
+        ...
+        symbol "_init" {
+            Bind:  STB_Global
+            Type:  STT_Func
+            ShNdx: SHN_EXT 11
+            Value: 0x0804850c
+            Size:  0x00000000
+        }
+        total: 78
 }
 section ".strtab" {
     Type:      SHT_STRTAB
@@ -386,6 +446,7 @@ section ".strtab" {
                62 6c 6f 61 74 65 64 2e 63 70 70 00 5f 5a 53 74 # bloated.cpp._ZSt
                ...
                33 2e 34 00 5f 65 64 61 74 61 00 6d 61 69 6e 00 # 3.4._edata.main.
+               total: 891
 }
 string section
 section table

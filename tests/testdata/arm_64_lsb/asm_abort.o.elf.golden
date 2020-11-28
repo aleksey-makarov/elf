@@ -18,6 +18,7 @@ section ".text" {
                f3 03 00 aa 00 10 40 39 a0 00 00 35 01 00 00 90 # ......@9...5....
                ...
                fd 7b c2 a8 c0 03 5f d6 00 00 80 12 c0 03 5f d6 # .{...._......._.
+               total: 112
 }
 section ".data" {
     Type:      SHT_PROGBITS
@@ -45,6 +46,7 @@ section ".comment" {
                2d 4e 47 20 31 2e 32 33 2e 30 2e 34 31 38 2d 64 # -NG 1.23.0.418-d
                ...
                34 31 38 2d 64 35 39 30 29 20 38 2e 33 2e 30 00 # 418-d590) 8.3.0.
+               total: 43
 }
 section ".note.GNU-stack" {
     Type:      SHT_PROGBITS
@@ -64,11 +66,35 @@ section ".eh_frame" {
                1b 0c 1f 00 20 00 00 00 18 00 00 00 00 00 00 00 # .... ...........
                ...
                9d 04 9e 03 42 93 02 55 de dd d3 0e 00 00 00 00 # ....B..U........
+               total: 56
 }
 symbol table section ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
     Data:  
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_Section
+            ShNdx: SHN_EXT 1
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        ...
+        symbol "__libasm_finictx" {
+            Bind:  STB_Global
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        total: 13
 }
 section ".strtab" {
     Type:      SHT_STRTAB
@@ -80,6 +106,7 @@ section ".strtab" {
                00 65 6c 66 5f 65 6e 64 00 75 6e 6c 69 6e 6b 00 # .elf_end.unlink.
                ...
                5f 6c 69 62 61 73 6d 5f 66 69 6e 69 63 74 78 00 # _libasm_finictx.
+               total: 49
 }
 section ".rela.text" {
     Type:      SHT_RELA
@@ -91,6 +118,7 @@ section ".rela.text" {
                00 00 00 00 00 00 00 00 24 00 00 00 00 00 00 00 # ........$.......
                ...
                38 01 00 00 0c 00 00 00 00 00 00 00 00 00 00 00 # 8...............
+               total: 144
 }
 section ".rela.eh_frame" {
     Type:      SHT_RELA

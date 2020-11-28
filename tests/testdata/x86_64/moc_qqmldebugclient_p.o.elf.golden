@@ -50,6 +50,7 @@ section ".text" {
                00 0f 1f 80 00 00 00 00 48 8d 05 00 00 00 00 c3 # ........H.......
                ...
                e7 89 44 24 0c e8 99 fe ff ff 8b 44 24 0c eb c5 # ..D$.......D$...
+               total: 493
 }
 section ".data" {
     Type:      SHT_PROGBITS
@@ -103,6 +104,7 @@ section ".data.rel.ro._ZTV15QQmlDebugClient" {
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                ...
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               total: 120
 }
 section ".data.rel.ro" {
     Type:      SHT_PROGBITS
@@ -114,6 +116,7 @@ section ".data.rel.ro" {
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                ...
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               total: 48
 }
 section ".rodata" {
     Type:      SHT_PROGBITS
@@ -125,6 +128,7 @@ section ".rodata" {
                01 00 00 00 0e 00 00 00 00 00 00 00 00 00 00 00 # ................
                ...
                61 74 65 00 73 74 61 74 65 00 00 00 00 00 00 00 # ate.state.......
+               total: 264
 }
 section ".comment" {
     Type:      SHT_PROGBITS
@@ -136,6 +140,7 @@ section ".comment" {
                78 20 39 2e 33 2e 30 2d 31 29 20 39 2e 33 2e 30 # x 9.3.0-1) 9.3.0
                ...
                20 39 2e 33 2e 30 2d 31 29 20 39 2e 33 2e 30 00 #  9.3.0-1) 9.3.0.
+               total: 33
 }
 section ".note.GNU-stack" {
     Type:      SHT_PROGBITS
@@ -155,11 +160,35 @@ section ".eh_frame" {
                1b 0c 07 08 90 01 00 00 10 00 00 00 1c 00 00 00 # ................
                ...
                0e 18 41 0e 10 42 0e 08 43 0b 00 00 00 00 00 00 # ..A..B..C.......
+               total: 232
 }
 symbol table section ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
     Data:  
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_Section
+            ShNdx: SHN_EXT 5
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        ...
+        symbol "_ZN7QObject16staticMetaObjectE" {
+            Bind:  STB_Global
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        total: 50
 }
 section ".strtab" {
     Type:      SHT_STRTAB
@@ -171,6 +200,7 @@ section ".strtab" {
                6c 69 65 6e 74 31 38 71 74 5f 73 74 61 74 69 63 # lient18qt_static
                ...
                61 74 69 63 4d 65 74 61 4f 62 6a 65 63 74 45 00 # aticMetaObjectE.
+               total: 1193
 }
 section ".rela.text" {
     Type:      SHT_RELA
@@ -182,6 +212,7 @@ section ".rela.text" {
                fc ff ff ff ff ff ff ff 1b 00 00 00 00 00 00 00 # ................
                ...
                29 00 00 00 21 00 00 00 fc ff ff ff ff ff ff ff # )...!...........
+               total: 312
 }
 section ".rela.qtversion" {
     Type:      SHT_RELA
@@ -202,6 +233,7 @@ section ".rela.data.rel.ro._ZTI15QQmlDebugClient" {
                10 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 # ................
                ...
                01 00 00 00 25 00 00 00 00 00 00 00 00 00 00 00 # ....%...........
+               total: 72
 }
 section ".rela.data.rel.ro._ZTV15QQmlDebugClient" {
     Type:      SHT_RELA
@@ -213,6 +245,7 @@ section ".rela.data.rel.ro._ZTV15QQmlDebugClient" {
                00 00 00 00 00 00 00 00 10 00 00 00 00 00 00 00 # ................
                ...
                01 00 00 00 30 00 00 00 00 00 00 00 00 00 00 00 # ....0...........
+               total: 336
 }
 section ".rela.data.rel.ro" {
     Type:      SHT_RELA
@@ -224,6 +257,7 @@ section ".rela.data.rel.ro" {
                00 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 # ................
                ...
                01 00 00 00 1c 00 00 00 00 00 00 00 00 00 00 00 # ................
+               total: 96
 }
 section ".rela.eh_frame" {
     Type:      SHT_RELA
@@ -235,6 +269,7 @@ section ".rela.eh_frame" {
                00 00 00 00 00 00 00 00 34 00 00 00 00 00 00 00 # ........4.......
                ...
                02 00 00 00 01 00 00 00 90 01 00 00 00 00 00 00 # ................
+               total: 144
 }
 string section
 section table

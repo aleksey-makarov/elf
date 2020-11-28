@@ -259,7 +259,15 @@ printElfSymbolTableEntry ElfSymbolTableEntry{..} =
         ]
 
 printElfSymbolTable :: SingI a => [ElfSymbolTableEntry a] -> Doc ()
-printElfSymbolTable l = align . vsep $ fmap printElfSymbolTableEntry l
+printElfSymbolTable l = align . vsep $
+    case l of
+        (e1 : e2 : _ : _) -> [ printElfSymbolTableEntry e1
+                             , printElfSymbolTableEntry e2
+                             , "..."
+                             , printElfSymbolTableEntry $ last l
+                             , "total:" <+> viaShow (L.length l)
+                             ]
+        _ -> fmap printElfSymbolTableEntry l
 
 splitBy :: Int64 -> BSL.ByteString -> [BSL.ByteString]
 splitBy n = L.unfoldr f
@@ -295,6 +303,7 @@ printData bs = align $ vsep $
                              , formatBytestringLine c2
                              , "..."
                              , formatBytestringLine cl
+                             , "total:" <+> viaShow (BSL.length bs)
                              ]
         chunks -> L.map formatBytestringLine chunks
     where

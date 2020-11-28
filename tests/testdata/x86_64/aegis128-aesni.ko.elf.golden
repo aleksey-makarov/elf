@@ -18,6 +18,7 @@ section ".note.gnu.build-id" {
                29 9b 29 c5 2c 2a 8a 05 cd b6 e6 f9 3f 47 16 a1 # ).).,*......?G..
                ...
                2c 2a 8a 05 cd b6 e6 f9 3f 47 16 a1 5a 67 1c c7 # ,*......?G..Zg..
+               total: 36
 }
 section ".note.Linux" {
     Type:      SHT_NOTE
@@ -38,6 +39,7 @@ section ".text" {
                49 89 f0 49 83 e0 1e 49 01 d0 45 8a 08 49 89 f0 # I..I...I..E..I..
                ...
                48 8d 65 e8 5b 41 5c 41 5d 5d c3 e8 00 00 00 00 # H.e.[A\A]]......
+               total: 5712
 }
 section ".init.text" {
     Type:      SHT_PROGBITS
@@ -49,6 +51,7 @@ section ".init.text" {
                73 28 31 f6 bf 02 00 00 00 e8 00 00 00 00 85 c0 # s(1.............
                ...
                c7 00 00 00 00 e9 00 00 00 00 b8 ed ff ff ff c3 # ................
+               total: 64
 }
 section ".exit.text" {
     Type:      SHT_PROGBITS
@@ -69,6 +72,7 @@ section ".rodata" {
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                ...
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               total: 72
 }
 section ".rodata.cst16.aegis128_const" {
     Type:      SHT_PROGBITS
@@ -97,6 +101,7 @@ section "__mcount_loc" {
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                ...
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               total: 64
 }
 section ".modinfo" {
     Type:      SHT_PROGBITS
@@ -108,6 +113,7 @@ section ".modinfo" {
                69 73 31 32 38 2d 61 65 73 6e 69 00 61 6c 69 61 # is128-aesni.alia
                ...
                6d 70 74 20 6d 6f 64 5f 75 6e 6c 6f 61 64 20 00 # mpt mod_unload .
+               total: 353
 }
 section ".data" {
     Type:      SHT_PROGBITS
@@ -119,6 +125,7 @@ section ".data" {
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                ...
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               total: 448
 }
 section ".gnu.linkonce.this_module" {
     Type:      SHT_PROGBITS
@@ -130,6 +137,7 @@ section ".gnu.linkonce.this_module" {
                00 00 00 00 00 00 00 00 61 65 67 69 73 31 32 38 # ........aegis128
                ...
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+               total: 896
 }
 section ".bss" {
     Type:      SHT_NOBITS
@@ -149,6 +157,7 @@ section ".comment" {
                2e 30 00 00 47 43 43 3a 20 28 47 4e 55 29 20 31 # .0..GCC: (GNU) 1
                ...
                43 3a 20 28 47 4e 55 29 20 31 30 2e 31 2e 30 00 # C: (GNU) 10.1.0.
+               total: 38
 }
 section ".note.GNU-stack" {
     Type:      SHT_PROGBITS
@@ -162,6 +171,29 @@ symbol table section ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
     Data:  
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        symbol "" {
+            Bind:  STB_Local
+            Type:  STT_Section
+            ShNdx: SHN_EXT 1
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        ...
+        symbol "skcipher_walk_aead_decrypt" {
+            Bind:  STB_Global
+            Type:  STT_NoType
+            ShNdx: SHN_Undef
+            Value: 0x0000000000000000
+            Size:  0x0000000000000000
+        }
+        total: 81
 }
 section ".strtab" {
     Type:      SHT_STRTAB
@@ -173,6 +205,7 @@ section ".strtab" {
                6d 6f 64 2e 63 00 5f 5f 55 4e 49 51 55 45 5f 49 # mod.c.__UNIQUE_I
                ...
                6c 6b 5f 61 65 61 64 5f 64 65 63 72 79 70 74 00 # lk_aead_decrypt.
+               total: 1418
 }
 section ".rela.text" {
     Type:      SHT_RELA
@@ -184,6 +217,7 @@ section ".rela.text" {
                00 00 00 00 00 00 00 00 06 01 00 00 00 00 00 00 # ................
                ...
                04 00 00 00 3c 00 00 00 fc ff ff ff ff ff ff ff # ....<...........
+               total: 936
 }
 section ".rela.init.text" {
     Type:      SHT_RELA
@@ -195,6 +229,7 @@ section ".rela.init.text" {
                fc ff ff ff ff ff ff ff 08 00 00 00 00 00 00 00 # ................
                ...
                04 00 00 00 35 00 00 00 fc ff ff ff ff ff ff ff # ....5...........
+               total: 144
 }
 section ".rela.exit.text" {
     Type:      SHT_RELA
@@ -206,6 +241,7 @@ section ".rela.exit.text" {
                00 00 00 00 00 00 00 00 0f 00 00 00 00 00 00 00 # ................
                ...
                04 00 00 00 4d 00 00 00 fc ff ff ff ff ff ff ff # ....M...........
+               total: 72
 }
 section ".rela.rodata" {
     Type:      SHT_RELA
@@ -217,6 +253,7 @@ section ".rela.rodata" {
                00 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 # ................
                ...
                01 00 00 00 33 00 00 00 00 00 00 00 00 00 00 00 # ....3...........
+               total: 144
 }
 section ".rela__mcount_loc" {
     Type:      SHT_RELA
@@ -228,6 +265,7 @@ section ".rela__mcount_loc" {
                80 0f 00 00 00 00 00 00 08 00 00 00 00 00 00 00 # ................
                ...
                01 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 # ................
+               total: 192
 }
 section ".rela.data" {
     Type:      SHT_RELA
@@ -239,6 +277,7 @@ section ".rela.data" {
                c0 0f 00 00 00 00 00 00 08 00 00 00 00 00 00 00 # ................
                ...
                01 00 00 00 32 00 00 00 00 00 00 00 00 00 00 00 # ....2...........
+               total: 168
 }
 section ".rela.gnu.linkonce.this_module" {
     Type:      SHT_RELA
@@ -250,6 +289,7 @@ section ".rela.gnu.linkonce.this_module" {
                00 00 00 00 00 00 00 00 38 03 00 00 00 00 00 00 # ........8.......
                ...
                01 00 00 00 34 00 00 00 00 00 00 00 00 00 00 00 # ....4...........
+               total: 48
 }
 string section
 section table

@@ -47,6 +47,7 @@ import Control.Monad
 import Control.Monad.Catch
 import Control.Monad.State
 -- import Data.Bifunctor
+import Data.Bits
 import Data.ByteString.Char8 as BSC
 import Data.ByteString.Lazy as BSL
 -- import Data.Either
@@ -383,7 +384,7 @@ parseElf' :: forall a m . (MonadCatch m, SingI a) =>
                                        HeaderXX a ->
                                     [SectionXX a] ->
                                     [SegmentXX a] ->
-                                   BSL.ByteString -> m (Sigma ElfClass (TyCon1 ElfList))
+                                   BSL.ByteString -> m (Elf')
 parseElf' hdr@HeaderXX{..} ss ps bs = do
 
     rbs <- parseRBuilder bs hdr ss ps
@@ -395,8 +396,37 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
         maybeStringData = firstJust isStringTable $ tail' $ Prelude.zip [0 .. ] ss
         stringData = maybe BSL.empty id maybeStringData
 
+        getStringFromSection :: Word32 ->  SectionXX a -> String
+        getStringFromSection offset s = BSC.unpack $ toStrict $ BSL.takeWhile (/= 0) $ BSL.drop (fromIntegral offset) (getSectionData bs s)
+
+        genericIndex' :: (Integral i) => [b] -> i -> Maybe b
+        genericIndex' (x:_)  0             = Just x
+        genericIndex' (_:xs) n | n > 0     = genericIndex' xs (n-1)
+                               | otherwise = Nothing
+        genericIndex' _ _                  = Nothing
+
+        findSectionN :: Word32 -> Maybe (SectionXX a)
+        findSectionN n = genericIndex' ss n
+
+        getStringSymbolTable :: SectionXX a -> Word32 -> String
+        getStringSymbolTable SectionXX{..} offset =
+            case findSectionN sLink of
+                Nothing -> ""
+                Just strs -> getStringFromSection offset strs
+
+        mkElfSymbolTableEntry s@SectionXX{..} SymbolTableEntryXX{..} =
+            let
+                steName  = getStringSymbolTable s stName
+                steBind  = ElfSymbolBinding $ stInfo `shiftR` 4
+                steType  = ElfSymbolType $ stInfo .&. 0x0f
+                steShNdx = stShNdx
+                steValue = stValue
+                steSize  = stSize
+            in
+                ElfSymbolTableEntry{..}
+
         rBuilderToElf RBuilderHeader{..} =
-            ElfHeader
+            return ElfHeader
                 { ehData       = hData
                 , ehOSABI      = hOSABI
                 , ehABIVersion = hABIVersion
@@ -405,22 +435,23 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                 , ehEntry      = hEntry
                 , ehFlags      = hFlags
                 }
-        rBuilderToElf RBuilderSectionTable{..} = ElfSectionTable
-        rBuilderToElf RBuilderSegmentTable{..} = ElfSegmentTable
+        rBuilderToElf RBuilderSectionTable{..} = return ElfSectionTable
+        rBuilderToElf RBuilderSegmentTable{..} = return ElfSegmentTable
         rBuilderToElf RBuilderSection{ rbsHeader = s@SectionXX{..}, ..} =
             if sectionIsSymbolTable s
-                then
-                    ElfSymbolTableSection
-                        { estName      = getString stringData $ fromIntegral sName
-                        , estType      = sType
-                        , estFlags     = sFlags
-                        , estTable     = []
+                then do
+                    st <- parseListA hData $ getSectionData bs s
+                    return ElfSymbolTableSection
+                        { estName  = getString stringData $ fromIntegral sName
+                        , estType  = sType
+                        , estFlags = sFlags
+                        , estTable = L.map (mkElfSymbolTableEntry s) st
                         }
                 else if rbsN == hShStrNdx
                     then
-                        ElfStringSection
+                        return ElfStringSection
                     else
-                        ElfSection
+                        return ElfSection
                             { esName      = getString stringData $ fromIntegral sName
                             , esType      = sType
                             , esFlags     = sFlags
@@ -429,19 +460,22 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                             , esEntSize   = sEntSize
                             , esData      = getSectionData bs s
                             }
-        rBuilderToElf RBuilderSegment{ rbpHeader = SegmentXX{..}, ..} =
-            ElfSegment
+        rBuilderToElf RBuilderSegment{ rbpHeader = SegmentXX{..}, ..} = do
+            d <- mapM rBuilderToElf rbpData
+            return ElfSegment
                 { epType     = pType
                 , epFlags    = pFlags
                 , epVirtAddr = pVirtAddr
                 , epPhysAddr = pPhysAddr
                 , epMemSize  = pMemSize
                 , epAlign    = pAlign
-                , epData     = L.map rBuilderToElf rbpData
+                , epData     = d
                 }
-        rBuilderToElf RBuilderRawData{ rbrdInterval = I o s } = ElfRawData $ cut bs (fromIntegral o) (fromIntegral s)
+        rBuilderToElf RBuilderRawData{ rbrdInterval = I o s } =
+            return $ ElfRawData $ cut bs (fromIntegral o) (fromIntegral s)
 
-    return $ sing :&: ElfList (L.map rBuilderToElf rbs)
+    el <- mapM rBuilderToElf rbs
+    return $ sing :&: ElfList el
 
 parseElf :: MonadCatch m => BSL.ByteString -> m Elf'
 parseElf bs = do
