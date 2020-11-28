@@ -109,7 +109,7 @@ mkTest'' classS HeaderXX{..} bs = do
 mkTest' :: ByteString -> Assertion
 mkTest' bs = do
     (off, elfh@(classS :&: hxx) :: Header) <- decodeOrFailAssertion bs
-    assertBool "Incorrect header size" ((headerSize ELFCLASS32 == fromIntegral off) || (headerSize ELFCLASS64 == fromIntegral off))
+    assertBool "Incorrect header size" ((headerSize ELFCLASS32 == off) || (headerSize ELFCLASS64 == off))
     assertEqual "Header round trip does not work" (BSL.take off bs) (encode elfh)
 
     mkTest'' classS hxx bs
@@ -199,12 +199,56 @@ printElfFile path = do
         Left err -> assertFailure $ show err
         Right e -> return $ printElf e
 
+testHeader64 :: Header
+testHeader64 = SELFCLASS64 :&: (HeaderXX ELFDATA2LSB 0 0 0 0 0 0 0 0 0 0 0 0 0)
+
+testHeader32 :: Header
+testHeader32 = SELFCLASS32 :&: (HeaderXX ELFDATA2MSB 0 0 0 0 0 0 0 0 0 0 0 0 0)
+
+testSection64 :: SectionXX 'ELFCLASS64
+testSection64 = SectionXX 0 0 0 0 0 0 0 0 0 0
+
+testSection32 :: SectionXX 'ELFCLASS32
+testSection32 = SectionXX 0 0 0 0 0 0 0 0 0 0
+
+testSegment64 :: SegmentXX 'ELFCLASS64
+testSegment64 =  SegmentXX 0 0 0 0 0 0 0 0
+
+testSegment32 :: SegmentXX 'ELFCLASS32
+testSegment32 =  SegmentXX 0 0 0 0 0 0 0 0
+
+testSymbolTableEntry64 :: SymbolTableEntryXX 'ELFCLASS64
+testSymbolTableEntry64 =  SymbolTableEntryXX 0 0 0 0 0 0
+
+testSymbolTableEntry32 :: SymbolTableEntryXX 'ELFCLASS32
+testSymbolTableEntry32 =  SymbolTableEntryXX 0 0 0 0 0 0
+
+mkSizeTest :: Binary a => String -> a -> Int64 -> TestTree
+mkSizeTest name v s = testCase name (len @?= s)
+    where
+        len = BSL.length $ encode v
+
+hdrSizeTests :: TestTree
+hdrSizeTests = testGroup "header size" [ mkSizeTest "header 64" testHeader64 (headerSize ELFCLASS64)
+                                       , mkSizeTest "header 32" testHeader32 (headerSize ELFCLASS32)
+
+                                       , mkSizeTest "section 64" (Le testSection64) (sectionSize ELFCLASS64)
+                                       , mkSizeTest "section 32" (Be testSection32) (sectionSize ELFCLASS32)
+
+                                       , mkSizeTest "segment 64" (Le testSegment64) (segmentSize ELFCLASS64)
+                                       , mkSizeTest "segment 32" (Be testSegment32) (segmentSize ELFCLASS32)
+
+                                       , mkSizeTest "symbol table entry 64" (Le testSymbolTableEntry64) (symbolTableEntrySize ELFCLASS64)
+                                       , mkSizeTest "symbol table entry 32" (Be testSymbolTableEntry32) (symbolTableEntrySize ELFCLASS32)
+                                       ]
+
 main :: IO ()
 main = do
 
     elfs <- traverseDir "testdata" isElf
 
-    defaultMain $ testGroup "elf" [ testGroup "headers round trip" (mkTest <$> elfs)
+    defaultMain $ testGroup "elf" [ hdrSizeTests
+                                  , testGroup "headers round trip" (mkTest <$> elfs)
                                   , testGroup "headers golden"     (mkGoldenTest "header" printHeadersFile  <$> elfs)
                                   , testGroup "layout golden"      (mkGoldenTest "layout" printRBuilderFile <$> elfs)
                                   , testGroup "elf golden"         (mkGoldenTest "elf"    printElfFile      <$> elfs)

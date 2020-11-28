@@ -33,9 +33,13 @@ module Data.Elf.Headers
     , wxxToIntegralS
     , wxxToIntegral
 
+    , headerSize
+    , sectionSize
+    , segmentSize
+    , symbolTableEntrySize
+
     , HeaderXX(..)
     , Header
-    , headerSize
 
     , BList(..)
 
@@ -247,9 +251,21 @@ data HeaderXX (c :: ElfClass) =
 
 type Header = Sigma ElfClass (TyCon1 HeaderXX)
 
-headerSize :: ElfClass -> Word16
+headerSize :: Num a => ElfClass -> a
 headerSize ELFCLASS64 = 64
 headerSize ELFCLASS32 = 52
+
+sectionSize :: Num a => ElfClass -> a
+sectionSize ELFCLASS64 = 64
+sectionSize ELFCLASS32 = 40
+
+segmentSize :: Num a => ElfClass -> a
+segmentSize ELFCLASS64 = 56
+segmentSize ELFCLASS32 = 32
+
+symbolTableEntrySize :: Num a => ElfClass -> a
+symbolTableEntrySize ELFCLASS64 = 24
+symbolTableEntrySize ELFCLASS32 = 16
 
 getHeader' :: forall (c :: ElfClass) . Sing c -> ElfData -> Get Header
 getHeader' classS hData = do
@@ -275,7 +291,7 @@ getHeader' classS hData = do
     hShOff <- getWXXE
 
     hFlags <- getE
-    hSize <- getE
+    (hSize :: Word16) <- getE
     when (hSize /= (headerSize $ fromSing classS)) $ error "incorrect size of elf header"
     hPhEntSize <- getE
     hPhNum <- getE
@@ -317,7 +333,7 @@ putHeader (classS :&: HeaderXX{..}) = do
     putWXXE hPhOff
     putWXXE hShOff
     putE hFlags
-    putE $ headerSize $ fromSing classS
+    putE (headerSize $ fromSing classS :: Word16)
     putE hPhEntSize
     putE hPhNum
     putE hShEntSize
