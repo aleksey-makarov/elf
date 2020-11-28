@@ -125,13 +125,11 @@ mkTestElf p = testCase p do
     bs <- fromStrict <$> BS.readFile p
     elf <- parseElf bs
     bs' <- serializeElf elf
-    let bs'strict = toStrict bs'
-    BS.writeFile outFileName bs'strict
     elf' <- parseElf bs'
+    withFile outFileName WriteMode (\ h -> hPutDoc h $ printElf elf')
     compareElfs elf elf'
-
     where
-        outFileName = "tests" </> p <.> "copy"
+        outFileName = "tests" </> p <.> "elf" <.> "copy"
 
 mkGoldenTest :: String -> (FilePath -> IO (Doc ())) -> FilePath -> TestTree
 mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
