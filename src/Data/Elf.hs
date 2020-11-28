@@ -306,6 +306,13 @@ data Elf (c :: ElfClass)
         { erData :: BSL.ByteString
         }
 
+foldMapElf :: Monoid m => (Elf a -> m) -> Elf a -> m
+foldMapElf f e@ElfSegment{..} = f e <> foldMapElfList f epData
+foldMapElf f e = f e
+
+foldMapElfList :: Monoid m => (Elf a -> m) -> [Elf a] -> m
+foldMapElfList f l = fold $ fmap (foldMapElf f) l
+
 -- FIXME: Elf' should be just Elf
 newtype ElfList c = ElfList [Elf c]
 type Elf' = Sigma ElfClass (TyCon1 ElfList)
@@ -567,6 +574,18 @@ serializeElf' elfs = do
                     }
 
         elf2WBuilder elf = get >>= elf2WBuilder' elf >>= put
+
+        sections = foldMapElfList f elfs
+            where
+                f s@ElfSection{..} = [s]
+                f s@ElfStringSection = [s]
+                f s@ElfSymbolTableSection{..} = [s]
+                f _ = []
+
+        segments = foldMapElfList f elfs
+            where
+                f p@ElfSegment{..} = [p]
+                f _ = []
 
         wbState2ByteString _ = return BSL.empty
 
