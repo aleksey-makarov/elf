@@ -45,9 +45,10 @@ import Data.Interval as I
 
 import Control.Monad
 import Control.Monad.Catch
-import Control.Monad.State
+import Control.Monad.State as MS
 -- import Data.Bifunctor
-import Data.Bits
+import Data.Binary
+import Data.Bits as Bin
 import Data.ByteString.Char8 as BSC
 import Data.ByteString.Lazy as BSL
 -- import Data.Either
@@ -55,12 +56,13 @@ import Data.Foldable
 import Data.Int
 import Data.List as L
 import Data.Maybe
+import Data.Monoid
 import Data.Singletons
 import Data.Singletons.Sigma
-import Data.Word
+-- import Data.Word
 
 headerInterval :: forall a . SingI a => HeaderXX a -> Interval Word64
-headerInterval _ = I 0 $ fromIntegral $ headerSize $ fromSing $ sing @a
+headerInterval _ = I 0 $ headerSize $ fromSing $ sing @a
 
 sectionTableInterval :: SingI a => HeaderXX a -> Interval Word64
 sectionTableInterval HeaderXX{..} = I o (s * n)
@@ -493,101 +495,180 @@ parseElf bs = do
 --
 -------------------------------------------------------------------------------
 
-data WBuilderSection (a :: ElfClass) =
-    WBuilderSection
-        {
-        }
-
-data WBuilderSegment (a :: ElfClass) =
-    WBuilderSegment
-        {
-        }
-
 data WBuilderData (a :: ElfClass)
     = WBuilderDataHeader
-    | WBuilderDataByteStream
+    | WBuilderDataByteStream { wbdData :: BSL.ByteString }
     | WBuilderDataSectionTable
     | WBuilderDataSegmentTable
 
 data WBuilderState (a :: ElfClass) =
     WBuilderState
-        { wbsSectionsReversed :: [WBuilderSection a]
-        , wbsSegmentsReversed :: [WBuilderSegment a]
+        { wbsSectionsReversed :: [SectionXX a]
+        , wbsSegmentsReversed :: [SegmentXX a]
         , wbsDataReversed     :: [WBuilderData a]
+        , wbsOffset           :: Word64 -- FIXME shold be WXX
+        , wbsPhOff            :: WXX a
+        , wbsShOff            :: WXX a
+        , wbsShStrNdx         :: Word16
+
         }
 
-wbStateInit :: WBuilderState a
+wbStateInit :: forall a . SingI a => WBuilderState a
 wbStateInit = WBuilderState
     { wbsSectionsReversed = []
     , wbsSegmentsReversed = []
     , wbsDataReversed     = []
+    , wbsOffset           = 0
+    , wbsPhOff            = wxxFromIntegral (0 :: Word32)
+    , wbsShOff            = wxxFromIntegral (0 :: Word32)
+    , wbsShStrNdx         = 0
     }
 
-serializeElf' :: (SingI a, MonadThrow m) => [Elf a] -> m BSL.ByteString
+zeroXX :: forall a . SingI a => WXX a
+zeroXX = wxxFromIntegral (0 :: Word32)
+
+zeroSection :: forall a . SingI a => SectionXX a
+zeroSection = SectionXX 0 0 zeroXX zeroXX zeroXX zeroXX 0 0 zeroXX zeroXX
+
+-- -- from rio package
+-- foldMapM :: (Monad m, Monoid w, Foldable t) => (a -> m w) -> t a -> m w
+-- foldMapM f = foldlM (\acc a -> do { w <- f a; return $! mappend acc w; }) mempty
+
+serializeElf' :: forall a m . (SingI a, MonadThrow m) => [Elf a] -> m BSL.ByteString
 serializeElf' elfs = do
 
     let
+
+        elfClass = fromSing $ sing @a
+
+        sectionN :: Num b => b
+        sectionN = getSum $ foldMapElfList f elfs
+            where
+                f ElfSection{..} = Sum 1
+                f ElfStringSection =  Sum 1
+                f ElfSymbolTableSection{..} =  Sum 1
+                f _ =  Sum 0
+
+        segmentN :: Num b => b
+        segmentN = getSum $ foldMapElfList f elfs
+            where
+                f ElfSegment{..} =  Sum 1
+                f _ =  Sum 0
+
+        sectionTable :: Bool
+        sectionTable = getAny $ foldMapElfList f elfs
+            where
+                f ElfSymbolTableSection{..} =  Any True
+                f _ = Any False
+
+        elf2WBuilder' :: MonadThrow n => Elf a -> WBuilderState a -> n (WBuilderState a)
         elf2WBuilder' ElfHeader{..} WBuilderState{..} =
             return WBuilderState
                 { wbsDataReversed = WBuilderDataHeader : wbsDataReversed
+                , wbsOffset = wbsOffset + headerSize elfClass
                 , ..
                 }
         elf2WBuilder' ElfSectionTable WBuilderState{..} =
             return WBuilderState
                 { wbsDataReversed = WBuilderDataSectionTable : wbsDataReversed
+                , wbsOffset = wbsOffset + (sectionN + 1) * sectionSize elfClass
+                , wbsShOff = wxxFromIntegral wbsOffset
                 , ..
                 }
         elf2WBuilder' ElfSegmentTable WBuilderState{..} =
             return WBuilderState
                 { wbsDataReversed = WBuilderDataSegmentTable : wbsDataReversed
+                , wbsOffset = wbsOffset + segmentN * segmentSize elfClass
+                , wbsPhOff = wxxFromIntegral wbsOffset
                 , ..
                 }
-        elf2WBuilder' ElfSection{..} WBuilderState{..} =
+        elf2WBuilder' ElfSection{..} WBuilderState{..} = do
             let
-                d = WBuilderDataByteStream
-                s = WBuilderSection
-            in
-                return WBuilderState
-                    { wbsDataReversed = d : wbsDataReversed
-                    , wbsSectionsReversed = s : wbsSectionsReversed
-                    , ..
-                    }
+                d = WBuilderDataByteStream esData
+            return WBuilderState
+                { wbsDataReversed = d : wbsDataReversed
+                , wbsOffset = wbsOffset + (fromIntegral $ BSL.length esData)
+                , ..
+                }
         elf2WBuilder' ElfStringSection s@WBuilderState{..} = return s
         elf2WBuilder' ElfSymbolTableSection{..} s@WBuilderState{..} = return s
-        elf2WBuilder' ElfSegment{..} WBuilderState{..} =
+        elf2WBuilder' ElfSegment{..} s = do
             let
-                ds = []
-                p = WBuilderSegment
-            in
-                return WBuilderState
-                    { wbsDataReversed = ds ++ wbsDataReversed
-                    , wbsSegmentsReversed = p : wbsSegmentsReversed
-                    , ..
-                    }
+                offset = wbsOffset s
+            WBuilderState{..} <- execStateT (mapM elf2WBuilder epData) s
+            let
+                pType = epType
+                pFlags = epFlags
+                pOffset = wxxFromIntegral offset
+                pVirtAddr = epVirtAddr
+                pPhysAddr = epPhysAddr
+                pFileSize = zeroXX -- FIXME
+                pMemSize = epMemSize
+                pAlign = epAlign
+                p' = SegmentXX{..}
+            return WBuilderState
+                { wbsSegmentsReversed = p' : wbsSegmentsReversed
+                , ..
+                }
         elf2WBuilder' ElfRawData{..} WBuilderState{..} =
-            let
-                bs = WBuilderDataByteStream
-            in
-                return WBuilderState
-                    { wbsDataReversed = bs : wbsDataReversed
-                    , ..
-                    }
+            return WBuilderState
+                { wbsDataReversed = (WBuilderDataByteStream erData) : wbsDataReversed
+                , wbsOffset = wbsOffset + (fromIntegral $ BSL.length erData)
+                , ..
+                }
 
-        elf2WBuilder elf = get >>= elf2WBuilder' elf >>= put
+        elf2WBuilder :: (MonadThrow n, MonadState (WBuilderState a) n) => Elf a -> n ()
+        elf2WBuilder elf = MS.get >>= elf2WBuilder' elf >>= MS.put
 
-        sections = foldMapElfList f elfs
+    (header, hData') <-
+        let
+            f h@ElfHeader{..} = First $ Just (h, ehData)
+            f _ = First $ Nothing
+        in
+            case getFirst $ foldMapElfList f elfs of
+                Just h -> return h
+                Nothing -> $elfError "no header"
+
+    let
+
+        wbState2ByteString :: WBuilderState a -> m BSL.ByteString
+        wbState2ByteString WBuilderState{..} = return $ foldMap f $ L.reverse wbsDataReversed
             where
-                f s@ElfSection{..} = [s]
-                f s@ElfStringSection = [s]
-                f s@ElfSymbolTableSection{..} = [s]
-                f _ = []
+                f WBuilderDataHeader =
+                    case header of
+                        ElfHeader{..} ->
+                            let
+                                hData       = ehData
+                                hOSABI      = ehOSABI
+                                hABIVersion = ehABIVersion
+                                hType       = ehType
+                                hMachine    = ehMachine
+                                hEntry      = ehEntry
+                                hPhOff      = wbsPhOff
+                                hShOff      = wbsShOff
+                                hFlags      = ehFlags
+                                hPhEntSize  = segmentSize elfClass
+                                hPhNum      = segmentN
+                                hShEntSize  = sectionSize elfClass
+                                hShNum      = if sectionTable then sectionN + 1 else 0
+                                hShStrNdx   = wbsShStrNdx
 
-        segments = foldMapElfList f elfs
-            where
-                f p@ElfSegment{..} = [p]
-                f _ = []
-
-        wbState2ByteString _ = return BSL.empty
+                                h :: Header
+                                h = sing @ a :&: HeaderXX{..}
+                            in
+                                encode h
+                        _ -> error "this should be ElfHeader" -- FIXME
+                f WBuilderDataByteStream {..} = wbdData
+                f WBuilderDataSectionTable =
+                    let
+                        ss = zeroSection : L.reverse wbsSectionsReversed
+                    in
+                        case hData' of
+                            ELFDATA2LSB -> encode $ BList $ fmap Le $ ss
+                            ELFDATA2MSB -> encode $ BList $ fmap Be $ ss
+                f WBuilderDataSegmentTable = case hData' of
+                    ELFDATA2LSB -> encode $ BList $ fmap Le $ L.reverse wbsSegmentsReversed
+                    ELFDATA2MSB -> encode $ BList $ fmap Be $ L.reverse wbsSegmentsReversed
 
     execStateT (mapM elf2WBuilder elfs) wbStateInit >>= wbState2ByteString
 
