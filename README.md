@@ -23,3 +23,11 @@ https://serokell.io/blog/dimensions-haskell-singletons
 https://habr.com/ru/post/485174/
 https://cs.stackexchange.com/questions/525/what-is-coinduction
 http://homepages.inf.ed.ac.uk/slindley/papers/hasochism.pdf
+
+# How to run tests
+
+	cabal v2-test --test-show-details=direct
+
+# How to update elf.nix
+
+	cabal2nix . > ./elf.nix

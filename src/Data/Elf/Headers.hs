@@ -13,6 +13,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE StandaloneKindSignatures #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -77,7 +78,7 @@ import Data.ByteString       as BS
 import Data.ByteString.Lazy  as BSL
 -- import Data.ByteString.Char8 as BSC
 -- import Data.Kind
-import Data.List as L
+import qualified Data.List as L
 import Data.Singletons.Sigma
 import Data.Singletons.TH
 -- import Numeric.Interval as I

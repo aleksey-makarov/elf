@@ -26,7 +26,7 @@ import qualified Data.ByteString.Char8 as BC8
 import qualified Data.ByteString.Lazy as BSL
 import Data.Char
 import Data.Int
-import Data.List as L
+import qualified Data.List as L
 import Data.Singletons
 import Data.Singletons.Sigma
 import Data.Text.Prettyprint.Doc as D
@@ -177,25 +177,25 @@ printRBuilder getStr rbs = vsep ldoc
 
                 i@(I o s) = rBuilderInterval rb
 
-                f RBuilderHeader{..} =
+                f RBuilderHeader{} =
                     [ (o,         "┎", ["H"])
                     , (o + s - 1, "┖", [])
                     ]
-                f RBuilderSectionTable{ rbstHeader = HeaderXX{..}, ..} =
+                f RBuilderSectionTable{ rbstHeader = HeaderXX{..} } =
                     if hShNum == 0
                         then []
                         else
                             [ (o,         "┎", ["ST", parens $ viaShow hShNum])
                             , (o + s - 1, "┖", [])
                             ]
-                f RBuilderSegmentTable{ rbptHeader = HeaderXX{..}, ..} =
+                f RBuilderSegmentTable{ rbptHeader = HeaderXX{..} } =
                     if hPhNum == 0
                         then []
                         else
                             [ (o,         "┎", ["PT", parens $ viaShow hPhNum])
                             , (o + s - 1, "┖", [])
                             ]
-                f RBuilderSection{ rbsHeader = SectionXX{..}, ..} =
+                f RBuilderSection{ rbsHeader = SectionXX{..} } =
                     let
                         doc = [ "S"
                               , dquotes $ pretty $ getStr sName
@@ -232,7 +232,7 @@ printRBuilder getStr rbs = vsep ldoc
                                     [(o,         b, doc)] ++
                                     xsf                         ++
                                     [(o + s - 1, e, [])]
-                f RBuilderRawData{..} = []
+                f RBuilderRawData{} = []
                 -- f RBuilderRawData{..} =
                 --     let
                 --         doc = [ "R" ]

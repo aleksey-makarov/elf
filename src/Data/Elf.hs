@@ -54,7 +54,7 @@ import Data.ByteString.Lazy as BSL
 -- import Data.Either
 import Data.Foldable
 import Data.Int
-import Data.List as L
+import qualified Data.List as L
 import Data.Maybe
 import Data.Monoid
 import Data.Singletons
@@ -141,12 +141,12 @@ findInterval f e list = findInterval' [] list
         findInterval' l (x : xs) | otherwise        = findInterval' (x : l) xs
 
 showRBuilber' :: RBuilder a -> String
-showRBuilber' RBuilderHeader{..}        = "header"
-showRBuilber' RBuilderSectionTable{..}  = "section table"
-showRBuilber' RBuilderSegmentTable{..}  = "segment table"
-showRBuilber' RBuilderSection{..}       = "section " ++ show rbsN
-showRBuilber' RBuilderSegment{..}       = "segment " ++ show rbpN
-showRBuilber' RBuilderRawData{..}       = "raw data" -- should not be called
+showRBuilber' RBuilderHeader{}       = "header"
+showRBuilber' RBuilderSectionTable{} = "section table"
+showRBuilber' RBuilderSegmentTable{} = "segment table"
+showRBuilber' RBuilderSection{..}    = "section " ++ show rbsN
+showRBuilber' RBuilderSegment{..}    = "segment " ++ show rbpN
+showRBuilber' RBuilderRawData{}      = "raw data" -- should not be called
 
 showRBuilber :: SingI a => RBuilder a -> String
 showRBuilber v = showRBuilber' v ++ " (" ++ (show $ rBuilderInterval v) ++ ")"
@@ -423,7 +423,7 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                 Nothing -> ""
                 Just strs -> getStringFromSection offset strs
 
-        mkElfSymbolTableEntry s@SectionXX{..} SymbolTableEntryXX{..} =
+        mkElfSymbolTableEntry s@SectionXX{} SymbolTableEntryXX{..} =
             let
                 steName  = getStringSymbolTable s stName
                 steBind  = ElfSymbolBinding $ stInfo `shiftR` 4
@@ -434,7 +434,7 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
             in
                 ElfSymbolTableEntry{..}
 
-        rBuilderToElf RBuilderHeader{..} =
+        rBuilderToElf RBuilderHeader{} =
             return ElfHeader
                 { ehData       = hData
                 , ehOSABI      = hOSABI
@@ -444,8 +444,8 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                 , ehEntry      = hEntry
                 , ehFlags      = hFlags
                 }
-        rBuilderToElf RBuilderSectionTable{..} = return ElfSectionTable
-        rBuilderToElf RBuilderSegmentTable{..} = return ElfSegmentTable
+        rBuilderToElf RBuilderSectionTable{} = return ElfSectionTable
+        rBuilderToElf RBuilderSegmentTable{} = return ElfSegmentTable
         rBuilderToElf RBuilderSection{ rbsHeader = s@SectionXX{..}, ..} =
             if sectionIsSymbolTable s
                 then do
@@ -544,25 +544,25 @@ serializeElf' elfs = do
         sectionN :: Num b => b
         sectionN = getSum $ foldMapElfList f elfs
             where
-                f ElfSection{..} = Sum 1
+                f ElfSection{} = Sum 1
                 f ElfStringSection =  Sum 1
-                f ElfSymbolTableSection{..} =  Sum 1
+                f ElfSymbolTableSection{} =  Sum 1
                 f _ =  Sum 0
 
         segmentN :: Num b => b
         segmentN = getSum $ foldMapElfList f elfs
             where
-                f ElfSegment{..} =  Sum 1
+                f ElfSegment{} = Sum 1
                 f _ =  Sum 0
 
         sectionTable :: Bool
         sectionTable = getAny $ foldMapElfList f elfs
             where
-                f ElfSymbolTableSection{..} =  Any True
+                f ElfSymbolTableSection{} =  Any True
                 f _ = Any False
 
         elf2WBuilder' :: MonadThrow n => Elf a -> WBuilderState a -> n (WBuilderState a)
-        elf2WBuilder' ElfHeader{..} WBuilderState{..} =
+        elf2WBuilder' ElfHeader{} WBuilderState{..} =
             return WBuilderState
                 { wbsDataReversed = WBuilderDataHeader : wbsDataReversed
                 , wbsOffset = wbsOffset + headerSize elfClass
@@ -590,8 +590,8 @@ serializeElf' elfs = do
                 , wbsOffset = wbsOffset + (fromIntegral $ BSL.length esData)
                 , ..
                 }
-        elf2WBuilder' ElfStringSection s@WBuilderState{..} = return s
-        elf2WBuilder' ElfSymbolTableSection{..} s@WBuilderState{..} = return s
+        elf2WBuilder' ElfStringSection s@WBuilderState{} = return s
+        elf2WBuilder' ElfSymbolTableSection{} s@WBuilderState{} = return s
         elf2WBuilder' ElfSegment{..} s = do
             let
                 offset = wbsOffset s

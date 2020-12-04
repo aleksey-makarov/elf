@@ -152,7 +152,7 @@ findHeader :: SingI a => [RBuilder a] -> Maybe (HeaderXX a)
 findHeader rbs = getFirst $ foldMap f rbs
     where
         f RBuilderSegment{..} = First $ findHeader rbpData
-        f RBuilderHeader{ rbhHeader = h@HeaderXX{..}, ..} = First $ Just h
+        f RBuilderHeader{ rbhHeader = h@HeaderXX{} } = First $ Just h
         f _ = First Nothing
 
 findSection :: SingI a => Word16 -> [RBuilder a] -> Maybe (SectionXX a)
@@ -173,7 +173,7 @@ printRBuilderFile path = do
     bs <- fromStrict <$> BS.readFile path
     case parseHeaders bs of
         Left err -> assertFailure $ show err
-        Right (classS :&: HeadersXX (hdr@HeaderXX{..}, ss, ps)) -> withSingI classS do
+        Right (classS :&: HeadersXX (hdr@HeaderXX{}, ss, ps)) -> withSingI classS do
             rbs <- parseRBuilder bs hdr ss ps
             let
                 stringSectionData = getSectionData bs <$> findStringSection rbs
