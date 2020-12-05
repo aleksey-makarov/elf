@@ -8,7 +8,7 @@ header {
     Entry:      0x0000000000000000
     Flags:      0x00000000
 }
-section ".text" {
+section 1 ".text" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000006
     Addr:      0x0000000000000000
@@ -16,7 +16,7 @@ section ".text" {
     EntSize:   0x0000000000000000
     Data:      
 }
-section ".data" {
+section 2 ".data" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000003
     Addr:      0x0000000000000000
@@ -24,7 +24,7 @@ section ".data" {
     EntSize:   0x0000000000000000
     Data:      
 }
-section ".bss" {
+section 3 ".bss" {
     Type:      SHT_NOBITS
     Flags:     0x0000000000000003
     Addr:      0x0000000000000000
@@ -32,7 +32,7 @@ section ".bss" {
     EntSize:   0x0000000000000000
     Data:      
 }
-section ".init" {
+section 4 ".init" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000006
     Addr:      0x0000000000000000
@@ -40,7 +40,7 @@ section ".init" {
     EntSize:   0x0000000000000000
     Data:      fd 7b c1 a8 c0 03 5f d6                         # .{...._.
 }
-section ".fini" {
+section 5 ".fini" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000006
     Addr:      0x0000000000000000
@@ -48,7 +48,7 @@ section ".fini" {
     EntSize:   0x0000000000000000
     Data:      fd 7b c1 a8 c0 03 5f d6                         # .{...._.
 }
-section ".note.GNU-stack" {
+section 6 ".note.GNU-stack" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000
@@ -84,7 +84,7 @@ symbol table section ".symtab" {
         }
         total: 9
 }
-section ".strtab" {
+section 8 ".strtab" {
     Type:      SHT_STRTAB
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000

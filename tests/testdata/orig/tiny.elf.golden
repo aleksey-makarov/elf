@@ -33,7 +33,7 @@ segment {
                   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                   total: 48
         }
-        section ".text" {
+        section 1 ".text" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
             Addr:      0x00000000004000e0

@@ -34,7 +34,7 @@ segment {
             MemSize:  0x0000000000000024
             Align:    0x0000000000000004
             Data:     
-                section ".note.gnu.build-id" {
+                section 1 ".note.gnu.build-id" {
                     Type:      SHT_NOTE
                     Flags:     0x0000000000000002
                     Addr:      0x00000000000001c8
@@ -50,7 +50,7 @@ segment {
         raw data {
             Data: 00 00 00 00                                     # ....
         }
-        section ".hash" {
+        section 2 ".hash" {
             Type:      SHT_HASH
             Flags:     0x0000000000000002
             Addr:      0x00000000000001f0
@@ -62,7 +62,7 @@ segment {
                        00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                        total: 360
         }
-        section ".gnu.hash" {
+        section 3 ".gnu.hash" {
             Type:      SHT_EXT 1879048182
             Flags:     0x0000000000000002
             Addr:      0x0000000000000358
@@ -105,7 +105,7 @@ segment {
                 }
                 total: 36
         }
-        section ".dynstr" {
+        section 5 ".dynstr" {
             Type:      SHT_STRTAB
             Flags:     0x0000000000000002
             Addr:      0x0000000000000828
@@ -117,7 +117,7 @@ segment {
                        37 00 47 4c 49 42 43 5f 50 52 49 56 41 54 45 00 # 7.GLIBC_PRIVATE.
                        total: 560
         }
-        section ".gnu.version" {
+        section 6 ".gnu.version" {
             Type:      SHT_EXT 1879048191
             Flags:     0x0000000000000002
             Addr:      0x0000000000000a58
@@ -129,7 +129,7 @@ segment {
                        03 00 03 00 03 00 03 00 03 00 03 00 02 00 03 00 # ................
                        total: 72
         }
-        section ".gnu.version_d" {
+        section 7 ".gnu.version_d" {
             Type:      SHT_EXT 1879048189
             Flags:     0x0000000000000002
             Addr:      0x0000000000000aa0
@@ -144,7 +144,7 @@ segment {
         raw data {
             Data: 00 00 00 00                                     # ....
         }
-        section ".rela.dyn" {
+        section 8 ".rela.dyn" {
             Type:      SHT_RELA
             Flags:     0x0000000000000002
             Addr:      0x0000000000000b00
@@ -156,7 +156,7 @@ segment {
                        01 04 00 00 1a 00 00 00 00 00 00 00 00 00 00 00 # ................
                        total: 1224
         }
-        section ".rela.plt" {
+        section 9 ".rela.plt" {
             Type:      SHT_RELA
             Flags:     0x0000000000000042
             Addr:      0x0000000000000fc8
@@ -168,7 +168,7 @@ segment {
                        02 04 00 00 1a 00 00 00 00 00 00 00 00 00 00 00 # ................
                        total: 216
         }
-        section ".plt" {
+        section 10 ".plt" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
             Addr:      0x00000000000010a0
@@ -187,7 +187,7 @@ segment {
                   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                   total: 48
         }
-        section ".text" {
+        section 11 ".text" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
             Addr:      0x0000000000001180
@@ -199,7 +199,7 @@ segment {
                        e0 03 00 4b 20 94 01 b9 00 00 80 92 c0 03 5f d6 # ...K ........._.
                        total: 93992
         }
-        section ".rodata" {
+        section 12 ".rodata" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
             Addr:      0x00000000000180a8
@@ -219,7 +219,7 @@ segment {
             MemSize:  0x000000000000069c
             Align:    0x0000000000000004
             Data:     
-                section ".eh_frame_hdr" {
+                section 13 ".eh_frame_hdr" {
                     Type:      SHT_PROGBITS
                     Flags:     0x0000000000000002
                     Addr:      0x000000000001c160
@@ -235,7 +235,7 @@ segment {
         raw data {
             Data: 00 00 00 00                                     # ....
         }
-        section ".eh_frame" {
+        section 14 ".eh_frame" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
             Addr:      0x000000000001c800
@@ -264,7 +264,7 @@ segment {
             MemSize:  0x0000000000000a78
             Align:    0x0000000000000001
             Data:     
-                section ".data.rel.ro" {
+                section 15 ".data.rel.ro" {
                     Type:      SHT_PROGBITS
                     Flags:     0x0000000000000003
                     Addr:      0x000000000002f588
@@ -287,7 +287,7 @@ segment {
                     MemSize:  0x0000000000000190
                     Align:    0x0000000000000008
                     Data:     
-                        section ".dynamic" {
+                        section 16 ".dynamic" {
                             Type:      SHT_DYNAMIC
                             Flags:     0x0000000000000003
                             Addr:      0x000000000002fdd0
@@ -300,7 +300,7 @@ segment {
                                        total: 400
                         }
                 }
-                section ".got" {
+                section 17 ".got" {
                     Type:      SHT_PROGBITS
                     Flags:     0x0000000000000003
                     Addr:      0x000000000002ff60
@@ -313,7 +313,7 @@ segment {
                                total: 160
                 }
         }
-        section ".data" {
+        section 18 ".data" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000003
             Addr:      0x0000000000030000
@@ -326,7 +326,7 @@ segment {
                        total: 4144
         }
 }
-section ".bss" {
+section 19 ".bss" {
     Type:      SHT_NOBITS
     Flags:     0x0000000000000003
     Addr:      0x0000000000031030
@@ -338,7 +338,7 @@ section ".bss" {
                60 c1 01 00 00 00 00 00 00 00 00 00 00 00 00 00 # `...............
                total: 360
 }
-section ".comment" {
+section 20 ".comment" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000030
     Addr:      0x0000000000000000
@@ -375,7 +375,7 @@ symbol table section ".symtab" {
         }
         total: 774
 }
-section ".strtab" {
+section 22 ".strtab" {
     Type:      SHT_STRTAB
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000

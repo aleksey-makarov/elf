@@ -8,7 +8,7 @@ header {
     Entry:      0x00000000
     Flags:      0x00000000
 }
-section ".text" {
+section 1 ".text" {
     Type:      SHT_PROGBITS
     Flags:     0x00000006
     Addr:      0x00000000
@@ -20,7 +20,7 @@ section ".text" {
                17 01 c0 df 17 00 00 df 04 02 c0 de 3a 28 00 f8 # ............:(..
                total: 52
 }
-section ".data" {
+section 3 ".data" {
     Type:      SHT_PROGBITS
     Flags:     0x00000003
     Addr:      0x00000000
@@ -28,7 +28,7 @@ section ".data" {
     EntSize:   0x00000000
     Data:      
 }
-section ".bss" {
+section 4 ".bss" {
     Type:      SHT_NOBITS
     Flags:     0x00000003
     Addr:      0x00000000
@@ -36,7 +36,7 @@ section ".bss" {
     EntSize:   0x00000000
     Data:      
 }
-section ".rodata" {
+section 5 ".rodata" {
     Type:      SHT_PROGBITS
     Flags:     0x00000002
     Addr:      0x00000000
@@ -44,7 +44,7 @@ section ".rodata" {
     EntSize:   0x00000000
     Data:      48 65 6c 6c 6f 20 77 6f 72 6c 64 00             # Hello world.
 }
-section ".debug_info" {
+section 6 ".debug_info" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
@@ -56,7 +56,7 @@ section ".debug_info" {
                05 5d 00 00 00 00 00 00 00 34 00 00 00 01 9c 00 # .].......4......
                total: 2343
 }
-section ".debug_abbrev" {
+section 8 ".debug_abbrev" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
@@ -68,7 +68,7 @@ section ".debug_abbrev" {
                39 0b 49 13 11 01 12 06 40 18 96 42 19 00 00 00 # 9.I.....@..B....
                total: 461
 }
-section ".debug_aranges" {
+section 9 ".debug_aranges" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
@@ -77,7 +77,7 @@ section ".debug_aranges" {
     Data:      1c 00 00 00 02 00 00 00 00 00 04 00 00 00 00 00 # ................
                00 00 00 00 34 00 00 00 00 00 00 00 00 00 00 00 # ....4...........
 }
-section ".debug_line" {
+section 11 ".debug_line" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
@@ -89,7 +89,7 @@ section ".debug_line" {
                00 14 05 05 f3 05 0c bb 05 01 4b 02 14 00 01 01 # ..........K.....
                total: 379
 }
-section ".debug_str" {
+section 13 ".debug_str" {
     Type:      SHT_PROGBITS
     Flags:     0x00000030
     Addr:      0x00000000
@@ -101,7 +101,7 @@ section ".debug_str" {
                00 6d 61 69 6e 00 5f 5f 74 6d 5f 6d 64 61 79 00 # .main.__tm_mday.
                total: 1204
 }
-section ".comment" {
+section 14 ".comment" {
     Type:      SHT_PROGBITS
     Flags:     0x00000030
     Addr:      0x00000000
@@ -113,7 +113,7 @@ section ".comment" {
                20 39 2e 33 2e 31 20 32 30 32 30 30 34 32 30 00 #  9.3.1 20200420.
                total: 45
 }
-section ".debug_frame" {
+section 15 ".debug_frame" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
     Addr:      0x00000000
@@ -153,7 +153,7 @@ symbol table section ".symtab" {
         }
         total: 15
 }
-section ".strtab" {
+section 18 ".strtab" {
     Type:      SHT_STRTAB
     Flags:     0x00000000
     Addr:      0x00000000
@@ -162,7 +162,7 @@ section ".strtab" {
     Data:      00 61 2e 63 00 6d 61 69 6e 00 70 72 69 6e 74 66 # .a.c.main.printf
                00                                              # .
 }
-section ".rela.text" {
+section 2 ".rela.text" {
     Type:      SHT_RELA
     Flags:     0x00000040
     Addr:      0x00000000
@@ -174,7 +174,7 @@ section ".rela.text" {
                00 00 00 00 18 00 00 00 04 0e 00 00 00 00 00 00 # ................
                total: 36
 }
-section ".rela.debug_info" {
+section 7 ".rela.debug_info" {
     Type:      SHT_RELA
     Flags:     0x00000040
     Addr:      0x00000000
@@ -186,7 +186,7 @@ section ".rela.debug_info" {
                a5 04 00 00 1c 09 00 00 0c 02 00 00 00 00 00 00 # ................
                total: 1584
 }
-section ".rela.debug_aranges" {
+section 10 ".rela.debug_aranges" {
     Type:      SHT_RELA
     Flags:     0x00000040
     Addr:      0x00000000
@@ -195,7 +195,7 @@ section ".rela.debug_aranges" {
     Data:      06 00 00 00 0c 06 00 00 00 00 00 00 10 00 00 00 # ................
                0c 02 00 00 00 00 00 00                         # ........
 }
-section ".rela.debug_line" {
+section 12 ".rela.debug_line" {
     Type:      SHT_RELA
     Flags:     0x00000040
     Addr:      0x00000000
@@ -203,7 +203,7 @@ section ".rela.debug_line" {
     EntSize:   0x0000000c
     Data:      68 01 00 00 0c 02 00 00 00 00 00 00             # h...........
 }
-section ".rela.debug_frame" {
+section 16 ".rela.debug_frame" {
     Type:      SHT_RELA
     Flags:     0x00000040
     Addr:      0x00000000

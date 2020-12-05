@@ -287,6 +287,7 @@ data Elf (c :: ElfClass)
         , esAddrAlign :: WXX c
         , esEntSize   :: WXX c
         , esData      :: BSL.ByteString
+        , esN         :: Word16
         }
     | ElfStringSection
     | ElfSymbolTableSection
@@ -468,6 +469,7 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                             , esAddrAlign = sAddrAlign
                             , esEntSize   = sEntSize
                             , esData      = getSectionData bs s
+                            , esN         = rbsN
                             }
         rBuilderToElf RBuilderSegment{ rbpHeader = SegmentXX{..}, ..} = do
             d <- mapM rBuilderToElf rbpData

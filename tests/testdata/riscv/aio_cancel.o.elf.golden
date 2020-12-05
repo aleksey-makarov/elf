@@ -8,7 +8,7 @@ header {
     Entry:      0x00000000
     Flags:      0x00000004
 }
-section ".text" {
+section 1 ".text" {
     Type:      SHT_PROGBITS
     Flags:     0x00000006
     Addr:      0x00000000
@@ -20,7 +20,7 @@ section ".text" {
                23 a0 e7 00 6f f0 5f e4 97 00 00 00 e7 80 00 00 # #...o._.........
                total: 592
 }
-section ".data" {
+section 3 ".data" {
     Type:      SHT_PROGBITS
     Flags:     0x00000003
     Addr:      0x00000000
@@ -28,7 +28,7 @@ section ".data" {
     EntSize:   0x00000000
     Data:      
 }
-section ".bss" {
+section 4 ".bss" {
     Type:      SHT_NOBITS
     Flags:     0x00000003
     Addr:      0x00000000
@@ -36,7 +36,7 @@ section ".bss" {
     EntSize:   0x00000000
     Data:      
 }
-section ".rodata.str1.4" {
+section 5 ".rodata.str1.4" {
     Type:      SHT_PROGBITS
     Flags:     0x00000032
     Addr:      0x00000000
@@ -48,7 +48,7 @@ section ".rodata.str1.4" {
                65 64 00 00 00 61 69 6f 5f 63 61 6e 63 65 6c 00 # ed...aio_cancel.
                total: 91
 }
-section ".comment" {
+section 6 ".comment" {
     Type:      SHT_PROGBITS
     Flags:     0x00000030
     Addr:      0x00000000
@@ -85,7 +85,7 @@ symbol table section ".symtab" {
         }
         total: 164
 }
-section ".strtab" {
+section 8 ".strtab" {
     Type:      SHT_STRTAB
     Flags:     0x00000000
     Addr:      0x00000000
@@ -97,7 +97,7 @@ section ".strtab" {
                69 6c 00 61 69 6f 5f 63 61 6e 63 65 6c 36 34 00 # il.aio_cancel64.
                total: 691
 }
-section ".rela.text" {
+section 2 ".rela.text" {
     Type:      SHT_RELA
     Flags:     0x00000040
     Addr:      0x00000000

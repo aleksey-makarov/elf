@@ -25,7 +25,7 @@ segment {
             MemSize:  0x0000000000000024
             Align:    0x0000000000000004
             Data:     
-                section ".note.gnu.build-id" {
+                section 1 ".note.gnu.build-id" {
                     Type:      SHT_NOTE
                     Flags:     0x0000000000000002
                     Addr:      0x0000000000000158
@@ -41,7 +41,7 @@ segment {
         raw data {
             Data: 00 00 00 00                                     # ....
         }
-        section ".gnu.hash" {
+        section 2 ".gnu.hash" {
             Type:      SHT_EXT 1879048182
             Flags:     0x0000000000000002
             Addr:      0x0000000000000180
@@ -84,7 +84,7 @@ segment {
                 }
                 total: 248
         }
-        section ".dynstr" {
+        section 4 ".dynstr" {
             Type:      SHT_STRTAB
             Flags:     0x0000000000000002
             Addr:      0x0000000000001fd0
@@ -96,7 +96,7 @@ segment {
                        33 2e 73 6f 00 47 4c 49 42 43 5f 32 2e 32 37 00 # 3.so.GLIBC_2.27.
                        total: 2936
         }
-        section ".gnu.version" {
+        section 5 ".gnu.version" {
             Type:      SHT_EXT 1879048191
             Flags:     0x0000000000000002
             Addr:      0x0000000000002b48
@@ -108,7 +108,7 @@ segment {
                        01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 # ................
                        total: 496
         }
-        section ".gnu.version_r" {
+        section 6 ".gnu.version_r" {
             Type:      SHT_EXT 1879048190
             Flags:     0x0000000000000002
             Addr:      0x0000000000002d38
@@ -120,7 +120,7 @@ segment {
                        87 91 96 06 00 00 02 00 6d 0b 00 00 00 00 00 00 # ........m.......
                        total: 128
         }
-        section ".rela.dyn" {
+        section 7 ".rela.dyn" {
             Type:      SHT_RELA
             Flags:     0x0000000000000002
             Addr:      0x0000000000002db8
@@ -132,7 +132,7 @@ segment {
                        02 00 00 00 5b 00 00 00 00 00 00 00 00 00 00 00 # ....[...........
                        total: 12096
         }
-        section ".rela.plt" {
+        section 8 ".rela.plt" {
             Type:      SHT_RELA
             Flags:     0x0000000000000042
             Addr:      0x0000000000005cf8
@@ -144,7 +144,7 @@ segment {
                        05 00 00 00 c8 00 00 00 00 00 00 00 00 00 00 00 # ................
                        total: 5208
         }
-        section ".plt" {
+        section 9 ".plt" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
             Addr:      0x0000000000007150
@@ -156,7 +156,7 @@ segment {
                        17 0e 02 00 03 3e 0e 7e 67 03 0e 00 13 00 00 00 # .....>.~g.......
                        total: 3504
         }
-        section ".text" {
+        section 10 ".text" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
             Addr:      0x0000000000007f00
@@ -171,7 +171,7 @@ segment {
         raw data {
             Data: 00 00 00 00 00 00                               # ......
         }
-        section ".rodata" {
+        section 11 ".rodata" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
             Addr:      0x0000000000021380
@@ -183,7 +183,7 @@ segment {
                        20 62 65 20 61 20 6e 75 6d 62 65 72 00 00 00 00 #  be a number....
                        total: 16192
         }
-        section ".eh_frame" {
+        section 12 ".eh_frame" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
             Addr:      0x00000000000252c0
@@ -208,7 +208,7 @@ segment {
             MemSize:  0x00000000000012c8
             Align:    0x0000000000000001
             Data:     
-                section ".init_array" {
+                section 13 ".init_array" {
                     Type:      SHT_EXT 14
                     Flags:     0x0000000000000003
                     Addr:      0x0000000000026d38
@@ -216,7 +216,7 @@ segment {
                     EntSize:   0x0000000000000008
                     Data:      00 00 00 00 00 00 00 00                         # ........
                 }
-                section ".fini_array" {
+                section 14 ".fini_array" {
                     Type:      SHT_EXT 15
                     Flags:     0x0000000000000003
                     Addr:      0x0000000000026d40
@@ -224,7 +224,7 @@ segment {
                     EntSize:   0x0000000000000008
                     Data:      00 00 00 00 00 00 00 00                         # ........
                 }
-                section ".data.rel.ro" {
+                section 15 ".data.rel.ro" {
                     Type:      SHT_PROGBITS
                     Flags:     0x0000000000000003
                     Addr:      0x0000000000026d48
@@ -244,7 +244,7 @@ segment {
                     MemSize:  0x00000000000001e0
                     Align:    0x0000000000000008
                     Data:     
-                        section ".dynamic" {
+                        section 16 ".dynamic" {
                             Type:      SHT_DYNAMIC
                             Flags:     0x0000000000000003
                             Addr:      0x0000000000027e20
@@ -258,7 +258,7 @@ segment {
                         }
                 }
         }
-        section ".got" {
+        section 17 ".got" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000003
             Addr:      0x0000000000028000
@@ -271,7 +271,7 @@ segment {
                        total: 1832
         }
 }
-section ".bss" {
+section 18 ".bss" {
     Type:      SHT_NOBITS
     Flags:     0x0000000000000003
     Addr:      0x0000000000028728
@@ -279,7 +279,7 @@ section ".bss" {
     EntSize:   0x0000000000000000
     Data:      6c 69 62 6c 75 61 2d 35                         # liblua-5
 }
-section ".gnu_debuglink" {
+section 19 ".gnu_debuglink" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000

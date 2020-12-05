@@ -8,7 +8,7 @@ header {
     Entry:      0x0000000000000000
     Flags:      0x00000000
 }
-section ".text" {
+section 1 ".text" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000006
     Addr:      0x0000000000000000
@@ -20,7 +20,7 @@ section ".text" {
                00 02 00 00 00 04 00 00 00 48 83 c3 05 ff 65 00 # .........H....e.
                total: 46671
 }
-section ".data" {
+section 3 ".data" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000003
     Addr:      0x0000000000000000
@@ -32,7 +32,7 @@ section ".data" {
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                total: 5120
 }
-section ".bss" {
+section 5 ".bss" {
     Type:      SHT_NOBITS
     Flags:     0x0000000000000003
     Addr:      0x0000000000000000
@@ -40,7 +40,7 @@ section ".bss" {
     EntSize:   0x0000000000000000
     Data:      
 }
-section ".rodata.str" {
+section 6 ".rodata.str" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000032
     Addr:      0x0000000000000000
@@ -52,7 +52,7 @@ section ".rodata.str" {
                64 65 72 53 65 67 6d 65 6e 74 54 61 62 6c 65 00 # derSegmentTable.
                total: 1393
 }
-section ".note.GNU-stack" {
+section 7 ".note.GNU-stack" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000
@@ -60,7 +60,7 @@ section ".note.GNU-stack" {
     EntSize:   0x0000000000000000
     Data:      
 }
-section ".comment" {
+section 8 ".comment" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000030
     Addr:      0x0000000000000000
@@ -96,7 +96,7 @@ symbol table section ".symtab" {
         }
         total: 337
 }
-section ".strtab" {
+section 10 ".strtab" {
     Type:      SHT_STRTAB
     Flags:     0x0000000000000000
     Addr:      0x0000000000000000
@@ -108,7 +108,7 @@ section ".strtab" {
                6e 74 54 61 62 6c 65 5f 63 6c 6f 73 75 72 65 00 # ntTable_closure.
                total: 17408
 }
-section ".rela.text" {
+section 2 ".rela.text" {
     Type:      SHT_RELA
     Flags:     0x0000000000000040
     Addr:      0x0000000000000000
@@ -120,7 +120,7 @@ section ".rela.text" {
                02 00 00 00 18 00 00 00 e8 ff ff ff ff ff ff ff # ................
                total: 27600
 }
-section ".rela.data" {
+section 4 ".rela.data" {
     Type:      SHT_RELA
     Flags:     0x0000000000000040
     Addr:      0x0000000000000000

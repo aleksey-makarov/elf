@@ -195,9 +195,9 @@ printRBuilder getStr rbs = vsep ldoc
                             [ (o,         "┎", ["PT", parens $ viaShow hPhNum])
                             , (o + s - 1, "┖", [])
                             ]
-                f RBuilderSection{ rbsHeader = SectionXX{..} } =
+                f RBuilderSection{ rbsHeader = SectionXX{..}, ..} =
                     let
-                        doc = [ "S"
+                        doc = [ "S" <> viaShow rbsN
                               , dquotes $ pretty $ getStr sName
                               , viaShow sType
                               , viaShow $ splitBits $ ElfSectionFlag $ wxxToIntegral sFlags
@@ -212,7 +212,7 @@ printRBuilder getStr rbs = vsep ldoc
                                 ]
                 f RBuilderSegment{ rbpHeader = SegmentXX{..}, ..} =
                     let
-                        doc = [ "P"
+                        doc = [ "P" <> viaShow rbpN
                               , viaShow pType
                               , viaShow $ splitBits $ ElfSegmentFlag $ wxxToIntegral pFlags
                               ]
@@ -322,7 +322,7 @@ printElf'' ElfHeader{..} =
         , ("Flags",      printWord32 ehFlags  ) -- Word32
         ]
 printElf'' ElfSection{..} =
-    formatPairsBlock ("section" <+> (dquotes $ pretty esName))
+    formatPairsBlock ("section" <+> (viaShow esN) <+> (dquotes $ pretty esName))
         [ ("Type",       viaShow esType       )
         , ("Flags",      printWXX esFlags     )
         , ("Addr",       printWXX esAddr      )
