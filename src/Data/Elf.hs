@@ -551,13 +551,21 @@ serializeElf' elfs = do
                 f ElfSection{} = Sum 1
                 f _ =  Sum 0
 
-        -- sectionNames :: [String]
-        -- sectionNames = foldMapElfList f elfs
-        --     where
-        --         f ElfSection{..} = []
-        --         f ElfStringSection =  Sum 1
-        --         f ElfSymbolTableSection{} =  Sum 1
-        --         f _ =  Sum 0
+        sectionNames :: [String]
+        sectionNames = foldMapElfList f elfs
+            where
+                f ElfSection{..} = [ esName ]
+                f _ = []
+
+        -- stringTable :: BSL.ByteString
+        -- stringIndexesReversed :: [Int64]
+        (stringTable, _stringIndexesReversed) = L.foldl f i sectionNames
+            where
+                i = (BSL.singleton 0, [0])
+                f (st, ir) "" = (st, 0 : ir)
+                f (st, ir) s  = (st <> sbs, BSL.length st : ir)
+                    where
+                        sbs = (BSL.fromStrict $ BSC.pack s) <> BSL.singleton 0
 
         segmentN :: Num b => b
         segmentN = getSum $ foldMapElfList f elfs
@@ -596,7 +604,7 @@ serializeElf' elfs = do
             let
                 d = case esData of
                     ElfSectionData bs -> bs
-                    ElfSectionDataStringTable -> undefined
+                    ElfSectionDataStringTable -> stringTable
                     ElfSectionDataSymbolTable _stes -> undefined
             in
                 return WBuilderState
