@@ -13,6 +13,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE StandaloneKindSignatures #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -25,7 +26,6 @@
 module Data.Elf
     ( module Data.Elf.Generated
     , ElfSectionData (..)
-    , ElfSymbolTableEntry (..)
     , Elf (..)
     , ElfList (..)
     , Elf'
@@ -34,9 +34,14 @@ module Data.Elf
     , parseRBuilder
     , getSectionData
     , getString
+    , elfFindSection
+    , elfFindHeader
     , rBuilderInterval
     , serializeElf'
     , serializeElf
+
+    , ElfSymbolTableEntry(..)
+    , parseSymbolTable
     ) where
 
 import Data.Elf.Exception
@@ -55,6 +60,7 @@ import Data.ByteString.Lazy as BSL
 -- import Data.Either
 import Data.Foldable
 import Data.Int
+-- import Data.Kind
 import qualified Data.List as L
 import Data.Maybe
 import Data.Monoid
@@ -91,10 +97,6 @@ segmentInterval SegmentXX{..} = I o s
         o = wxxToIntegral pOffset
         s = wxxToIntegral pFileSize
 
-data RBuilderSectionParsedData (c :: ElfClass)
-    = NoData
-    | SymbolTable [SymbolTableEntryXX c]
-
 data RBuilder (c :: ElfClass)
     = RBuilderHeader
         { rbhHeader :: HeaderXX c
@@ -108,7 +110,6 @@ data RBuilder (c :: ElfClass)
     | RBuilderSection
         { rbsHeader :: SectionXX c
         , rbsN      :: Word16
-        , rbsData   :: RBuilderSectionParsedData c
         }
     | RBuilderSegment
         { rbpHeader :: SegmentXX c
@@ -258,20 +259,9 @@ addRBuilder t ts =
                     -- to this list: ..........[l2__]..[l2__].....[c2_______]........
                     $elfError $ intersectMessage t c2
 
-data ElfSymbolTableEntry (c :: ElfClass) =
-    ElfSymbolTableEntry
-        { steName  :: String -- NB: different
-        , steBind  :: ElfSymbolBinding
-        , steType  :: ElfSymbolType
-        , steShNdx :: ElfSectionIndex
-        , steValue :: WXX c
-        , steSize  :: WXX c
-        }
-
-data ElfSectionData (c :: ElfClass)
+data ElfSectionData
     = ElfSectionData BSL.ByteString
     | ElfSectionDataStringTable
-    | ElfSectionDataSymbolTable [ElfSymbolTableEntry c]
 
 data Elf (c :: ElfClass)
     = ElfHeader
@@ -293,15 +283,9 @@ data Elf (c :: ElfClass)
         , esAddrAlign :: WXX c
         , esEntSize   :: WXX c
         , esN         :: Word16
-        , esData      :: ElfSectionData c
+        , esLink      :: Word32
+        , esData      :: ElfSectionData
         }
-    -- | ElfStringSection
-    -- | ElfSymbolTableSection
-    --     { estName      :: String -- NB: different
-    --     , estType      :: ElfSectionType
-    --     , estFlags     :: WXX c
-    --     , estTable     :: [ElfSymbolTableEntry c]
-    --     }
     | ElfSegment
         { epType     :: ElfSegmentType
         , epFlags    :: Word32
@@ -315,12 +299,74 @@ data Elf (c :: ElfClass)
         { erData :: BSL.ByteString
         }
 
+-- FIXME MyTree nodeT leafT, bifunctor MyTree, Elf -> split to 6 separate types
+
+-- FIXME: Write GADT record with constrained type: https://stackoverflow.com/questions/21505975/write-gadt-record-with-constrained-type
+-- data ElfNodeType = Header | SectionTable | SegmentTable | Section | Segment | Raw
+--
+-- type Elf :: ElfClass -> ElfNodeType -> Type
+-- data Elf c t where
+--         ElfHeader ::
+--             { ehData       :: ElfData
+--             , ehOSABI      :: ElfOSABI
+--             , ehABIVersion :: Word8
+--             , ehType       :: ElfType
+--             , ehMachine    :: ElfMachine
+--             , ehEntry      :: WXX c
+--             , ehFlags      :: Word32
+--             } -> Elf c 'Header
+--         ElfSectionTable :: Elf c 'SectionTable
+--         ElfSegmentTable :: Elf c 'SegmentTable
+--         ElfSection ::
+--             { esName      :: String -- NB: different
+--             , esType      :: ElfSectionType
+--             , esFlags     :: WXX c
+--             , esAddr      :: WXX c
+--             , esAddrAlign :: WXX c
+--             , esEntSize   :: WXX c
+--             , esN         :: Word16
+--             , esLink      :: Word32
+--             , esData      :: ElfSectionData
+--             } -> Elf c 'Section
+--         ElfSegment ::
+--             { epType     :: ElfSegmentType
+--             , epFlags    :: Word32
+--             , epVirtAddr :: WXX c
+--             , epPhysAddr :: WXX c
+--             , epMemSize  :: WXX c
+--             , epAlign    :: WXX c
+--             , epData     :: [Elf c t']
+--             } -> Elf c 'Segment
+--         ElfRawData ::
+--             { erData :: BSL.ByteString
+--             } -> Elf c 'Raw
+--
+-- -- FIXME: ElfSomeNode
+-- type ElfNode :: ElfClass -> Type
+-- data ElfNode c = forall t' . ElfNode { getElf :: Elf c t' }
+
 foldMapElf :: Monoid m => (Elf a -> m) -> Elf a -> m
 foldMapElf f e@ElfSegment{..} = f e <> foldMapElfList f epData
 foldMapElf f e = f e
 
 foldMapElfList :: Monoid m => (Elf a -> m) -> [Elf a] -> m
 foldMapElfList f l = fold $ fmap (foldMapElf f) l
+
+elfFindSection :: forall a m b . (SingI a, MonadThrow m, Integral b, Show b) => [Elf a] -> b -> m (Elf a)
+elfFindSection elfs n = if n == 0
+    then $elfError "no section 0"
+    else maybe ($elfError $ "no section " ++ show n) return maybeSection
+        where
+            maybeSection = getFirst $ foldMapElfList f elfs
+            f s@ElfSection{..} | esN == fromIntegral n = First $ Just s
+            f _ = First Nothing
+
+elfFindHeader :: forall a m . (SingI a, MonadThrow m) => [Elf a] -> m (Elf a)
+elfFindHeader elfs = maybe ($elfError $ "no header") return maybeHeader
+    where
+        maybeHeader = getFirst $ foldMapElfList f elfs
+        f h@ElfHeader{} = First $ Just h
+        f _ = First Nothing
 
 -- FIXME: Elf' should be just Elf
 newtype ElfList c = ElfList [Elf c]
@@ -343,8 +389,8 @@ tail' [] = []
 tail' (_ : xs) = xs
 
 fixRbuilder :: SingI a => RBuilder a -> RBuilder a
-fixRbuilder p                     | I.empty $ rBuilderInterval p = p
-fixRbuilder p@RBuilderSegment{..} | otherwise                    = RBuilderSegment{ rbpData = addRaw b newRbpData newE, ..}
+fixRbuilder p | I.empty $ rBuilderInterval p = p
+fixRbuilder p@RBuilderSegment{..}            = RBuilderSegment{ rbpData = addRaw b newRbpData newE, ..}
     where
         (I b s) = rBuilderInterval p
         -- e, e' and e'' stand for the first occupied byte after the place being fixed
@@ -368,15 +414,12 @@ fixRbuilder p@RBuilderSegment{..} | otherwise                    = RBuilderSegme
 
 fixRbuilder x = x
 
-parseRBuilder :: (MonadCatch m, SingI a) => BSL.ByteString -> HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> m [RBuilder a]
-parseRBuilder bs hdr@HeaderXX{..} ss ps = do
+parseRBuilder :: (MonadCatch m, SingI a) => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> m [RBuilder a]
+parseRBuilder hdr@HeaderXX{..} ss ps = do
 
     let
         mkRBuilderSection :: (SingI a, MonadCatch m) => (Word16, SectionXX a) -> m (RBuilder a)
-        mkRBuilderSection (n, s) = RBuilderSection s n <$>
-            if sectionIsSymbolTable s
-                then SymbolTable <$> (parseListA hData $ getSectionData bs s)
-                else return NoData
+        mkRBuilderSection (n, s) = return $ RBuilderSection s n
 
         mkRBuilderSegment :: (SingI a, MonadCatch m) => (Word16, SegmentXX a) -> m (RBuilder a)
         mkRBuilderSegment (n, s) = return $ RBuilderSegment s n []
@@ -403,7 +446,7 @@ parseElf' :: forall a m . (MonadCatch m, SingI a) =>
                                    BSL.ByteString -> m (Elf')
 parseElf' hdr@HeaderXX{..} ss ps bs = do
 
-    rbs <- parseRBuilder bs hdr ss ps
+    rbs <- parseRBuilder hdr ss ps
 
     let
         firstJust f = listToMaybe . mapMaybe f
@@ -411,35 +454,6 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
         isStringTable _                       = Nothing
         maybeStringData = firstJust isStringTable $ tail' $ Prelude.zip [0 .. ] ss
         stringData = maybe BSL.empty id maybeStringData
-
-        getStringFromSection :: Word32 ->  SectionXX a -> String
-        getStringFromSection offset s = BSC.unpack $ toStrict $ BSL.takeWhile (/= 0) $ BSL.drop (fromIntegral offset) (getSectionData bs s)
-
-        genericIndex' :: (Integral i) => [b] -> i -> Maybe b
-        genericIndex' (x:_)  0             = Just x
-        genericIndex' (_:xs) n | n > 0     = genericIndex' xs (n-1)
-                               | otherwise = Nothing
-        genericIndex' _ _                  = Nothing
-
-        findSectionN :: Word32 -> Maybe (SectionXX a)
-        findSectionN n = genericIndex' ss n
-
-        getStringSymbolTable :: SectionXX a -> Word32 -> String
-        getStringSymbolTable SectionXX{..} offset =
-            case findSectionN sLink of
-                Nothing -> ""
-                Just strs -> getStringFromSection offset strs
-
-        mkElfSymbolTableEntry s@SectionXX{} SymbolTableEntryXX{..} =
-            let
-                steName  = getStringSymbolTable s stName
-                steBind  = ElfSymbolBinding $ stInfo `shiftR` 4
-                steType  = ElfSymbolType $ stInfo .&. 0x0f
-                steShNdx = stShNdx
-                steValue = stValue
-                steSize  = stSize
-            in
-                ElfSymbolTableEntry{..}
 
         rBuilderToElf RBuilderHeader{} =
             return ElfHeader
@@ -451,18 +465,11 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                 , ehEntry      = hEntry
                 , ehFlags      = hFlags
                 }
-        rBuilderToElf RBuilderSectionTable{} = return ElfSectionTable
-        rBuilderToElf RBuilderSegmentTable{} = return ElfSegmentTable
-        rBuilderToElf RBuilderSection{ rbsHeader = s@SectionXX{..}, ..} = do
-            d <- if sectionIsSymbolTable s
-                    then do
-                        st <- parseListA hData $ getSectionData bs s
-                        return $ ElfSectionDataSymbolTable $ L.map (mkElfSymbolTableEntry s) st
-                    else if rbsN == hShStrNdx
-                        then
-                            return ElfSectionDataStringTable
-                        else
-                            return $ ElfSectionData $ getSectionData bs s
+        rBuilderToElf RBuilderSectionTable{} =
+            return ElfSectionTable
+        rBuilderToElf RBuilderSegmentTable{} =
+            return ElfSegmentTable
+        rBuilderToElf RBuilderSection{ rbsHeader = s@SectionXX{..}, ..} =
             return ElfSection
                 { esName      = getString stringData $ fromIntegral sName
                 , esType      = sType
@@ -471,7 +478,12 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                 , esAddrAlign = sAddrAlign
                 , esEntSize   = sEntSize
                 , esN         = rbsN
-                , esData      = d
+                , esLink      = sLink
+                , esData      = if rbsN == hShStrNdx
+                    then
+                        ElfSectionDataStringTable
+                    else
+                        ElfSectionData $ getSectionData bs s
                 }
         rBuilderToElf RBuilderSegment{ rbpHeader = SegmentXX{..}, ..} = do
             d <- mapM rBuilderToElf rbpData
@@ -535,21 +547,14 @@ zeroXX = wxxFromIntegral (0 :: Word32)
 zeroSection :: forall a . SingI a => SectionXX a
 zeroSection = SectionXX 0 0 zeroXX zeroXX zeroXX zeroXX 0 0 zeroXX zeroXX
 
--- -- from rio package
--- foldMapM :: (Monad m, Monoid w, Foldable t) => (a -> m w) -> t a -> m w
--- foldMapM f = foldlM (\acc a -> do { w <- f a; return $! mappend acc w; }) mempty
-
 serializeElf' :: forall a m . (SingI a, MonadThrow m) => [Elf a] -> m BSL.ByteString
 serializeElf' elfs = do
 
-    (header, hData') <-
-        let
-            f h@ElfHeader{..} = First $ Just (h, ehData)
-            f _ = First $ Nothing
-        in
-            case getFirst $ foldMapElfList f elfs of
-                Just h -> return h
-                Nothing -> $elfError "no header"
+    (header', hData') <- do
+        header <- elfFindHeader elfs
+        case header of
+            ElfHeader{..} -> return (header, ehData)
+            _ -> $elfError "not a header" -- FIXME
 
     let
 
@@ -567,8 +572,6 @@ serializeElf' elfs = do
                 f ElfSection{..} = [ esName ]
                 f _ = []
 
-        -- stringTable :: BSL.ByteString
-        -- stringIndexesReversed :: [Int64]
         (stringTable, stringIndexesReversed) = L.foldl f i sectionNames
             where
                 i = (BSL.singleton 0, [0])
@@ -615,10 +618,6 @@ serializeElf' elfs = do
                 d = case esData of
                     ElfSectionData bs -> bs
                     ElfSectionDataStringTable -> stringTable
-                    ElfSectionDataSymbolTable _stes -> undefined
-                    -- ElfSectionDataSymbolTable stes -> case hData' of
-                    --     ELFDATA2LSB -> encode $ BList $ fmap Le $ stes
-                    --     ELFDATA2MSB -> encode $ BList $ fmap Be $ stes
             in
                 return WBuilderState
                     { wbsDataReversed = (WBuilderDataByteStream d) : wbsDataReversed
@@ -657,7 +656,7 @@ serializeElf' elfs = do
         wbState2ByteString WBuilderState{..} = return $ foldMap f $ L.reverse wbsDataReversed
             where
                 f WBuilderDataHeader =
-                    case header of
+                    case header' of
                         ElfHeader{..} ->
                             let
                                 hData       = ehData
@@ -682,17 +681,54 @@ serializeElf' elfs = do
                         _ -> error "this should be ElfHeader" -- FIXME
                 f WBuilderDataByteStream {..} = wbdData
                 f WBuilderDataSectionTable =
-                    let
-                        ss = zeroSection : L.reverse wbsSectionsReversed
-                    in
-                        case hData' of
-                            ELFDATA2LSB -> encode $ BList $ fmap Le $ ss
-                            ELFDATA2MSB -> encode $ BList $ fmap Be $ ss
-                f WBuilderDataSegmentTable = case hData' of
-                    ELFDATA2LSB -> encode $ BList $ fmap Le $ L.reverse wbsSegmentsReversed
-                    ELFDATA2MSB -> encode $ BList $ fmap Be $ L.reverse wbsSegmentsReversed
+                    serializeListA hData' $ zeroSection : L.reverse wbsSectionsReversed
+                f WBuilderDataSegmentTable =
+                    serializeListA hData' $ L.reverse wbsSegmentsReversed
 
     execStateT (mapM elf2WBuilder elfs) wbStateInit{ wbsStringIndexes = L.reverse stringIndexesReversed } >>= wbState2ByteString
 
 serializeElf :: MonadThrow m => Elf' -> m BSL.ByteString
 serializeElf (classS :&: ElfList ls) = withSingI classS $ serializeElf' ls
+
+-------------------------------------------------------------------------------
+--
+-------------------------------------------------------------------------------
+
+-- FIXME: move this to a separate file
+
+data ElfSymbolTableEntry (c :: ElfClass) =
+    ElfSymbolTableEntry
+        { steName  :: String -- NB: different
+        , steBind  :: ElfSymbolBinding
+        , steType  :: ElfSymbolType
+        , steShNdx :: ElfSectionIndex
+        , steValue :: WXX c
+        , steSize  :: WXX c
+        }
+
+getStringFromData :: BSL.ByteString -> Word32 -> String
+getStringFromData stringTable offset = BSC.unpack $ toStrict $ BSL.takeWhile (/= 0) $ BSL.drop (fromIntegral offset) stringTable
+
+mkElfSymbolTableEntry :: SingI a => BSL.ByteString -> SymbolTableEntryXX a -> ElfSymbolTableEntry a
+mkElfSymbolTableEntry stringTable SymbolTableEntryXX{..} =
+    let
+        steName  = getStringFromData stringTable stName
+        steBind  = ElfSymbolBinding $ stInfo `shiftR` 4
+        steType  = ElfSymbolType $ stInfo .&. 0x0f
+        steShNdx = stShNdx
+        steValue = stValue
+        steSize  = stSize
+    in
+        ElfSymbolTableEntry{..}
+
+parseSymbolTable :: (MonadThrow m, SingI a) => ElfData -> Elf a -> [Elf a] -> m [ElfSymbolTableEntry a]
+parseSymbolTable d ElfSection{ esData = ElfSectionData symbolTable, ..} elfs = do
+    section <- elfFindSection elfs esLink
+    case section of
+        ElfSection{ esData = ElfSectionData stringTable } -> do
+            st <- parseListA d symbolTable
+            return (mkElfSymbolTableEntry stringTable <$> st)
+        _ -> $elfError "not a section" -- FIXME
+parseSymbolTable _ _ _ = $elfError "incorrect args to parseSymbolTable" -- FIXME
+
+-- FIXME: serializeSymbolTable

@@ -30,6 +30,11 @@ instance Show ElfException where
 
 instance Exception ElfException
 
+-- FIXME: add function name
+-- FIXME: add context only to ElfExceptions
+-- FIXME: add envelope for other types of exceptions which should be of the same type (IOException etc)
+-- FIXME: move to a separate module
+
 withFileLine :: Q Exp -> Q Exp
 withFileLine f = let loc = fileLine =<< location in appE f loc
 

@@ -1,12 +1,14 @@
+{-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE FlexibleContexts #-}
 
 module Data.Elf.Doc
     ( formatPairs
@@ -21,6 +23,7 @@ module Data.Elf.Doc
     , printElf
     ) where
 
+import Control.Monad.Catch
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BC8
 import qualified Data.ByteString.Lazy as BSL
@@ -34,6 +37,7 @@ import Data.Word
 import Numeric
 
 import Data.Elf
+import Data.Elf.Exception
 import Data.Elf.Headers
 import Data.Interval
 
@@ -309,53 +313,70 @@ printData bs = align $ vsep $
     where
         cl = BSL.drop (BSL.length bs - 16) bs
 
-printElf'' :: forall a . SingI a => Elf a -> Doc ()
-printElf'' ElfHeader{..} =
-    formatPairsBlock "header"
-        [ ("Class",      viaShow $ fromSing $ sing @a )
-        , ("Data",       viaShow ehData       ) -- ElfData
-        , ("OSABI",      viaShow ehOSABI      ) -- ElfOSABI
-        , ("ABIVersion", viaShow ehABIVersion ) -- Word8
-        , ("Type",       viaShow ehType       ) -- ElfType
-        , ("Machine",    viaShow ehMachine    ) -- ElfMachine
-        , ("Entry",      printWXX ehEntry     ) -- WXX c
-        , ("Flags",      printWord32 ehFlags  ) -- Word32
-        ]
-printElf'' ElfSection{ esData = (ElfSectionData bs), ..} =
-    formatPairsBlock ("section" <+> (viaShow esN) <+> (dquotes $ pretty esName))
-        [ ("Type",       viaShow esType       )
-        , ("Flags",      printWXX esFlags     )
-        , ("Addr",       printWXX esAddr      )
-        , ("AddrAlign",  printWXX esAddrAlign )
-        , ("EntSize",    printWXX esEntSize   )
-        , ("Data",       printData bs         )
-        ]
-printElf'' ElfSection{ esData = (ElfSectionDataSymbolTable stes), ..} =
-    formatPairsBlock ("symbol table section" <+> (viaShow esN) <+> (dquotes $ pretty esName))
-        [ ("Type",       viaShow esType       )
-        , ("Flags",      printWXX esFlags     )
-        , ("Data",       if null stes then "" else line <> (indent 4 $ printElfSymbolTable stes) )
-        ]
-printElf'' ElfSection{ esData = ElfSectionDataStringTable, ..} = "string table section" <+> (viaShow esN) <+> (dquotes $ pretty esName)
-printElf'' ElfSegment{..} =
-    formatPairsBlock "segment"
-        [ ("Type",       viaShow epType       )
-        , ("Flags",      printWord32 epFlags  )
-        , ("VirtAddr",   printWXX epVirtAddr  )
-        , ("PhysAddr",   printWXX epPhysAddr  )
-        , ("MemSize",    printWXX epMemSize   )
-        , ("Align",      printWXX epAlign     )
-        , ("Data",       if null epData then "" else line <> (indent 4 $ printElf' epData) )
-        ]
-printElf'' ElfSectionTable = "section table"
-printElf'' ElfSegmentTable = "segment table"
-printElf'' ElfRawData{..} =
-    formatPairsBlock "raw data"
-        [ ("Data",       printData erData)
-        ]
+printElf :: MonadThrow m => Sigma ElfClass (TyCon1 ElfList) -> m (Doc ())
+printElf (classS :&: ElfList elfs) = withSingI classS do
 
-printElf' :: SingI a => [Elf a] -> Doc ()
-printElf' l = align . vsep $ fmap printElf'' l
+    hData' <- do
+        header <- elfFindHeader elfs
+        case header of
+            ElfHeader{..} -> return ehData
+            _ -> $elfError "not a header" -- FIXME
 
-printElf :: Sigma ElfClass (TyCon1 ElfList) -> Doc ()
-printElf (classS :&: ElfList ls) = withSingI classS $ printElf' ls
+    let
+
+        printElf' elfs' = align . vsep <$> mapM printElf'' elfs'
+
+        printElf'' ElfHeader{..} =
+            return $ formatPairsBlock "header"
+                [ ("Class",      viaShow $ fromSing classS )
+                , ("Data",       viaShow ehData       ) -- ElfData
+                , ("OSABI",      viaShow ehOSABI      ) -- ElfOSABI
+                , ("ABIVersion", viaShow ehABIVersion ) -- Word8
+                , ("Type",       viaShow ehType       ) -- ElfType
+                , ("Machine",    viaShow ehMachine    ) -- ElfMachine
+                , ("Entry",      printWXX ehEntry     ) -- WXX c
+                , ("Flags",      printWord32 ehFlags  ) -- Word32
+                ]
+        printElf'' s@ElfSection{ esData = (ElfSectionData bs), ..} =
+            if sectionIsSymbolTable esType
+                then do
+                    stes <- parseSymbolTable hData' s elfs
+                    return $ formatPairsBlock ("symbol table section" <+> (viaShow esN) <+> (dquotes $ pretty esName))
+                        [ ("Type",       viaShow esType       )
+                        , ("Flags",      printWXX esFlags     )
+                        , ("Data",       if null stes then "" else line <> (indent 4 $ printElfSymbolTable stes) )
+                        ]
+                else
+                    return $ formatPairsBlock ("section" <+> (viaShow esN) <+> (dquotes $ pretty esName))
+                        [ ("Type",       viaShow esType       )
+                        , ("Flags",      printWXX esFlags     )
+                        , ("Addr",       printWXX esAddr      )
+                        , ("AddrAlign",  printWXX esAddrAlign )
+                        , ("EntSize",    printWXX esEntSize   )
+                        , ("Data",       printData bs         )
+                        ]
+        printElf'' ElfSection{ esData = ElfSectionDataStringTable, ..} =
+            return $ "string table section" <+> (viaShow esN) <+> (dquotes $ pretty esName)
+        printElf'' ElfSegment{..} = do
+            dataDoc <- if null epData
+                then return ""
+                else do
+                    dataDoc' <- printElf' epData
+                    return $ line <> (indent 4 dataDoc')
+            return $ formatPairsBlock "segment"
+                [ ("Type",       viaShow epType       )
+                , ("Flags",      printWord32 epFlags  )
+                , ("VirtAddr",   printWXX epVirtAddr  )
+                , ("PhysAddr",   printWXX epPhysAddr  )
+                , ("MemSize",    printWXX epMemSize   )
+                , ("Align",      printWXX epAlign     )
+                , ("Data",       dataDoc              )
+                ]
+        printElf'' ElfSectionTable = return "section table"
+        printElf'' ElfSegmentTable = return "segment table"
+        printElf'' ElfRawData{..} =
+            return $ formatPairsBlock "raw data"
+                [ ("Data",       printData erData)
+                ]
+
+    printElf' elfs

@@ -81,24 +81,24 @@ mkTest'' classS HeaderXX{..} bs = do
         bsSections = takeLen (wxxToIntegralS classS hShOff) (fromIntegral hShEntSize * fromIntegral hShNum)
         bsSegments = takeLen (wxxToIntegralS classS hPhOff) (fromIntegral hPhEntSize * fromIntegral hPhNum)
 
-    (off, s :: [SectionXX a]) <- withSingI classS $ case hData of
+    (off, s :: [SectionXX a]) <- withSingI classS $ case hData of -- FIXME: use parse/serializeListA (?)
         ELFDATA2LSB -> second (fmap fromLe . fromBList) <$> (decodeOrFailAssertion bsSections)
         ELFDATA2MSB -> second (fmap fromBe . fromBList) <$> (decodeOrFailAssertion bsSections)
 
     assertEqual "Not all section table could be parsed" (BSL.length bsSections) off
     let
-        encoded = withSingI classS $ case hData of
+        encoded = withSingI classS $ case hData of -- FIXME: use parse/serializeListA (?)
             ELFDATA2LSB -> encode $ BList $ Le <$> s
             ELFDATA2MSB -> encode $ BList $ Be <$> s
     assertEqual "Section table round trip does not work" bsSections encoded
 
-    (offp, p :: [SegmentXX a]) <- withSingI classS $ case hData of
+    (offp, p :: [SegmentXX a]) <- withSingI classS $ case hData of  -- FIXME: use parse/serializeListA (?)
         ELFDATA2LSB -> second (fmap fromLe . fromBList) <$> (decodeOrFailAssertion bsSegments)
         ELFDATA2MSB -> second (fmap fromBe . fromBList) <$> (decodeOrFailAssertion bsSegments)
 
     assertEqual "Not all ssgment table could be parsed" (BSL.length bsSegments) offp
     let
-        encodedp = withSingI classS $ case hData of
+        encodedp = withSingI classS $ case hData of -- FIXME: use parse/serializeListA (?)
             ELFDATA2LSB -> encode $ BList $ Le <$> p
             ELFDATA2MSB -> encode $ BList $ Be <$> p
     assertEqual "Segment table round trip does not work" bsSegments encodedp
@@ -126,7 +126,8 @@ mkTestElf p = testCase p do
     elf <- parseElf bs
     bs' <- serializeElf elf
     elf' <- parseElf bs'
-    withFile outFileName WriteMode (\ h -> hPutDoc h $ printElf elf')
+    doc <- printElf elf'
+    withFile outFileName WriteMode (\ h -> hPutDoc h doc)
     compareElfs elf elf'
     where
         outFileName = "tests" </> p <.> "elf" <.> "copy"
@@ -146,7 +147,10 @@ mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
             withFile o WriteMode (\ h -> hPutDoc h doc)
 
 sectionParseSymbolTable  :: (SingI a, MonadThrow m) => ElfData -> BSL.ByteString -> SectionXX a -> m (SectionXX a, [SymbolTableEntryXX a])
-sectionParseSymbolTable d bs s = (s, ) <$> if sectionIsSymbolTable s then parseListA d $ getSectionData bs s else return []
+sectionParseSymbolTable d bs s@SectionXX{..} =
+    (s, ) <$> if sectionIsSymbolTable sType
+        then parseListA d $ getSectionData bs s
+        else return []
 
 findHeader :: SingI a => [RBuilder a] -> Maybe (HeaderXX a)
 findHeader rbs = getFirst $ foldMap f rbs
@@ -171,33 +175,29 @@ findStringSection rbs = do
 printRBuilderFile :: FilePath -> IO (Doc ())
 printRBuilderFile path = do
     bs <- fromStrict <$> BS.readFile path
-    case parseHeaders bs of
-        Left err -> assertFailure $ show err
-        Right (classS :&: HeadersXX (hdr@HeaderXX{}, ss, ps)) -> withSingI classS do
-            rbs <- parseRBuilder bs hdr ss ps
-            let
-                stringSectionData = getSectionData bs <$> findStringSection rbs
-                getString' n = case stringSectionData of
-                    Nothing -> error "no string table"
-                    Just st -> getString st $ fromIntegral n
-            return $ printRBuilder getString' rbs
+    (classS :&: HeadersXX (hdr@HeaderXX{}, ss, ps)) <- parseHeaders bs
+    withSingI classS do
+        rbs <- parseRBuilder hdr ss ps
+        let
+            stringSectionData = getSectionData bs <$> findStringSection rbs
+            getString' n = case stringSectionData of
+                Nothing -> error "no string table"
+                Just st -> getString st $ fromIntegral n
+        return $ printRBuilder getString' rbs
 
 printHeadersFile :: FilePath -> IO (Doc ())
 printHeadersFile path = do
     bs <- fromStrict <$> BS.readFile path
-    case parseHeaders bs of
-        Left err -> assertFailure $ show err
-        Right (classS :&: HeadersXX (hdr@HeaderXX{..}, ss, ps)) -> withSingI classS do
-            case mapM (sectionParseSymbolTable hData bs) ss of
-                Left err -> assertFailure $ show err
-                Right sts -> return $ printHeaders hdr sts ps
+    (classS :&: HeadersXX (hdr@HeaderXX{..}, ss, ps)) <- parseHeaders bs
+    withSingI classS do
+        sts <- mapM (sectionParseSymbolTable hData bs) ss
+        return $ printHeaders hdr sts ps
 
 printElfFile :: FilePath -> IO (Doc ())
 printElfFile path = do
     bs <- fromStrict <$> BS.readFile path
-    case parseElf bs of
-        Left err -> assertFailure $ show err
-        Right e -> return $ printElf e
+    e <- parseElf bs
+    printElf e
 
 testHeader64 :: Header
 testHeader64 = SELFCLASS64 :&: (HeaderXX ELFDATA2LSB 0 0 0 0 0 0 0 0 0 0 0 0 0)

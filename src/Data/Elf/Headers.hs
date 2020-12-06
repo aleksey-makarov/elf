@@ -59,6 +59,7 @@ module Data.Elf.Headers
     , HeadersXX (..)
     , parseHeaders
     , parseListA
+    , serializeListA
 
     , elfMagic
 
@@ -510,8 +511,8 @@ instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
     put = putSegment sing ELFDATA2LSB . fromLe
     get = Le <$> getSegment sing ELFDATA2LSB
 
-sectionIsSymbolTable :: SingI a => SectionXX a -> Bool
-sectionIsSymbolTable SectionXX{..} = sType `L.elem` [SHT_SYMTAB, SHT_DYNSYM]
+sectionIsSymbolTable :: ElfSectionType -> Bool
+sectionIsSymbolTable sType  = sType `L.elem` [SHT_SYMTAB, SHT_DYNSYM]
 
 --------------------------------------------------------------------------
 -- symbol table entry
@@ -624,6 +625,11 @@ parseListA :: (MonadThrow m, Binary (Le a), Binary (Be a)) => ElfData -> BSL.Byt
 parseListA d bs = case d of
     ELFDATA2LSB -> fmap fromLe <$> fromBList <$> elfDecodeAllOrFail bs
     ELFDATA2MSB -> fmap fromBe <$> fromBList <$> elfDecodeAllOrFail bs
+
+serializeListA :: (Binary (Le a), Binary (Be a)) => ElfData -> [a] -> BSL.ByteString
+serializeListA d as = case d of
+    ELFDATA2LSB -> encode $ BList $ fmap Le $ as
+    ELFDATA2MSB -> encode $ BList $ fmap Be $ as
 
 parseHeaders' :: (SingI a, MonadThrow m) => HeaderXX a -> BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
 parseHeaders' hxx@HeaderXX{..} bs =
