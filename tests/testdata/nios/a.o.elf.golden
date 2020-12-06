@@ -212,5 +212,5 @@ section 16 ".rela.debug_frame" {
     Data:      14 00 00 00 0c 0b 00 00 00 00 00 00 18 00 00 00 # ................
                0c 02 00 00 00 00 00 00                         # ........
 }
-string section
+string table section
 section table

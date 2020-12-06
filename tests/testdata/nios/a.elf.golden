@@ -243,5 +243,5 @@ section 17 ".strtab" {
                5f 6d 75 6c 74 61 64 64 00 5f 42 66 72 65 65 00 # _multadd._Bfree.
                total: 2635
 }
-string section
+string table section
 section table

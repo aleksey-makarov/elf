@@ -321,21 +321,22 @@ printElf'' ElfHeader{..} =
         , ("Entry",      printWXX ehEntry     ) -- WXX c
         , ("Flags",      printWord32 ehFlags  ) -- Word32
         ]
-printElf'' ElfSection{..} =
+printElf'' ElfSection{ esData = (ElfSectionData bs), ..} =
     formatPairsBlock ("section" <+> (viaShow esN) <+> (dquotes $ pretty esName))
         [ ("Type",       viaShow esType       )
         , ("Flags",      printWXX esFlags     )
         , ("Addr",       printWXX esAddr      )
         , ("AddrAlign",  printWXX esAddrAlign )
         , ("EntSize",    printWXX esEntSize   )
-        , ("Data",       printData esData     )
+        , ("Data",       printData bs         )
         ]
-printElf'' ElfSymbolTableSection{..} =
-    formatPairsBlock ("symbol table section" <+> (dquotes $ pretty estName))
-        [ ("Type",       viaShow estType       )
-        , ("Flags",      printWXX estFlags     )
-        , ("Data",       if null estTable then "" else line <> (indent 4 $ printElfSymbolTable estTable) )
+printElf'' ElfSection{ esData = (ElfSectionDataSymbolTable stes), ..} =
+    formatPairsBlock ("symbol table section" <+> (dquotes $ pretty esName))
+        [ ("Type",       viaShow esType       )
+        , ("Flags",      printWXX esFlags     )
+        , ("Data",       if null stes then "" else line <> (indent 4 $ printElfSymbolTable stes) )
         ]
+printElf'' ElfSection{ esData = ElfSectionDataStringTable } = "string table section"
 printElf'' ElfSegment{..} =
     formatPairsBlock "segment"
         [ ("Type",       viaShow epType       )
@@ -348,7 +349,6 @@ printElf'' ElfSegment{..} =
         ]
 printElf'' ElfSectionTable = "section table"
 printElf'' ElfSegmentTable = "segment table"
-printElf'' ElfStringSection = "string section"
 printElf'' ElfRawData{..} =
     formatPairsBlock "raw data"
         [ ("Data",       printData erData)

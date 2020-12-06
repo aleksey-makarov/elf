@@ -448,5 +448,5 @@ section 30 ".strtab" {
                33 2e 34 00 5f 65 64 61 74 61 00 6d 61 69 6e 00 # 3.4._edata.main.
                total: 891
 }
-string section
+string table section
 section table

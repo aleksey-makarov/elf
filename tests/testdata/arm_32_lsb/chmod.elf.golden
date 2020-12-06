@@ -394,5 +394,5 @@ section 26 ".ARM.attributes" {
                14 01 15 01 17 03 18 01 19 01 1a 02 1c 01 22 01 # ..............".
                total: 51
 }
-string section
+string table section
 section table

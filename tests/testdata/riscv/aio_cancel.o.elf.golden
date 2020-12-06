@@ -109,5 +109,5 @@ section 2 ".rela.text" {
                00 00 00 00 44 02 00 00 11 58 00 00 00 00 00 00 # ....D....X......
                total: 924
 }
-string section
+string table section
 section table

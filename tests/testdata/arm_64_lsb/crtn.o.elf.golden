@@ -92,5 +92,5 @@ section 8 ".strtab" {
     EntSize:   0x0000000000000000
     Data:      00 24 78 00                                     # .$x.
 }
-string section
+string table section
 section table

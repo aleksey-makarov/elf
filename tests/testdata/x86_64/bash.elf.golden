@@ -391,5 +391,5 @@ section 23 ".comment" {
                20 39 2e 32 2e 31 20 32 30 32 30 30 31 33 30 00 #  9.2.1 20200130.
                total: 76
 }
-string section
+string table section
 section table

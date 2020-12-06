@@ -398,5 +398,5 @@ section 26 ".gnu_debuglink" {
     EntSize:   0x0000000000000000
     Data:      62 61 73 68 34 2e 64 65 62 75 67 00 7e 0c 51 7a # bash4.debug.~.Qz
 }
-string section
+string table section
 section table

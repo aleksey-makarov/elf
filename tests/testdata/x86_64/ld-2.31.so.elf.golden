@@ -465,5 +465,5 @@ section 27 ".strtab" {
                65 72 72 6f 72 00 47 4c 49 42 43 5f 32 2e 33 00 # error.GLIBC_2.3.
                total: 6435
 }
-string section
+string table section
 section table

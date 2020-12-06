@@ -355,5 +355,5 @@ section 22 ".bss" {
                00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 # ................
                total: 1184
 }
-string section
+string table section
 section table

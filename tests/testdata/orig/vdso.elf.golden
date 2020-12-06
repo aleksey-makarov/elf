@@ -247,5 +247,5 @@ section 15 ".comment" {
                36 75 62 75 6e 74 75 33 29 20 37 2e 33 2e 30 00 # 6ubuntu3) 7.3.0.
                total: 36
 }
-string section
+string table section
 section table

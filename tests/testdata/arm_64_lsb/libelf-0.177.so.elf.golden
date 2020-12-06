@@ -388,5 +388,5 @@ section 25 ".comment" {
                34 31 38 2d 64 35 39 30 29 20 38 2e 33 2e 30 00 # 418-d590) 8.3.0.
                total: 59
 }
-string section
+string table section
 section table

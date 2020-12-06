@@ -24,10 +24,11 @@
 -- | Data.Elf is a module for parsing a ByteString of an ELF file into an Elf record.
 module Data.Elf
     ( module Data.Elf.Generated
+    , ElfSectionData (..)
+    , ElfSymbolTableEntry (..)
     , Elf (..)
     , ElfList (..)
     , Elf'
-    , ElfSymbolTableEntry (..)
     , RBuilder (..)
     , parseElf
     , parseRBuilder
@@ -267,6 +268,11 @@ data ElfSymbolTableEntry (c :: ElfClass) =
         , steSize  :: WXX c
         }
 
+data ElfSectionData (c :: ElfClass)
+    = ElfSectionData BSL.ByteString
+    | ElfSectionDataStringTable
+    | ElfSectionDataSymbolTable [ElfSymbolTableEntry c]
+
 data Elf (c :: ElfClass)
     = ElfHeader
         { ehData       :: ElfData
@@ -286,16 +292,16 @@ data Elf (c :: ElfClass)
         , esAddr      :: WXX c
         , esAddrAlign :: WXX c
         , esEntSize   :: WXX c
-        , esData      :: BSL.ByteString
         , esN         :: Word16
+        , esData      :: ElfSectionData c
         }
-    | ElfStringSection
-    | ElfSymbolTableSection
-        { estName      :: String -- NB: different
-        , estType      :: ElfSectionType
-        , estFlags     :: WXX c
-        , estTable     :: [ElfSymbolTableEntry c]
-        }
+    -- | ElfStringSection
+    -- | ElfSymbolTableSection
+    --     { estName      :: String -- NB: different
+    --     , estType      :: ElfSectionType
+    --     , estFlags     :: WXX c
+    --     , estTable     :: [ElfSymbolTableEntry c]
+    --     }
     | ElfSegment
         { epType     :: ElfSegmentType
         , epFlags    :: Word32
@@ -447,30 +453,26 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                 }
         rBuilderToElf RBuilderSectionTable{} = return ElfSectionTable
         rBuilderToElf RBuilderSegmentTable{} = return ElfSegmentTable
-        rBuilderToElf RBuilderSection{ rbsHeader = s@SectionXX{..}, ..} =
-            if sectionIsSymbolTable s
-                then do
-                    st <- parseListA hData $ getSectionData bs s
-                    return ElfSymbolTableSection
-                        { estName  = getString stringData $ fromIntegral sName
-                        , estType  = sType
-                        , estFlags = sFlags
-                        , estTable = L.map (mkElfSymbolTableEntry s) st
-                        }
-                else if rbsN == hShStrNdx
-                    then
-                        return ElfStringSection
-                    else
-                        return ElfSection
-                            { esName      = getString stringData $ fromIntegral sName
-                            , esType      = sType
-                            , esFlags     = sFlags
-                            , esAddr      = sAddr
-                            , esAddrAlign = sAddrAlign
-                            , esEntSize   = sEntSize
-                            , esData      = getSectionData bs s
-                            , esN         = rbsN
-                            }
+        rBuilderToElf RBuilderSection{ rbsHeader = s@SectionXX{..}, ..} = do
+            d <- if sectionIsSymbolTable s
+                    then do
+                        st <- parseListA hData $ getSectionData bs s
+                        return $ ElfSectionDataSymbolTable $ L.map (mkElfSymbolTableEntry s) st
+                    else if rbsN == hShStrNdx
+                        then
+                            return ElfSectionDataStringTable
+                        else
+                            return $ ElfSectionData $ getSectionData bs s
+            return ElfSection
+                { esName      = getString stringData $ fromIntegral sName
+                , esType      = sType
+                , esFlags     = sFlags
+                , esAddr      = sAddr
+                , esAddrAlign = sAddrAlign
+                , esEntSize   = sEntSize
+                , esN         = rbsN
+                , esData      = d
+                }
         rBuilderToElf RBuilderSegment{ rbpHeader = SegmentXX{..}, ..} = do
             d <- mapM rBuilderToElf rbpData
             return ElfSegment
@@ -547,9 +549,15 @@ serializeElf' elfs = do
         sectionN = getSum $ foldMapElfList f elfs
             where
                 f ElfSection{} = Sum 1
-                f ElfStringSection =  Sum 1
-                f ElfSymbolTableSection{} =  Sum 1
                 f _ =  Sum 0
+
+        -- sectionNames :: [String]
+        -- sectionNames = foldMapElfList f elfs
+        --     where
+        --         f ElfSection{..} = []
+        --         f ElfStringSection =  Sum 1
+        --         f ElfSymbolTableSection{} =  Sum 1
+        --         f _ =  Sum 0
 
         segmentN :: Num b => b
         segmentN = getSum $ foldMapElfList f elfs
@@ -560,7 +568,7 @@ serializeElf' elfs = do
         sectionTable :: Bool
         sectionTable = getAny $ foldMapElfList f elfs
             where
-                f ElfSymbolTableSection{} =  Any True
+                f ElfSectionTable =  Any True
                 f _ = Any False
 
         elf2WBuilder' :: MonadThrow n => Elf a -> WBuilderState a -> n (WBuilderState a)
@@ -584,16 +592,18 @@ serializeElf' elfs = do
                 , wbsPhOff = wxxFromIntegral wbsOffset
                 , ..
                 }
-        elf2WBuilder' ElfSection{..} WBuilderState{..} = do
+        elf2WBuilder' ElfSection{..} WBuilderState{..} =
             let
-                d = WBuilderDataByteStream esData
-            return WBuilderState
-                { wbsDataReversed = d : wbsDataReversed
-                , wbsOffset = wbsOffset + (fromIntegral $ BSL.length esData)
-                , ..
-                }
-        elf2WBuilder' ElfStringSection s@WBuilderState{} = return s
-        elf2WBuilder' ElfSymbolTableSection{} s@WBuilderState{} = return s
+                d = case esData of
+                    ElfSectionData bs -> bs
+                    ElfSectionDataStringTable -> undefined
+                    ElfSectionDataSymbolTable _stes -> undefined
+            in
+                return WBuilderState
+                    { wbsDataReversed = (WBuilderDataByteStream d) : wbsDataReversed
+                    , wbsOffset = wbsOffset + (fromIntegral $ BSL.length d)
+                    , ..
+                    }
         elf2WBuilder' ElfSegment{..} s = do
             let
                 offset = wbsOffset s
