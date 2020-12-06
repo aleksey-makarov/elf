@@ -514,7 +514,7 @@ data WBuilderState (a :: ElfClass) =
         , wbsPhOff            :: WXX a
         , wbsShOff            :: WXX a
         , wbsShStrNdx         :: Word16
-
+        , wbsStringIndexes    :: [Int64]
         }
 
 wbStateInit :: forall a . SingI a => WBuilderState a
@@ -526,6 +526,7 @@ wbStateInit = WBuilderState
     , wbsPhOff            = wxxFromIntegral (0 :: Word32)
     , wbsShOff            = wxxFromIntegral (0 :: Word32)
     , wbsShStrNdx         = 0
+    , wbsStringIndexes    = []
     }
 
 zeroXX :: forall a . SingI a => WXX a
@@ -540,6 +541,15 @@ zeroSection = SectionXX 0 0 zeroXX zeroXX zeroXX zeroXX 0 0 zeroXX zeroXX
 
 serializeElf' :: forall a m . (SingI a, MonadThrow m) => [Elf a] -> m BSL.ByteString
 serializeElf' elfs = do
+
+    (header, hData') <-
+        let
+            f h@ElfHeader{..} = First $ Just (h, ehData)
+            f _ = First $ Nothing
+        in
+            case getFirst $ foldMapElfList f elfs of
+                Just h -> return h
+                Nothing -> $elfError "no header"
 
     let
 
@@ -559,7 +569,7 @@ serializeElf' elfs = do
 
         -- stringTable :: BSL.ByteString
         -- stringIndexesReversed :: [Int64]
-        (stringTable, _stringIndexesReversed) = L.foldl f i sectionNames
+        (stringTable, stringIndexesReversed) = L.foldl f i sectionNames
             where
                 i = (BSL.singleton 0, [0])
                 f (st, ir) "" = (st, 0 : ir)
@@ -606,6 +616,9 @@ serializeElf' elfs = do
                     ElfSectionData bs -> bs
                     ElfSectionDataStringTable -> stringTable
                     ElfSectionDataSymbolTable _stes -> undefined
+                    -- ElfSectionDataSymbolTable stes -> case hData' of
+                    --     ELFDATA2LSB -> encode $ BList $ fmap Le $ stes
+                    --     ELFDATA2MSB -> encode $ BList $ fmap Be $ stes
             in
                 return WBuilderState
                     { wbsDataReversed = (WBuilderDataByteStream d) : wbsDataReversed
@@ -639,17 +652,6 @@ serializeElf' elfs = do
 
         elf2WBuilder :: (MonadThrow n, MonadState (WBuilderState a) n) => Elf a -> n ()
         elf2WBuilder elf = MS.get >>= elf2WBuilder' elf >>= MS.put
-
-    (header, hData') <-
-        let
-            f h@ElfHeader{..} = First $ Just (h, ehData)
-            f _ = First $ Nothing
-        in
-            case getFirst $ foldMapElfList f elfs of
-                Just h -> return h
-                Nothing -> $elfError "no header"
-
-    let
 
         wbState2ByteString :: WBuilderState a -> m BSL.ByteString
         wbState2ByteString WBuilderState{..} = return $ foldMap f $ L.reverse wbsDataReversed
@@ -690,7 +692,7 @@ serializeElf' elfs = do
                     ELFDATA2LSB -> encode $ BList $ fmap Le $ L.reverse wbsSegmentsReversed
                     ELFDATA2MSB -> encode $ BList $ fmap Be $ L.reverse wbsSegmentsReversed
 
-    execStateT (mapM elf2WBuilder elfs) wbStateInit >>= wbState2ByteString
+    execStateT (mapM elf2WBuilder elfs) wbStateInit{ wbsStringIndexes = L.reverse stringIndexesReversed } >>= wbState2ByteString
 
 serializeElf :: MonadThrow m => Elf' -> m BSL.ByteString
 serializeElf (classS :&: ElfList ls) = withSingI classS $ serializeElf' ls
