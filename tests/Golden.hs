@@ -15,7 +15,6 @@ import Prelude as P
 
 import Control.Arrow
 import Control.Monad
-import Control.Monad.Catch
 import Data.Binary
 import qualified Data.ByteString as BS
 import Data.ByteString.Lazy as BSL
@@ -146,12 +145,6 @@ mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
             doc <- formatFunction file
             withFile o WriteMode (\ h -> hPutDoc h doc)
 
-sectionParseSymbolTable  :: (SingI a, MonadThrow m) => ElfData -> BSL.ByteString -> SectionXX a -> m (SectionXX a, [SymbolTableEntryXX a])
-sectionParseSymbolTable d bs s@SectionXX{..} =
-    (s, ) <$> if sectionIsSymbolTable sType
-        then parseListA d $ getSectionData bs s
-        else return []
-
 findHeader :: SingI a => [RBuilder a] -> Maybe (HeaderXX a)
 findHeader rbs = getFirst $ foldMap f rbs
     where
@@ -188,10 +181,8 @@ printRBuilderFile path = do
 printHeadersFile :: FilePath -> IO (Doc ())
 printHeadersFile path = do
     bs <- fromStrict <$> BS.readFile path
-    (classS :&: HeadersXX (hdr@HeaderXX{..}, ss, ps)) <- parseHeaders bs
-    withSingI classS do
-        sts <- mapM (sectionParseSymbolTable hData bs) ss
-        return $ printHeaders hdr sts ps
+    (classS :&: HeadersXX (hdr, ss, ps)) <- parseHeaders bs
+    return $ withSingI classS $ printHeaders hdr ss ps
 
 printElfFile :: FilePath -> IO (Doc ())
 printElfFile path = do

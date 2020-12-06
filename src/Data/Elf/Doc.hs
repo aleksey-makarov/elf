@@ -18,7 +18,6 @@ module Data.Elf.Doc
     , printSection
     , printSegment
     , printHeaders
-    , printSymbolTableEntry
     , printRBuilder
     , printElf
     ) where
@@ -56,8 +55,8 @@ padLeadingZeros :: Int -> String -> String
 padLeadingZeros n s | length s > n = error "padLeadingZeros args"
 padLeadingZeros n s | otherwise = "0x" ++ replicate (n - length s) '0' ++ s
 
-printWord8 :: Word8 -> Doc ()
-printWord8 n = pretty $ padLeadingZeros 2 $ showHex n ""
+-- printWord8 :: Word8 -> Doc ()
+-- printWord8 n = pretty $ padLeadingZeros 2 $ showHex n ""
 
 printWord16 :: Word16 -> Doc ()
 printWord16 n = pretty $ padLeadingZeros 4 $ showHex n ""
@@ -95,8 +94,8 @@ printHeader HeaderXX{..} =
         , ("ShStrNdx",   viaShow hShStrNdx       ) -- Word16
         ]
 
-printSection :: SingI a => (Int, (SectionXX a, [SymbolTableEntryXX a])) -> Doc ()
-printSection (n, (SectionXX{..}, ss)) =
+printSection :: SingI a => (Int, SectionXX a) -> Doc ()
+printSection (n, SectionXX{..}) =
     formatPairs $
         [ ("N",         viaShow n           )
         , ("Name",      viaShow sName       ) -- Word32
@@ -109,9 +108,7 @@ printSection (n, (SectionXX{..}, ss)) =
         , ("Info",      viaShow sInfo       ) -- Word32
         , ("AddrAlign", printWXX sAddrAlign ) -- WXX c
         , ("EntSize",   printWXX sEntSize   ) -- WXX c
-        ] ++ if null ss then [] else
-            [ ("Symbols", line <> (indent 4 $ formatList $ fmap printSymbolTableEntry ss))
-            ]
+        ]
 
 printSegment :: SingI a => (Int, SegmentXX a) -> Doc ()
 printSegment (n, SegmentXX{..}) =
@@ -127,18 +124,7 @@ printSegment (n, SegmentXX{..}) =
         , ("Align",    printWXX pAlign    ) -- WXX c
         ]
 
-printSymbolTableEntry :: SingI a => SymbolTableEntryXX a -> Doc ()
-printSymbolTableEntry SymbolTableEntryXX{..} =
-    formatPairs
-        [ ("Name",  viaShow stName      )
-        , ("Info",  printWord8 stInfo   )
-        , ("Other", printWord8 stOther  )
-        , ("ShNdx", viaShow stShNdx     )
-        , ("Value", printWXX stValue    )
-        , ("Size",  printWXX stSize     )
-        ]
-
-printHeaders :: SingI a => HeaderXX a -> [(SectionXX a, [SymbolTableEntryXX a])] -> [SegmentXX a] -> Doc ()
+printHeaders :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> Doc ()
 printHeaders hdr ss ps =
     let
         h  = printHeader hdr
