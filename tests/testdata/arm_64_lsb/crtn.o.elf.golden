@@ -56,7 +56,7 @@ section 6 ".note.GNU-stack" {
     EntSize:   0x0000000000000000
     Data:      
 }
-symbol table section ".symtab" {
+symbol table section 7 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
     Data:  
@@ -92,5 +92,5 @@ section 8 ".strtab" {
     EntSize:   0x0000000000000000
     Data:      00 24 78 00                                     # .$x.
 }
-string table section
+string table section 9 ".shstrtab"
 section table

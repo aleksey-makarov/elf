@@ -203,7 +203,7 @@ section 15 ".debug_ranges" {
                f8 da 00 00 18 dc 00 00 00 00 00 00 00 00 00 00 # ................
                total: 7376
 }
-symbol table section ".symtab" {
+symbol table section 16 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x00000000
     Data:  
@@ -243,5 +243,5 @@ section 17 ".strtab" {
                5f 6d 75 6c 74 61 64 64 00 5f 42 66 72 65 65 00 # _multadd._Bfree.
                total: 2635
 }
-string table section
+string table section 18 ".shstrtab"
 section table

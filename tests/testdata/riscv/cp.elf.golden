@@ -80,7 +80,7 @@ segment {
                        78 8e 50 83 9d 1b f7 1a df e8 8e 40 1d ed 63 2a # x.P........@..c*
                        total: 152
         }
-        symbol table section ".dynsym" {
+        symbol table section 4 ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x00000002
             Data:  
@@ -355,5 +355,5 @@ section 22 ".bss" {
                00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 # ................
                total: 1184
 }
-string table section
+string table section 23 ".shstrtab"
 section table

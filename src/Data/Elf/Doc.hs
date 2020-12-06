@@ -331,12 +331,12 @@ printElf'' ElfSection{ esData = (ElfSectionData bs), ..} =
         , ("Data",       printData bs         )
         ]
 printElf'' ElfSection{ esData = (ElfSectionDataSymbolTable stes), ..} =
-    formatPairsBlock ("symbol table section" <+> (dquotes $ pretty esName))
+    formatPairsBlock ("symbol table section" <+> (viaShow esN) <+> (dquotes $ pretty esName))
         [ ("Type",       viaShow esType       )
         , ("Flags",      printWXX esFlags     )
         , ("Data",       if null stes then "" else line <> (indent 4 $ printElfSymbolTable stes) )
         ]
-printElf'' ElfSection{ esData = ElfSectionDataStringTable } = "string table section"
+printElf'' ElfSection{ esData = ElfSectionDataStringTable, ..} = "string table section" <+> (viaShow esN) <+> (dquotes $ pretty esName)
 printElf'' ElfSegment{..} =
     formatPairsBlock "segment"
         [ ("Type",       viaShow epType       )

@@ -44,7 +44,7 @@ segment {
                        19 a3 43 6e 8a 2a c6 26 26 b0 62 65 6d 58 87 ff # ..Cn.*.&&.bemX..
                        total: 72
         }
-        symbol table section ".dynsym" {
+        symbol table section 3 ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
             Data:  
@@ -247,5 +247,5 @@ section 15 ".comment" {
                36 75 62 75 6e 74 75 33 29 20 37 2e 33 2e 30 00 # 6ubuntu3) 7.3.0.
                total: 36
 }
-string table section
+string table section 16 ".shstrtab"
 section table

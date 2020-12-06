@@ -95,7 +95,7 @@ segment {
                        df 18 a8 41 42 fb 95 f8 af 22 e1 a3 e1 64 1c e6 # ...AB...."...d..
                        total: 12544
         }
-        symbol table section ".dynsym" {
+        symbol table section 5 ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
             Data:  
@@ -391,5 +391,5 @@ section 23 ".comment" {
                20 39 2e 32 2e 31 20 32 30 32 30 30 31 33 30 00 #  9.2.1 20200130.
                total: 76
 }
-string table section
+string table section 24 ".shstrtab"
 section table

@@ -68,7 +68,7 @@ section 7 ".eh_frame" {
                9d 04 9e 03 42 93 02 55 de dd d3 0e 00 00 00 00 # ....B..U........
                total: 56
 }
-symbol table section ".symtab" {
+symbol table section 9 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
     Data:  
@@ -129,5 +129,5 @@ section 8 ".rela.eh_frame" {
     Data:      1c 00 00 00 00 00 00 00 05 01 00 00 01 00 00 00 # ................
                00 00 00 00 00 00 00 00                         # ........
 }
-string table section
+string table section 11 ".shstrtab"
 section table

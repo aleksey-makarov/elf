@@ -56,7 +56,7 @@ segment {
         raw data {
             Data: 00 00 00 00                                     # ....
         }
-        symbol table section ".dynsym" {
+        symbol table section 3 ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
             Data:  
@@ -288,5 +288,5 @@ section 19 ".gnu_debuglink" {
     Data:      6c 69 62 6c 75 61 2d 35 2e 33 2e 73 6f 2e 64 65 # liblua-5.3.so.de
                62 75 67 00 d3 6b 5f 9f                         # bug..k_.
 }
-string table section
+string table section 20 ".shstrtab"
 section table

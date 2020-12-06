@@ -183,7 +183,7 @@ section 22 ".note.GNU-stack" {
     EntSize:   0x0000000000000000
     Data:      
 }
-symbol table section ".symtab" {
+symbol table section 23 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
     Data:  
@@ -271,5 +271,5 @@ section 15 ".rela__patchable_function_entries" {
                01 01 00 00 03 00 00 00 48 01 00 00 00 00 00 00 # ........H.......
                total: 96
 }
-string table section
+string table section 25 ".shstrtab"
 section table

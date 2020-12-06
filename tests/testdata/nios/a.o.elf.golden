@@ -125,7 +125,7 @@ section 15 ".debug_frame" {
                44 0d 1c 54 0d 1b 44 df 44 dc 44 0e 00 00 00 00 # D..T..D.D.D.....
                total: 56
 }
-symbol table section ".symtab" {
+symbol table section 17 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x00000000
     Data:  
@@ -212,5 +212,5 @@ section 16 ".rela.debug_frame" {
     Data:      14 00 00 00 0c 0b 00 00 00 00 00 00 18 00 00 00 # ................
                0c 02 00 00 00 00 00 00                         # ........
 }
-string table section
+string table section 19 ".shstrtab"
 section table

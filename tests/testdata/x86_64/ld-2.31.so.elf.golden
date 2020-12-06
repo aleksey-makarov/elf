@@ -104,7 +104,7 @@ segment {
         raw data {
             Data: 00 00 00 00                                     # ....
         }
-        symbol table section ".dynsym" {
+        symbol table section 5 ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
             Data:  
@@ -425,7 +425,7 @@ section 25 ".note.stapsdt" {
                34 40 25 65 61 78 20 38 40 25 72 64 78 00 00 00 # 4@%eax 8@%rdx...
                total: 988
 }
-symbol table section ".symtab" {
+symbol table section 26 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
     Data:  
@@ -465,5 +465,5 @@ section 27 ".strtab" {
                65 72 72 6f 72 00 47 4c 49 42 43 5f 32 2e 33 00 # error.GLIBC_2.3.
                total: 6435
 }
-string table section
+string table section 28 ".shstrtab"
 section table

@@ -98,7 +98,7 @@ segment {
         raw data {
             Data: 00 00 00 00                                     # ....
         }
-        symbol table section ".dynsym" {
+        symbol table section 5 ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
             Data:  
@@ -397,5 +397,5 @@ section 25 ".comment" {
                34 31 38 2d 64 35 39 30 29 20 38 2e 33 2e 30 00 # 418-d590) 8.3.0.
                total: 59
 }
-string table section
+string table section 26 ".shstrtab"
 section table

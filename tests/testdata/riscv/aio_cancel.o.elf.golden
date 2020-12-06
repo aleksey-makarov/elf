@@ -57,7 +57,7 @@ section 6 ".comment" {
     Data:      00 47 43 43 3a 20 28 47 65 6e 74 6f 6f 20 37 2e # .GCC: (Gentoo 7.
                32 2e 30 20 70 31 2e 31 29 20 37 2e 32 2e 30 00 # 2.0 p1.1) 7.2.0.
 }
-symbol table section ".symtab" {
+symbol table section 7 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x00000000
     Data:  
@@ -109,5 +109,5 @@ section 2 ".rela.text" {
                00 00 00 00 44 02 00 00 11 58 00 00 00 00 00 00 # ....D....X......
                total: 924
 }
-string table section
+string table section 9 ".shstrtab"
 section table

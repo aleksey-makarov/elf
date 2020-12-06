@@ -98,7 +98,7 @@ segment {
                        cd cd 84 7c 9e fb 6e 0f 29 ce 24 8f 4b 22 7d ff # ...|..n.).$.K"}.
                        total: 648
         }
-        symbol table section ".dynsym" {
+        symbol table section 5 ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x00000002
             Data:  
@@ -381,5 +381,5 @@ section 26 ".ARM.attributes" {
                15 01 17 03 18 01 19 01 1a 02 1b 03 1c 01 22 01 # ..............".
                total: 53
 }
-string table section
+string table section 27 ".shstrtab"
 section table

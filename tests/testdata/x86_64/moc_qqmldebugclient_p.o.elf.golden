@@ -162,7 +162,7 @@ section 21 ".eh_frame" {
                0e 18 41 0e 10 42 0e 08 43 0b 00 00 00 00 00 00 # ..A..B..C.......
                total: 232
 }
-symbol table section ".symtab" {
+symbol table section 23 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
     Data:  
@@ -271,5 +271,5 @@ section 22 ".rela.eh_frame" {
                02 00 00 00 01 00 00 00 90 01 00 00 00 00 00 00 # ................
                total: 144
 }
-string table section
+string table section 25 ".shstrtab"
 section table

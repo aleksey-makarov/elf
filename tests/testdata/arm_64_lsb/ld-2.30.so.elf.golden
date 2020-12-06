@@ -77,7 +77,7 @@ segment {
         raw data {
             Data: 00 00 00 00                                     # ....
         }
-        symbol table section ".dynsym" {
+        symbol table section 4 ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
             Data:  
@@ -347,7 +347,7 @@ section 20 ".comment" {
     Data:      47 43 43 3a 20 28 47 4e 55 29 20 39 2e 32 2e 30 # GCC: (GNU) 9.2.0
                00                                              # .
 }
-symbol table section ".symtab" {
+symbol table section 21 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
     Data:  
@@ -387,5 +387,5 @@ section 22 ".strtab" {
                6f 72 00 5f 64 6c 5f 76 61 72 5f 69 6e 69 74 00 # or._dl_var_init.
                total: 7310
 }
-string table section
+string table section 23 ".shstrtab"
 section table
