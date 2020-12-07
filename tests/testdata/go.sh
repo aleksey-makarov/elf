@@ -1,5 +1,5 @@
 # find . -type f -name '*.layout.golden' -delete
 # find . -type f -name '*.elf.golden' -delete
-find . -type f -name '*.header.golden' -delete
+# find . -type f -name '*.header.golden' -delete
 # find . -type f -name '*.out' -delete
-
+# find . -type f -name '*.copy' -delete

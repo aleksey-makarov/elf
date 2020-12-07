@@ -116,34 +116,27 @@ mkTest' bs = do
 mkTest :: FilePath -> TestTree
 mkTest p = testCase p $ withBinaryFile p ReadMode (BSL.hGetContents >=> mkTest')
 
-compareElfs :: Elf' -> Elf' -> IO ()
-compareElfs _ _ = return ()
-
-mkTestElf :: FilePath -> TestTree
-mkTestElf p = testCase p do
-    bs <- fromStrict <$> BS.readFile p
-    elf <- parseElf bs
-    bs' <- serializeElf elf
-    elf' <- parseElf bs'
-    doc <- printElf elf'
-    withFile outFileName WriteMode (\ h -> hPutDoc h doc)
-    compareElfs elf elf'
+mkGoldenTest' :: FilePath -> FilePath -> (FilePath -> IO (Doc ())) -> FilePath -> TestTree
+mkGoldenTest' g o formatFunction file = goldenVsFile file g o mkGoldenTestOutput
     where
-        outFileName = "tests" </> p <.> "elf" <.> "copy"
-
-mkGoldenTest :: String -> (FilePath -> IO (Doc ())) -> FilePath -> TestTree
-mkGoldenTest name formatFunction file = goldenVsFile file g o mkGoldenTestOutput
-    where
-
-        newBase = "tests" </> file <.> name
-
-        o = newBase <.> "out"
-        g = newBase <.> "golden"
-
         mkGoldenTestOutput :: IO ()
         mkGoldenTestOutput = do
             doc <- formatFunction file
             withFile o WriteMode (\ h -> hPutDoc h doc)
+
+mkGoldenTest :: String -> (FilePath -> IO (Doc ())) -> FilePath -> TestTree
+mkGoldenTest name formatFunction file = mkGoldenTest' g o formatFunction file
+    where
+        newBase = "tests" </> file <.> name
+        o = newBase <.> "out"
+        g = newBase <.> "golden"
+
+mkGoldenTestOSuffix :: String -> String -> (FilePath -> IO (Doc ())) -> FilePath -> TestTree
+mkGoldenTestOSuffix name osuffix formatFunction file = mkGoldenTest' g o formatFunction file
+    where
+        newBase = "tests" </> file <.> name
+        o = newBase <.> osuffix <.> "out"
+        g = newBase <.> "golden"
 
 findHeader :: SingI a => [RBuilder a] -> Maybe (HeaderXX a)
 findHeader rbs = getFirst $ foldMap f rbs
@@ -189,6 +182,17 @@ printElfFile path = do
     bs <- fromStrict <$> BS.readFile path
     e <- parseElf bs
     printElf e
+
+printCopyElfFile :: FilePath -> IO (Doc ())
+printCopyElfFile p = do
+    bs <- fromStrict <$> BS.readFile p
+    elf <- parseElf bs
+    bs' <- serializeElf elf
+    elf' <- parseElf bs'
+    printElf elf'
+
+-- printCopyRBuilderFile :: FilePath -> IO (Doc ())
+-- printCopyRBuilderFile = undefined
 
 testHeader64 :: Header
 testHeader64 = SELFCLASS64 :&: (HeaderXX ELFDATA2LSB 0 0 0 0 0 0 0 0 0 0 0 0 0)
@@ -240,8 +244,9 @@ main = do
 
     defaultMain $ testGroup "elf" [ hdrSizeTests
                                   , testGroup "headers round trip" (mkTest <$> elfs)
-                                  , testGroup "headers golden"     (mkGoldenTest "header" printHeadersFile  <$> elfs)
-                                  , testGroup "layout golden"      (mkGoldenTest "layout" printRBuilderFile <$> elfs)
-                                  , testGroup "elf golden"         (mkGoldenTest "elf"    printElfFile      <$> elfs)
-                                  , testGroup "elf round trip"     (mkTestElf <$> P.take 2 elfs)
+                                  , testGroup "headers golden"     (mkGoldenTest        "header"        printHeadersFile      <$> elfs)
+                                  , testGroup "layout golden"      (mkGoldenTest        "layout"        printRBuilderFile     <$> elfs)
+                                  , testGroup "elf golden"         (mkGoldenTest        "elf"           printElfFile          <$> elfs)
+                                  , testGroup "copy elf golden"    (mkGoldenTestOSuffix "elf"    "copy" printCopyElfFile      <$> P.take 2 elfs)
+                                  -- , testGroup "copy layout golden" (mkGoldenTestOSuffix "layout" "copy" printCopyRBuilderFile <$> elfs)
                                   ]

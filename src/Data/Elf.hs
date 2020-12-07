@@ -439,6 +439,10 @@ parseRBuilder hdr@HeaderXX{..} ss ps = do
         =<< addRBuildersToList segments
         =<< addRBuildersToList sections [])
 
+neighbours :: [a] -> (a -> a -> b) -> [b]
+neighbours [] _ = []
+neighbours x  f = fmap (uncurry f) $ L.zip x $ L.tail x
+
 parseElf' :: forall a m . (MonadCatch m, SingI a) =>
                                        HeaderXX a ->
                                     [SectionXX a] ->
@@ -519,7 +523,7 @@ data WBuilderData (a :: ElfClass)
 
 data WBuilderState (a :: ElfClass) =
     WBuilderState
-        { wbsSectionsReversed :: [SectionXX a]
+        { wbsSections         :: [(Word16, SectionXX a)]
         , wbsSegmentsReversed :: [SegmentXX a]
         , wbsDataReversed     :: [WBuilderData a]
         , wbsOffset           :: Word64 -- FIXME shold be WXX
@@ -531,7 +535,7 @@ data WBuilderState (a :: ElfClass) =
 
 wbStateInit :: forall a . SingI a => WBuilderState a
 wbStateInit = WBuilderState
-    { wbsSectionsReversed = []
+    { wbsSections         = []
     , wbsSegmentsReversed = []
     , wbsDataReversed     = []
     , wbsOffset           = 0
@@ -618,9 +622,20 @@ serializeElf' elfs = do
                 d = case esData of
                     ElfSectionData bs -> bs
                     ElfSectionDataStringTable -> stringTable
+                sName = 0                              -- Word32
+                sType = esType                         -- ElfSectionType
+                sFlags = esFlags                       -- WXX c
+                sAddr = esAddr                         -- WXX c
+                sOffset = wxxFromIntegral wbsOffset    -- WXX c
+                sSize = wxxFromIntegral $ BSL.length d -- WXX c
+                sLink = esLink                         -- Word32
+                sInfo = 0                              -- Word32 FIXME
+                sAddrAlign = esAddrAlign               -- WXX c
+                sEntSize = zeroXX                      -- WXX c
             in
                 return WBuilderState
-                    { wbsDataReversed = (WBuilderDataByteStream d) : wbsDataReversed
+                    { wbsSections = (esN, SectionXX{..}) : wbsSections
+                    , wbsDataReversed = (WBuilderDataByteStream d) : wbsDataReversed
                     , wbsOffset = wbsOffset + (fromIntegral $ BSL.length d)
                     , ..
                     }
@@ -637,9 +652,8 @@ serializeElf' elfs = do
                 pFileSize = zeroXX -- FIXME
                 pMemSize = epMemSize
                 pAlign = epAlign
-                p' = SegmentXX{..}
             return WBuilderState
-                { wbsSegmentsReversed = p' : wbsSegmentsReversed
+                { wbsSegmentsReversed = SegmentXX{..} : wbsSegmentsReversed
                 , ..
                 }
         elf2WBuilder' ElfRawData{..} WBuilderState{..} =
@@ -652,9 +666,24 @@ serializeElf' elfs = do
         elf2WBuilder :: (MonadThrow n, MonadState (WBuilderState a) n) => Elf a -> n ()
         elf2WBuilder elf = MS.get >>= elf2WBuilder' elf >>= MS.put
 
+        fixSections :: [(Word16, SectionXX a)] -> m [SectionXX a]
+        fixSections ss = do
+            when (L.length ss /= sectionN) (error "internal error: L.length ss /= sectionN")
+            let
+                f (ln, _) (rn, _) = ln `compare` rn
+                sorted = L.sortBy f ss
+                next (ln, _) (rn, _) = ln + 1 == rn
+                checkNeibours = L.all id $ neighbours sorted next
+
+            when (not checkNeibours) ($elfError "sections are not consistent")
+            return $ fmap snd sorted
+
         wbState2ByteString :: WBuilderState a -> m BSL.ByteString
-        wbState2ByteString WBuilderState{..} = return $ foldMap f $ L.reverse wbsDataReversed
-            where
+        wbState2ByteString WBuilderState{..} = do
+
+            sections <- fixSections wbsSections
+
+            let
                 f WBuilderDataHeader =
                     case header' of
                         ElfHeader{..} ->
@@ -681,9 +710,11 @@ serializeElf' elfs = do
                         _ -> error "this should be ElfHeader" -- FIXME
                 f WBuilderDataByteStream {..} = wbdData
                 f WBuilderDataSectionTable =
-                    serializeListA hData' $ zeroSection : L.reverse wbsSectionsReversed
+                    serializeListA hData' $ zeroSection : sections
                 f WBuilderDataSegmentTable =
                     serializeListA hData' $ L.reverse wbsSegmentsReversed
+
+            return $ foldMap f $ L.reverse wbsDataReversed
 
     execStateT (mapM elf2WBuilder elfs) wbStateInit{ wbsStringIndexes = L.reverse stringIndexesReversed } >>= wbState2ByteString
 

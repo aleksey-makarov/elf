@@ -222,14 +222,13 @@ printRBuilder getStr rbs = vsep ldoc
                                     [(o,         b, doc)] ++
                                     xsf                         ++
                                     [(o + s - 1, e, [])]
-                f RBuilderRawData{} = []
-                -- f RBuilderRawData{..} =
-                --     let
-                --         doc = [ "R" ]
-                --     in
-                --         [(o,         "╓", doc)
-                --         ,(o + s - 1, "╙", [])
-                --         ]
+                f RBuilderRawData{} =
+                    let
+                        doc = [ "R" ]
+                    in
+                        [(o,         "╓", doc)
+                        ,(o + s - 1, "╙", [])
+                        ]
 
 --------------------------------------------------------------------
 --

@@ -10,6 +10,8 @@
 ││╓ 0x00000134 S1 ".interp" SHT_PROGBITS [SHF_ALLOC]
 ││╙ 0x00000146
 │└─ 0x00000146
+│ ╓ 0x00000147 R
+│ ╙ 0x00000147
 │┌─ 0x00000148 P6 PT_NOTE [PF_R]
 ││╓ 0x00000148 S2 ".note.ABI-tag" SHT_NOTE [SHF_ALLOC]
 ││╙ 0x00000167
@@ -24,6 +26,8 @@
 │ ╙ 0x00000bef
 │ ╓ 0x00000bf0 S7 ".gnu.version" SHT_EXT 1879048191 [SHF_ALLOC]
 │ ╙ 0x00000c89
+│ ╓ 0x00000c8a R
+│ ╙ 0x00000c8b
 │ ╓ 0x00000c8c S8 ".gnu.version_r" SHT_EXT 1879048190 [SHF_ALLOC]
 │ ╙ 0x00000ccb
 │ ╓ 0x00000ccc S9 ".rel.dyn" SHT_REL [SHF_ALLOC]

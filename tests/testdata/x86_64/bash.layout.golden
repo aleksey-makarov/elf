@@ -24,6 +24,8 @@
  │ ╙ 0x00015653
  │ ╓ 0x00015654 S7 ".gnu.version" SHT_EXT 1879048191 [SHF_ALLOC]
  │ ╙ 0x0001652b
+ │ ╓ 0x0001652c R
+ │ ╙ 0x0001652f
  │ ╓ 0x00016530 S8 ".gnu.version_r" SHT_EXT 1879048190 [SHF_ALLOC]
  │ ╙ 0x000165df
  │ ╓ 0x000165e0 S9 ".rela.dyn" SHT_RELA [SHF_ALLOC]
@@ -32,8 +34,12 @@
   ┌─ 0x0001f000 P3 PT_LOAD [PF_X,PF_R]
   │╓ 0x0001f000 S10 ".init" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
   │╙ 0x0001f01a
+  │╓ 0x0001f01b R
+  │╙ 0x0001f01f
   │╓ 0x0001f020 S11 ".text" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
   │╙ 0x000a8a54
+  │╓ 0x000a8a55 R
+  │╙ 0x000a8a57
   │╓ 0x000a8a58 S12 ".fini" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
   │╙ 0x000a8a64
   └─ 0x000a8a64
@@ -44,6 +50,8 @@
  ││╓ 0x000c1860 S14 ".eh_frame_hdr" SHT_PROGBITS [SHF_ALLOC]
  ││╙ 0x000c4afb
  │└─ 0x000c4afb
+ │ ╓ 0x000c4afc R
+ │ ╙ 0x000c4aff
  │ ╓ 0x000c4b00 S15 ".eh_frame" SHT_PROGBITS [SHF_ALLOC]
  │ ╙ 0x000d6867
  └── 0x000d6867

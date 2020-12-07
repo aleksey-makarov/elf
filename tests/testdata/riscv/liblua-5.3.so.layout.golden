@@ -7,8 +7,12 @@
  ││╓ 0x00000158 S1 ".note.gnu.build-id" SHT_NOTE [SHF_ALLOC]
  ││╙ 0x0000017b
  │└─ 0x0000017b
+ │ ╓ 0x0000017c R
+ │ ╙ 0x0000017f
  │ ╓ 0x00000180 S2 ".gnu.hash" SHT_EXT 1879048182 [SHF_ALLOC]
  │ ╙ 0x0000088b
+ │ ╓ 0x0000088c R
+ │ ╙ 0x0000088f
  │ ╓ 0x00000890 S3 ".dynsym" SHT_DYNSYM [SHF_ALLOC]
  │ ╙ 0x00001fcf
  │ ╓ 0x00001fd0 S4 ".dynstr" SHT_STRTAB [SHF_ALLOC]
@@ -25,6 +29,8 @@
  │ ╙ 0x00007eff
  │ ╓ 0x00007f00 S10 ".text" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
  │ ╙ 0x00021379
+ │ ╓ 0x0002137a R
+ │ ╙ 0x0002137f
  │ ╓ 0x00021380 S11 ".rodata" SHT_PROGBITS [SHF_ALLOC]
  │ ╙ 0x000252bf
  │ ╓ 0x000252c0 S12 ".eh_frame" SHT_PROGBITS [SHF_ALLOC]

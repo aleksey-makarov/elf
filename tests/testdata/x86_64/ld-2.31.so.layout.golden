@@ -14,10 +14,14 @@
 │ │╓ 0x000002c8 S2 ".note.gnu.build-id" SHT_NOTE [SHF_ALLOC]
 │ │╙ 0x000002eb
 │ └─ 0x000002eb
+│  ╓ 0x000002ec R
+│  ╙ 0x000002ef
 │  ╓ 0x000002f0 S3 ".hash" SHT_HASH [SHF_ALLOC]
 │  ╙ 0x0000044f
 │  ╓ 0x00000450 S4 ".gnu.hash" SHT_EXT 1879048182 [SHF_ALLOC]
 │  ╙ 0x000005eb
+│  ╓ 0x000005ec R
+│  ╙ 0x000005ef
 │  ╓ 0x000005f0 S5 ".dynsym" SHT_DYNSYM [SHF_ALLOC]
 │  ╙ 0x0000091f
 │  ╓ 0x00000920 S6 ".dynstr" SHT_STRTAB [SHF_ALLOC]
@@ -26,6 +30,8 @@
 │  ╙ 0x00000b87
 │  ╓ 0x00000b88 S8 ".gnu.version_d" SHT_EXT 1879048189 [SHF_ALLOC]
 │  ╙ 0x00000c2b
+│  ╓ 0x00000c2c R
+│  ╙ 0x00000c2f
 │  ╓ 0x00000c30 S9 ".rela.dyn" SHT_RELA [SHF_ALLOC]
 │  ╙ 0x0000104f
 │  ╓ 0x00001050 S10 ".rela.plt" SHT_RELA [SHF_ALLOC,SHF_EXT 64]
@@ -57,12 +63,16 @@
 │┌── 0x0002a4c0 P10 PT_EXT 1685382482 [PF_R]
 ││ ╓ 0x0002a4c0 S19 ".data.rel.ro" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
 ││ ╙ 0x0002ae03
+││ ╓ 0x0002ae04 R
+││ ╙ 0x0002ae07
 ││┌─ 0x0002ae08 P4 PT_DYNAMIC [PF_W,PF_R]
 │││╓ 0x0002ae08 S20 ".dynamic" SHT_DYNAMIC [SHF_WRITE,SHF_ALLOC]
 │││╙ 0x0002af97
 ││└─ 0x0002af97
 ││ ╓ 0x0002af98 S21 ".got" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
 ││ ╙ 0x0002aff7
+││ ╓ 0x0002aff8 R
+││ ╙ 0x0002afff
 │└── 0x0002afff
 │  ╓ 0x0002b000 S22 ".data" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
 │  ╙ 0x0002bf97
