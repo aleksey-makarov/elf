@@ -259,6 +259,13 @@ segment {
                        total: 44
         }
 }
+raw data {
+    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          ...
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          total: 924
+}
 segment {
     Type:     PT_LOAD
     Flags:    0x00000006
@@ -399,4 +406,7 @@ section 26 ".gnu_debuglink" {
     Data:      62 61 73 68 34 2e 64 65 62 75 67 00 7e 0c 51 7a # bash4.debug.~.Qz
 }
 string table section 27 ".shstrtab"
+raw data {
+    Data: 00 00 00 00 00 00 00                            # .......
+}
 section table

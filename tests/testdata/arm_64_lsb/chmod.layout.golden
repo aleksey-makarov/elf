@@ -57,6 +57,8 @@
  │ ╓ 0x0000c0c0 S17 ".eh_frame" SHT_PROGBITS [SHF_ALLOC]
  │ ╙ 0x0000d84f
  └── 0x0000d84f
+   ╓ 0x0000d850 R
+   ╙ 0x0000e807
 ┌─── 0x0000e808 P PT_LOAD [PF_W,PF_R]
 │┌── 0x0000e808 P PT_EXT 1685382482 [PF_R]
 ││ ╓ 0x0000e808 S18 ".init_array" SHT_EXT 14 [SHF_WRITE,SHF_ALLOC]
@@ -80,5 +82,7 @@
    ╙ 0x0000f12a
    ╓ 0x0000f12b S26 ".shstrtab" SHT_STRTAB []
    ╙ 0x0000f221
+   ╓ 0x0000f222 R
+   ╙ 0x0000f227
    ┎ 0x0000f228 ST (27)
    ┖ 0x0000f8e7

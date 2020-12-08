@@ -11,5 +11,7 @@
 └─ 0x000000eb
  ╓ 0x000000ec S2 ".shstrtab" SHT_STRTAB []
  ╙ 0x000000fc
+ ╓ 0x000000fd R
+ ╙ 0x000000ff
  ┎ 0x00000100 ST (3)
  ┖ 0x000001bf

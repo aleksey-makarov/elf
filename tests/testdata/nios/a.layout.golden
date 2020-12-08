@@ -28,6 +28,8 @@
  ╙ 0x0004fcc4
  ╓ 0x0004fcc5 S11 ".debug_line" SHT_PROGBITS []
  ╙ 0x0006486a
+ ╓ 0x0006486b R
+ ╙ 0x0006486b
  ╓ 0x0006486c S12 ".debug_frame" SHT_PROGBITS []
  ╙ 0x0006601b
  ╓ 0x0006601c S13 ".debug_str" SHT_PROGBITS [SHF_EXT 16,SHF_EXT 32]
@@ -42,5 +44,7 @@
  ╙ 0x00089ba6
  ╓ 0x00089ba7 S18 ".shstrtab" SHT_STRTAB []
  ╙ 0x00089c56
+ ╓ 0x00089c57 R
+ ╙ 0x00089c57
  ┎ 0x00089c58 ST (19)
  ┖ 0x00089f4f

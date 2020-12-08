@@ -93,4 +93,7 @@ section 8 ".strtab" {
     Data:      00 24 78 00                                     # .$x.
 }
 string table section 9 ".shstrtab"
+raw data {
+    Data: 00 00 00 00                                     # ....
+}
 section table

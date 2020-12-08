@@ -270,6 +270,13 @@ segment {
             Data:      00 00 00 00                                     # ....
         }
 }
+raw data {
+    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          ...
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          total: 2076
+}
 segment {
     Type:     PT_LOAD
     Flags:    0x00000006
@@ -397,4 +404,7 @@ section 26 ".ARM.attributes" {
                total: 53
 }
 string table section 27 ".shstrtab"
+raw data {
+    Data: 00 00 00                                        # ...
+}
 section table

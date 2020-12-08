@@ -248,4 +248,7 @@ section 15 ".comment" {
                total: 36
 }
 string table section 16 ".shstrtab"
+raw data {
+    Data: 00 00 00                                        # ...
+}
 section table

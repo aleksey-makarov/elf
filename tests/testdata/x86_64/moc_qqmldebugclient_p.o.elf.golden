@@ -40,6 +40,9 @@ section 4 ".group" {
     EntSize:   0x0000000000000004
     Data:      01 00 00 00 0e 00 00 00 0f 00 00 00             # ............
 }
+raw data {
+    Data: 00 00 00 00                                     # ....
+}
 section 5 ".text" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000006
@@ -68,6 +71,9 @@ section 8 ".bss" {
     EntSize:   0x0000000000000000
     Data:      
 }
+raw data {
+    Data: 00 00 00                                        # ...
+}
 section 9 ".qtversion" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000202
@@ -84,6 +90,9 @@ section 11 ".rodata._ZTS15QQmlDebugClient" {
     EntSize:   0x0000000000000000
     Data:      31 35 51 51 6d 6c 44 65 62 75 67 43 6c 69 65 6e # 15QQmlDebugClien
                74 00                                           # t.
+}
+raw data {
+    Data: 00 00 00 00 00 00                               # ......
 }
 section 12 ".data.rel.ro._ZTI15QQmlDebugClient" {
     Type:      SHT_PROGBITS
@@ -106,6 +115,9 @@ section 14 ".data.rel.ro._ZTV15QQmlDebugClient" {
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                total: 120
 }
+raw data {
+    Data: 00 00 00 00 00 00 00 00                         # ........
+}
 section 16 ".data.rel.ro" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000003
@@ -117,6 +129,9 @@ section 16 ".data.rel.ro" {
                ...
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                total: 48
+}
+raw data {
+    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
 }
 section 18 ".rodata" {
     Type:      SHT_PROGBITS
@@ -149,6 +164,9 @@ section 20 ".note.GNU-stack" {
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
     Data:      
+}
+raw data {
+    Data: 00 00 00 00 00 00 00                            # .......
 }
 section 21 ".eh_frame" {
     Type:      SHT_PROGBITS
@@ -201,6 +219,9 @@ section 24 ".strtab" {
                ...
                61 74 69 63 4d 65 74 61 4f 62 6a 65 63 74 45 00 # aticMetaObjectE.
                total: 1193
+}
+raw data {
+    Data: 00 00 00 00 00 00 00                            # .......
 }
 section 6 ".rela.text" {
     Type:      SHT_RELA

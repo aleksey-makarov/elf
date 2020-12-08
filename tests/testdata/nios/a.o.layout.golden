@@ -24,6 +24,8 @@
 ╙ 0x0000130b
 ╓ 0x0000130c S18 ".strtab" SHT_STRTAB []
 ╙ 0x0000131c
+╓ 0x0000131d R
+╙ 0x0000131f
 ╓ 0x00001320 S2 ".rela.text" SHT_RELA [SHF_EXT 64]
 ╙ 0x00001343
 ╓ 0x00001344 S7 ".rela.debug_info" SHT_RELA [SHF_EXT 64]
@@ -36,5 +38,7 @@
 ╙ 0x000019af
 ╓ 0x000019b0 S19 ".shstrtab" SHT_STRTAB []
 ╙ 0x00001a52
+╓ 0x00001a53 R
+╙ 0x00001a53
 ┎ 0x00001a54 ST (20)
 ┖ 0x00001d73

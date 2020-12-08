@@ -282,6 +282,13 @@ segment {
                        total: 6032
         }
 }
+raw data {
+    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          ...
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          total: 4024
+}
 segment {
     Type:     PT_LOAD
     Flags:    0x00000006
@@ -398,4 +405,7 @@ section 25 ".comment" {
                total: 59
 }
 string table section 26 ".shstrtab"
+raw data {
+    Data: 00 00 00 00 00 00                               # ......
+}
 section table

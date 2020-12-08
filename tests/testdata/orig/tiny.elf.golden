@@ -43,4 +43,7 @@ segment {
         }
 }
 string table section 2 ".shstrtab"
+raw data {
+    Data: 00 00 00                                        # ...
+}
 section table

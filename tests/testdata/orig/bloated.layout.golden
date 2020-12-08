@@ -63,6 +63,8 @@
  │ ╓ 0x00000840 S18 ".eh_frame" SHT_PROGBITS [SHF_ALLOC]
  │ ╙ 0x00000933
  └── 0x00000933
+   ╓ 0x00000934 R
+   ╙ 0x00000eeb
 ┌─── 0x00000eec P PT_LOAD [PF_W,PF_R]
 │┌── 0x00000eec P PT_EXT 1685382482 [PF_R]
 ││ ╓ 0x00000eec S19 ".init_array" SHT_EXT 14 [SHF_WRITE,SHF_ALLOC]
@@ -86,11 +88,15 @@
    - 0x0000102c S26 ".bss" SHT_NOBITS [SHF_WRITE,SHF_ALLOC]
    ╓ 0x0000102c S27 ".comment" SHT_PROGBITS [SHF_EXT 16,SHF_EXT 32]
    ╙ 0x00001084
+   ╓ 0x00001085 R
+   ╙ 0x00001087
    ╓ 0x00001088 S29 ".symtab" SHT_SYMTAB []
    ╙ 0x00001567
    ╓ 0x00001568 S30 ".strtab" SHT_STRTAB []
    ╙ 0x000018e2
    ╓ 0x000018e3 S28 ".shstrtab" SHT_STRTAB []
    ╙ 0x000019ec
+   ╓ 0x000019ed R
+   ╙ 0x000019ef
    ┎ 0x000019f0 ST (31)
    ┖ 0x00001ec7

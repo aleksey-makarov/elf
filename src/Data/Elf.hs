@@ -388,15 +388,19 @@ tail' :: [a] -> [a]
 tail' [] = []
 tail' (_ : xs) = xs
 
-fixRbuilder :: SingI a => RBuilder a -> RBuilder a
-fixRbuilder p | I.empty $ rBuilderInterval p = p
-fixRbuilder p@RBuilderSegment{..}            = RBuilderSegment{ rbpData = addRaw b newRbpData newE, ..}
+addRawData :: SingI a => [RBuilder a] -> [RBuilder a]
+addRawData [] = []
+addRawData rBuilders = fst $ L.foldr f ([], lrbie) $ fmap fixRBuilder' rBuilders
     where
-        (I b s) = rBuilderInterval p
-        -- e, e' and e'' stand for the first occupied byte after the place being fixed
-        e = b + s
-        fixedRbpData = fmap fixRbuilder rbpData
-        (newRbpData, newE) = L.foldr f ([], e) fixedRbpData
+
+        lrbi@(I lrbib lrbis) = rBuilderInterval $ L.last rBuilders
+        lrbie = if I.empty lrbi then lrbib else lrbib + lrbis
+
+        addRaw :: SingI a => Word64 -> [RBuilder a] -> Word64 -> [RBuilder a]
+        addRaw b' rbs e' = case compare b' e' of
+            LT -> RBuilderRawData (I b' (e' - b')) : rbs
+            EQ -> rbs
+            GT -> error "internal error" -- FIXME: add context
 
         f rb (rbs, e') =
             let
@@ -406,13 +410,16 @@ fixRbuilder p@RBuilderSegment{..}            = RBuilderSegment{ rbpData = addRaw
             in
                 (rb : rbs', e'')
 
-        addRaw :: SingI a => Word64 -> [RBuilder a] -> Word64 -> [RBuilder a]
-        addRaw b' rbs e' = case compare b' e' of
-            LT -> RBuilderRawData (I b' (e' - b')) : rbs
-            EQ -> rbs
-            GT -> error "internal error" -- FIXME: add context
-
-fixRbuilder x = x
+        fixRBuilder' :: SingI a => RBuilder a -> RBuilder a
+        fixRBuilder' p | I.empty $ rBuilderInterval p = p
+        fixRBuilder' p@RBuilderSegment{..}            = RBuilderSegment{ rbpData = addRaw b newRbpData newE, ..}
+            where
+                (I b s) = rBuilderInterval p
+                -- e, e' and e'' stand for the first occupied byte after the place being fixed
+                e = b + s
+                fixedRbpData = fmap fixRBuilder' rbpData
+                (newRbpData, newE) = L.foldr f ([], e) fixedRbpData
+        fixRBuilder' x = x
 
 parseRBuilder :: (MonadCatch m, SingI a) => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> m [RBuilder a]
 parseRBuilder hdr@HeaderXX{..} ss ps = do
@@ -433,11 +440,13 @@ parseRBuilder hdr@HeaderXX{..} ss ps = do
         maybeSectionTable = if hShNum == 0 then Nothing else  Just $ RBuilderSectionTable hdr
         maybeSegmentTable = if hPhNum == 0 then Nothing else  Just $ RBuilderSegmentTable hdr
 
-    fmap fixRbuilder <$> (addRBuilder header
+    rbs <-addRBuilder header
         =<< maybe return addRBuilder maybeSectionTable
         =<< maybe return addRBuilder maybeSegmentTable
         =<< addRBuildersToList segments
-        =<< addRBuildersToList sections [])
+        =<< addRBuildersToList sections []
+
+    return $ addRawData rbs
 
 parseElf' :: forall a m . (MonadCatch m, SingI a) =>
                                        HeaderXX a ->

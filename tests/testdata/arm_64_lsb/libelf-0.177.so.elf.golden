@@ -264,6 +264,13 @@ segment {
                        total: 12220
         }
 }
+raw data {
+    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          ...
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          total: 3620
+}
 section 17 ".tbss" {
     Type:      SHT_NOBITS
     Flags:     0x0000000000000403
@@ -389,4 +396,7 @@ section 25 ".comment" {
                total: 59
 }
 string table section 26 ".shstrtab"
+raw data {
+    Data: 00 00 00 00 00 00 00                            # .......
+}
 section table

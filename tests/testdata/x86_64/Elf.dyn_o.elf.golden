@@ -20,6 +20,9 @@ section 1 ".text" {
                00 02 00 00 00 04 00 00 00 48 83 c3 05 ff 65 00 # .........H....e.
                total: 46671
 }
+raw data {
+    Data: 00                                              # .
+}
 section 3 ".data" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000003
@@ -67,6 +70,9 @@ section 8 ".comment" {
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000001
     Data:      00 47 48 43 20 38 2e 38 2e 33 00                # .GHC 8.8.3.
+}
+raw data {
+    Data: 00 00 00 00                                     # ....
 }
 symbol table section 9 ".symtab" {
     Type:  SHT_SYMTAB
@@ -133,4 +139,7 @@ section 4 ".rela.data" {
                total: 8688
 }
 string table section 11 ".shstrtab"
+raw data {
+    Data: 00 00 00 00 00                                  # .....
+}
 section table

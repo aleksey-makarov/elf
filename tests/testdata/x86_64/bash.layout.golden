@@ -31,6 +31,8 @@
  │ ╓ 0x000165e0 S9 ".rela.dyn" SHT_RELA [SHF_ALLOC]
  │ ╙ 0x0001efdf
  └── 0x0001efdf
+   ╓ 0x0001efe0 R
+   ╙ 0x0001efff
   ┌─ 0x0001f000 P PT_LOAD [PF_X,PF_R]
   │╓ 0x0001f000 S10 ".init" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
   │╙ 0x0001f01a
@@ -43,6 +45,8 @@
   │╓ 0x000a8a58 S12 ".fini" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
   │╙ 0x000a8a64
   └─ 0x000a8a64
+   ╓ 0x000a8a65 R
+   ╙ 0x000a8fff
  ┌── 0x000a9000 P PT_LOAD [PF_R]
  │ ╓ 0x000a9000 S13 ".rodata" SHT_PROGBITS [SHF_ALLOC]
  │ ╙ 0x000c185f
@@ -55,6 +59,8 @@
  │ ╓ 0x000c4b00 S15 ".eh_frame" SHT_PROGBITS [SHF_ALLOC]
  │ ╙ 0x000d6867
  └── 0x000d6867
+   ╓ 0x000d6868 R
+   ╙ 0x000d6ccf
 ┌─── 0x000d6cd0 P PT_LOAD [PF_W,PF_R]
 │┌── 0x000d6cd0 P PT_EXT 1685382482 [PF_R]
 ││ ╓ 0x000d6cd0 S16 ".init_array" SHT_EXT 14 [SHF_WRITE,SHF_ALLOC]
@@ -78,5 +84,7 @@
    ╙ 0x000dc21b
    ╓ 0x000dc21c S24 ".shstrtab" SHT_STRTAB []
    ╙ 0x000dc308
+   ╓ 0x000dc309 R
+   ╙ 0x000dc30f
    ┎ 0x000dc310 ST (25)
    ┖ 0x000dc94f

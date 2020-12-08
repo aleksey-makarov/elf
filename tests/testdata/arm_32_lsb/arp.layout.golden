@@ -74,5 +74,7 @@
   ╙ 0x00009e62
   ╓ 0x00009e63 S27 ".shstrtab" SHT_STRTAB []
   ╙ 0x00009f5c
+  ╓ 0x00009f5d R
+  ╙ 0x00009f5f
   ┎ 0x00009f60 ST (28)
   ┖ 0x0000a3bf

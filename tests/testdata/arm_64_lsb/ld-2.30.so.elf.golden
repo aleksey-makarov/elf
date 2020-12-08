@@ -248,6 +248,13 @@ segment {
                        total: 9976
         }
 }
+raw data {
+    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          ...
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          total: 1680
+}
 segment {
     Type:     PT_LOAD
     Flags:    0x00000006
@@ -347,6 +354,9 @@ section 20 ".comment" {
     Data:      47 43 43 3a 20 28 47 4e 55 29 20 39 2e 32 2e 30 # GCC: (GNU) 9.2.0
                00                                              # .
 }
+raw data {
+    Data: 00 00 00 00 00 00 00                            # .......
+}
 symbol table section 21 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
@@ -388,4 +398,7 @@ section 22 ".strtab" {
                total: 7310
 }
 string table section 23 ".shstrtab"
+raw data {
+    Data: 00 00 00 00 00                                  # .....
+}
 section table

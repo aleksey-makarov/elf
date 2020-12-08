@@ -293,6 +293,13 @@ segment {
                        total: 244
         }
 }
+raw data {
+    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          ...
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
+          total: 1464
+}
 segment {
     Type:     PT_LOAD
     Flags:    0x00000006
@@ -408,6 +415,9 @@ section 27 ".comment" {
                45 41 53 45 5f 33 38 31 2f 66 69 6e 61 6c 29 00 # EASE_381/final).
                total: 89
 }
+raw data {
+    Data: 00 00 00                                        # ...
+}
 symbol table section 29 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x00000000
@@ -449,4 +459,7 @@ section 30 ".strtab" {
                total: 891
 }
 string table section 28 ".shstrtab"
+raw data {
+    Data: 00 00 00                                        # ...
+}
 section table

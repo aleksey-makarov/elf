@@ -161,7 +161,7 @@ findStringSection rbs = do
 printRBuilderFile :: FilePath -> IO (Doc ())
 printRBuilderFile path = do
     bs <- fromStrict <$> BS.readFile path
-    (classS :&: HeadersXX (hdr@HeaderXX{}, ss, ps)) <- parseHeaders bs
+    (classS :&: HeadersXX (hdr, ss, ps)) <- parseHeaders bs
     withSingI classS do
         rbs <- parseRBuilder hdr ss ps
         let
@@ -184,15 +184,30 @@ printElfFile path = do
     printElf e
 
 printCopyElfFile :: FilePath -> IO (Doc ())
-printCopyElfFile p = do
-    bs <- fromStrict <$> BS.readFile p
+printCopyElfFile path = do
+    bs <- fromStrict <$> BS.readFile path
     elf <- parseElf bs
     bs' <- serializeElf elf
     elf' <- parseElf bs'
     printElf elf'
 
--- printCopyRBuilderFile :: FilePath -> IO (Doc ())
--- printCopyRBuilderFile = undefined
+printCopyRBuilderFile :: FilePath -> IO (Doc ())
+printCopyRBuilderFile path = do
+    bs <- fromStrict <$> BS.readFile path
+    elf <- parseElf bs
+    bs' <- serializeElf elf
+    (classS :&: HeadersXX (hdr, ss, ps)) <- parseHeaders bs'
+    withSingI classS do
+        rbs <- parseRBuilder hdr ss ps
+        let
+            stringSectionData = getSectionData bs' <$> findStringSection rbs
+            getString' n = case stringSectionData of
+                Nothing -> error "no string table"
+                Just st -> getString st $ fromIntegral n
+        return $ printRBuilder getString' rbs
+
+
+
 
 testHeader64 :: Header
 testHeader64 = SELFCLASS64 :&: (HeaderXX ELFDATA2LSB 0 0 0 0 0 0 0 0 0 0 0 0 0)
@@ -247,6 +262,6 @@ main = do
                                   , testGroup "headers golden"     (mkGoldenTest        "header"        printHeadersFile      <$> elfs)
                                   , testGroup "layout golden"      (mkGoldenTest        "layout"        printRBuilderFile     <$> elfs)
                                   , testGroup "elf golden"         (mkGoldenTest        "elf"           printElfFile          <$> elfs)
+                                  , testGroup "copy layout golden" (mkGoldenTestOSuffix "layout" "copy" printCopyRBuilderFile <$> elfs)
                                   , testGroup "copy elf golden"    (mkGoldenTestOSuffix "elf"    "copy" printCopyElfFile      <$> elfs)
-                                  -- , testGroup "copy layout golden" (mkGoldenTestOSuffix "layout" "copy" printCopyRBuilderFile <$> elfs)
                                   ]

@@ -382,4 +382,7 @@ section 26 ".ARM.attributes" {
                total: 53
 }
 string table section 27 ".shstrtab"
+raw data {
+    Data: 00 00 00                                        # ...
+}
 section table

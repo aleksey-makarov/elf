@@ -37,6 +37,8 @@
 │  ╓ 0x00001050 S10 ".rela.plt" SHT_RELA [SHF_ALLOC,SHF_EXT 64]
 │  ╙ 0x000010f7
 └─── 0x000010f7
+   ╓ 0x000010f8 R
+   ╙ 0x00001fff
   ┌─ 0x00002000 P PT_LOAD [PF_X,PF_R]
   │╓ 0x00002000 S11 ".plt" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
   │╙ 0x0000207f
@@ -47,6 +49,8 @@
   │╓ 0x00002100 S14 ".text" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
   │╙ 0x00021c23
   └─ 0x00021c23
+   ╓ 0x00021c24 R
+   ╙ 0x00021fff
  ┌── 0x00022000 P PT_LOAD [PF_R]
  │ ╓ 0x00022000 S15 ".rodata" SHT_PROGBITS [SHF_ALLOC]
  │ ╙ 0x00026c5a
@@ -59,6 +63,8 @@
  │ ╓ 0x00027388 S18 ".eh_frame" SHT_PROGBITS [SHF_ALLOC]
  │ ╙ 0x00029b9b
  └── 0x00029b9b
+   ╓ 0x00029b9c R
+   ╙ 0x0002a4bf
 ┌─── 0x0002a4c0 P PT_LOAD [PF_W,PF_R]
 │┌── 0x0002a4c0 P PT_EXT 1685382482 [PF_R]
 ││ ╓ 0x0002a4c0 S19 ".data.rel.ro" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
@@ -80,6 +86,8 @@
    - 0x0002bf98 S23 ".bss" SHT_NOBITS [SHF_WRITE,SHF_ALLOC]
    ╓ 0x0002bf98 S24 ".comment" SHT_PROGBITS [SHF_EXT 16,SHF_EXT 32]
    ╙ 0x0002bfa9
+   ╓ 0x0002bfaa R
+   ╙ 0x0002bfab
    ╓ 0x0002bfac S25 ".note.stapsdt" SHT_NOTE []
    ╙ 0x0002c387
    ╓ 0x0002c388 S26 ".symtab" SHT_SYMTAB []
@@ -88,5 +96,7 @@
    ╙ 0x000310e2
    ╓ 0x000310e3 S28 ".shstrtab" SHT_STRTAB []
    ╙ 0x000311eb
+   ╓ 0x000311ec R
+   ╙ 0x000311ef
    ┎ 0x000311f0 ST (29)
    ┖ 0x0003192f
