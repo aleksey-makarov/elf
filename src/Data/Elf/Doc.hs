@@ -202,7 +202,7 @@ printRBuilder getStr rbs = vsep ldoc
                                 ]
                 f RBuilderSegment{ rbpHeader = SegmentXX{..}, ..} =
                     let
-                        doc = [ "P" <> viaShow rbpN
+                        doc = [ "P"
                               , viaShow pType
                               , viaShow $ splitBits $ ElfSegmentFlag $ wxxToIntegral pFlags
                               ]
