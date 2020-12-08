@@ -526,7 +526,7 @@ data WBuilderState (a :: ElfClass) =
         , wbsPhOff            :: WXX a
         , wbsShOff            :: WXX a
         , wbsShStrNdx         :: Word16
-        , wbsStringIndexes    :: [Int64]
+        , wbsNameIndexes    :: [Int64]
         }
 
 wbStateInit :: forall a . SingI a => WBuilderState a
@@ -538,7 +538,7 @@ wbStateInit = WBuilderState
     , wbsPhOff            = wxxFromIntegral (0 :: Word32)
     , wbsShOff            = wxxFromIntegral (0 :: Word32)
     , wbsShStrNdx         = 0
-    , wbsStringIndexes    = []
+    , wbsNameIndexes    = []
     }
 
 zeroXX :: forall a . SingI a => WXX a
@@ -576,9 +576,9 @@ serializeElf' elfs = do
                 f ElfSection{..} = [ esName ]
                 f _ = []
 
-        (stringTable, stringIndexesReversed) = L.foldl f i sectionNames
+        (stringTable, nameIndexesReversed) = L.foldl f i sectionNames
             where
-                i = (BSL.singleton 0, [0])
+                i = (BSL.singleton 0, [])
                 f (st, ir) "" = (st, 0 : ir)
                 f (st, ir) s  = (st <> sbs, BSL.length st : ir)
                     where
@@ -622,7 +622,10 @@ serializeElf' elfs = do
                 (d, shStrNdx) = case esData of
                     ElfSectionData bs -> (bs, wbsShStrNdx)
                     ElfSectionDataStringTable -> (stringTable, esN)
-                sName = 0                              -- Word32 FIXME
+                (n, ns) = case wbsNameIndexes of
+                    n' : ns' -> (n', ns')
+                    _ -> error "internal error: different number of sections in two iterations"
+                sName = fromIntegral n                 -- Word32
                 sType = esType                         -- ElfSectionType
                 sFlags = esFlags                       -- WXX c
                 sAddr = esAddr                         -- WXX c
@@ -631,13 +634,14 @@ serializeElf' elfs = do
                 sLink = esLink                         -- Word32
                 sInfo = 0                              -- Word32 FIXME
                 sAddrAlign = esAddrAlign               -- WXX c
-                sEntSize = zeroXX                      -- WXX c
+                sEntSize = esEntSize                   -- WXX c
             in
                 return WBuilderState
                     { wbsSections = (esN, SectionXX{..}) : wbsSections
                     , wbsDataReversed = (WBuilderDataByteStream d) : wbsDataReversed
                     , wbsOffset = wbsOffset + (fromIntegral $ BSL.length d)
                     , wbsShStrNdx = shStrNdx
+                    , wbsNameIndexes = ns
                     , ..
                     }
         elf2WBuilder' ElfSegment{..} s = do
@@ -717,7 +721,7 @@ serializeElf' elfs = do
 
             return $ foldMap f $ L.reverse wbsDataReversed
 
-    execStateT (mapM elf2WBuilder elfs) wbStateInit{ wbsStringIndexes = L.reverse stringIndexesReversed } >>= wbState2ByteString
+    execStateT (mapM elf2WBuilder elfs) wbStateInit{ wbsNameIndexes = L.reverse nameIndexesReversed } >>= wbState2ByteString
 
 serializeElf :: MonadThrow m => Elf' -> m BSL.ByteString
 serializeElf (classS :&: ElfList ls) = withSingI classS $ serializeElf' ls
