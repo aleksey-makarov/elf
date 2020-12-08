@@ -439,10 +439,6 @@ parseRBuilder hdr@HeaderXX{..} ss ps = do
         =<< addRBuildersToList segments
         =<< addRBuildersToList sections [])
 
-neighbours :: [a] -> (a -> a -> b) -> [b]
-neighbours [] _ = []
-neighbours x  f = fmap (uncurry f) $ L.zip x $ L.tail x
-
 parseElf' :: forall a m . (MonadCatch m, SingI a) =>
                                        HeaderXX a ->
                                     [SectionXX a] ->
@@ -551,6 +547,10 @@ zeroXX = wxxFromIntegral (0 :: Word32)
 zeroSection :: forall a . SingI a => SectionXX a
 zeroSection = SectionXX 0 0 zeroXX zeroXX zeroXX zeroXX 0 0 zeroXX zeroXX
 
+neighbours :: [a] -> (a -> a -> b) -> [b]
+neighbours [] _ = []
+neighbours x  f = fmap (uncurry f) $ L.zip x $ L.tail x
+
 serializeElf' :: forall a m . (SingI a, MonadThrow m) => [Elf a] -> m BSL.ByteString
 serializeElf' elfs = do
 
@@ -619,10 +619,10 @@ serializeElf' elfs = do
                 }
         elf2WBuilder' ElfSection{..} WBuilderState{..} =
             let
-                d = case esData of
-                    ElfSectionData bs -> bs
-                    ElfSectionDataStringTable -> stringTable
-                sName = 0                              -- Word32
+                (d, shStrNdx) = case esData of
+                    ElfSectionData bs -> (bs, wbsShStrNdx)
+                    ElfSectionDataStringTable -> (stringTable, esN)
+                sName = 0                              -- Word32 FIXME
                 sType = esType                         -- ElfSectionType
                 sFlags = esFlags                       -- WXX c
                 sAddr = esAddr                         -- WXX c
@@ -637,6 +637,7 @@ serializeElf' elfs = do
                     { wbsSections = (esN, SectionXX{..}) : wbsSections
                     , wbsDataReversed = (WBuilderDataByteStream d) : wbsDataReversed
                     , wbsOffset = wbsOffset + (fromIntegral $ BSL.length d)
+                    , wbsShStrNdx = shStrNdx
                     , ..
                     }
         elf2WBuilder' ElfSegment{..} s = do
@@ -649,7 +650,7 @@ serializeElf' elfs = do
                 pOffset = wxxFromIntegral offset
                 pVirtAddr = epVirtAddr
                 pPhysAddr = epPhysAddr
-                pFileSize = zeroXX -- FIXME
+                pFileSize = wxxFromIntegral $ wbsOffset - offset
                 pMemSize = epMemSize
                 pAlign = epAlign
             return WBuilderState

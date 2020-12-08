@@ -247,6 +247,6 @@ main = do
                                   , testGroup "headers golden"     (mkGoldenTest        "header"        printHeadersFile      <$> elfs)
                                   , testGroup "layout golden"      (mkGoldenTest        "layout"        printRBuilderFile     <$> elfs)
                                   , testGroup "elf golden"         (mkGoldenTest        "elf"           printElfFile          <$> elfs)
-                                  , testGroup "copy elf golden"    (mkGoldenTestOSuffix "elf"    "copy" printCopyElfFile      <$> P.take 2 elfs)
+                                  , testGroup "copy elf golden"    (mkGoldenTestOSuffix "elf"    "copy" printCopyElfFile      <$> elfs)
                                   -- , testGroup "copy layout golden" (mkGoldenTestOSuffix "layout" "copy" printCopyRBuilderFile <$> elfs)
                                   ]
