@@ -1,12 +1,13 @@
 {-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE DataKinds #-}
 
 module Main (main) where
 
@@ -15,6 +16,7 @@ import Prelude as P
 
 import Control.Arrow
 import Control.Monad
+import Control.Monad.Catch
 import Data.Binary
 import qualified Data.ByteString as BS
 import Data.ByteString.Lazy as BSL
@@ -37,8 +39,9 @@ import Test.Tasty.Golden
 import Test.Tasty.HUnit
 
 import Data.Elf
-import Data.Elf.Headers
 import Data.Elf.Doc
+import Data.Elf.Exception
+import Data.Elf.Headers
 
 -- runExecWithStdoutFile :: FilePath -> [String] -> FilePath -> IO ()
 -- runExecWithStdoutFile execFilePath args stdoutPath =
@@ -138,6 +141,8 @@ mkGoldenTestOSuffix name osuffix formatFunction file = mkGoldenTest' g o formatF
         o = newBase <.> osuffix <.> "out"
         g = newBase <.> "golden"
 
+------------------------------------------------------------------------------
+
 findHeader :: SingI a => [RBuilder a] -> Maybe (HeaderXX a)
 findHeader rbs = getFirst $ foldMap f rbs
     where
@@ -158,18 +163,37 @@ findStringSection rbs = do
     HeaderXX{..} <- findHeader rbs
     findSection hShStrNdx rbs
 
-printRBuilderFile :: FilePath -> IO (Doc ())
-printRBuilderFile path = do
-    bs <- fromStrict <$> BS.readFile path
-    (classS :&: HeadersXX (hdr, ss, ps)) <- parseHeaders bs
-    withSingI classS do
-        rbs <- parseRBuilder hdr ss ps
-        let
-            stringSectionData = getSectionData bs <$> findStringSection rbs
-            getString' n = case stringSectionData of
-                Nothing -> error "no string table"
-                Just st -> getString st $ fromIntegral n
-        return $ printRBuilder getString' rbs
+printRBuilder' :: MonadCatch m => (Sigma ElfClass (TyCon1 HeadersXX)) -> BSL.ByteString -> m (Doc ())
+printRBuilder' (classS :&: HeadersXX (hdr, ss, ps)) bs = withSingI classS do
+    rbs <- parseRBuilder hdr ss ps
+    let
+        stringSectionData = getSectionData bs <$> findStringSection rbs
+        getString' n = case stringSectionData of
+            Nothing -> error "no string table"
+            Just st -> getString st $ fromIntegral n
+    return $ printRBuilder getString' rbs
+
+readFileLazy :: FilePath -> IO BSL.ByteString
+readFileLazy path = fromStrict <$> BS.readFile path
+
+index' :: (Integral i, MonadThrow m) => [a] -> i -> m a
+index' (x:_) 0 = return x
+index' (_:xs) n | n > 0     = index' xs (n-1)
+                | otherwise = $elfError "index': negative argument."
+index' _ _                  = $elfError "index': index too large."
+
+getStringTable :: MonadThrow m => (Sigma ElfClass (TyCon1 HeadersXX)) -> BSL.ByteString -> m BSL.ByteString
+getStringTable (classS :&: HeadersXX (HeaderXX{..}, ss, _)) bs = withSingI classS
+    if hShStrNdx == 0
+        then return BSL.empty
+        else do
+            strs <- index' ss hShStrNdx
+            return $ getSectionData bs strs
+
+copyElf :: MonadCatch m => BSL.ByteString -> m BSL.ByteString
+copyElf bs = parseElf bs >>= serializeElf
+
+---------------------------------------------------------------------
 
 printHeadersFile :: FilePath -> IO (Doc ())
 printHeadersFile path = do
@@ -177,37 +201,45 @@ printHeadersFile path = do
     (classS :&: HeadersXX (hdr, ss, ps)) <- parseHeaders bs
     return $ withSingI classS $ printHeaders hdr ss ps
 
+printStrTableFile :: FilePath -> IO (Doc ())
+printStrTableFile path = do
+    bs <- readFileLazy path
+    hdrs <- parseHeaders bs
+    getStringTable hdrs bs >>= printStringTable
+
+printCopyStrTableFile :: FilePath -> IO (Doc ())
+printCopyStrTableFile path = do
+    bs <- readFileLazy path >>= copyElf
+    hdrs <- parseHeaders bs
+    getStringTable hdrs bs >>= printStringTable
+
+printRBuilderFile :: FilePath -> IO (Doc ())
+printRBuilderFile path = do
+    bs <- readFileLazy path
+    hdrs <- parseHeaders bs
+    printRBuilder' hdrs bs
+
+printCopyRBuilderFile :: FilePath -> IO (Doc ())
+printCopyRBuilderFile path = do
+    bs <- readFileLazy path
+    bs' <- copyElf bs
+    hdrs <- parseHeaders bs'
+    printRBuilder' hdrs bs'
+
 printElfFile :: FilePath -> IO (Doc ())
 printElfFile path = do
-    bs <- fromStrict <$> BS.readFile path
+    bs <- readFileLazy path
     e <- parseElf bs
     printElf e
 
 printCopyElfFile :: FilePath -> IO (Doc ())
 printCopyElfFile path = do
-    bs <- fromStrict <$> BS.readFile path
-    elf <- parseElf bs
-    bs' <- serializeElf elf
-    elf' <- parseElf bs'
-    printElf elf'
+    bs <- readFileLazy path
+    bs' <- copyElf bs
+    e <- parseElf bs'
+    printElf e
 
-printCopyRBuilderFile :: FilePath -> IO (Doc ())
-printCopyRBuilderFile path = do
-    bs <- fromStrict <$> BS.readFile path
-    elf <- parseElf bs
-    bs' <- serializeElf elf
-    (classS :&: HeadersXX (hdr, ss, ps)) <- parseHeaders bs'
-    withSingI classS do
-        rbs <- parseRBuilder hdr ss ps
-        let
-            stringSectionData = getSectionData bs' <$> findStringSection rbs
-            getString' n = case stringSectionData of
-                Nothing -> error "no string table"
-                Just st -> getString st $ fromIntegral n
-        return $ printRBuilder getString' rbs
-
-
-
+-----------------------------------------------------------------------
 
 testHeader64 :: Header
 testHeader64 = SELFCLASS64 :&: (HeaderXX ELFDATA2LSB 0 0 0 0 0 0 0 0 0 0 0 0 0)
@@ -258,10 +290,12 @@ main = do
     elfs <- traverseDir "testdata" isElf
 
     defaultMain $ testGroup "elf" [ hdrSizeTests
-                                  , testGroup "headers round trip" (mkTest <$> elfs)
-                                  , testGroup "headers golden"     (mkGoldenTest        "header"        printHeadersFile      <$> elfs)
-                                  , testGroup "layout golden"      (mkGoldenTest        "layout"        printRBuilderFile     <$> elfs)
-                                  , testGroup "elf golden"         (mkGoldenTest        "elf"           printElfFile          <$> elfs)
-                                  , testGroup "copy layout golden" (mkGoldenTestOSuffix "layout" "copy" printCopyRBuilderFile <$> elfs)
-                                  , testGroup "copy elf golden"    (mkGoldenTestOSuffix "elf"    "copy" printCopyElfFile      <$> elfs)
+                                  , testGroup "headers round trip"  (mkTest <$> elfs)
+                                  , testGroup "headers golden"      (mkGoldenTest        "header"          printHeadersFile      <$> elfs)
+                                  , testGroup "string table golden" (mkGoldenTest        "strtable"        printStrTableFile     <$> elfs)
+                                  , testGroup "layout golden"       (mkGoldenTest        "layout"          printRBuilderFile     <$> elfs)
+                                  , testGroup "elf golden"          (mkGoldenTest        "elf"             printElfFile          <$> elfs)
+                                  , testGroup "string table copy"   (mkGoldenTestOSuffix "strtable" "copy" printCopyStrTableFile <$> elfs)
+                                  , testGroup "layout copy"         (mkGoldenTestOSuffix "layout"   "copy" printCopyRBuilderFile <$> elfs)
+                                  , testGroup "elf copy"            (mkGoldenTestOSuffix "elf"      "copy" printCopyElfFile      <$> elfs)
                                   ]

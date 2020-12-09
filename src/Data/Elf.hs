@@ -55,7 +55,7 @@ import Control.Monad.State as MS
 -- import Data.Bifunctor
 import Data.Binary
 import Data.Bits as Bin
-import Data.ByteString.Char8 as BSC
+import Data.ByteString.Lazy.Char8 as BSL8
 import Data.ByteString.Lazy as BSL
 -- import Data.Either
 import Data.Foldable
@@ -373,7 +373,7 @@ newtype ElfList c = ElfList [Elf c]
 type Elf' = Sigma ElfClass (TyCon1 ElfList)
 
 getString :: BSL.ByteString -> Int64 -> String
-getString bs offset = BSC.unpack $ toStrict $ BSL.takeWhile (/= 0) $ BSL.drop offset bs
+getString bs offset = BSL8.unpack $ BSL.takeWhile (/= 0) $ BSL.drop offset bs
 
 cut :: BSL.ByteString -> Int64 -> Int64 -> BSL.ByteString
 cut content offset size = BSL.take size $ BSL.drop offset content
@@ -563,6 +563,53 @@ neighbours :: [a] -> (a -> a -> b) -> [b]
 neighbours [] _ = []
 neighbours x  f = fmap (uncurry f) $ L.zip x $ L.tail x
 
+-- make string table and indexes for it from a list of strings
+mkStringTable :: [String] -> (BSL.ByteString, [Int64])
+mkStringTable sectionNames = (stringTable, os)
+    where
+
+        -- names:
+        -- i for indexes of the section entry in section table
+        -- n for section name string
+        -- o for offset of the string in the string table
+        -- in, io -- for pairs
+        -- ins, ios -- for lists of pairs
+        -- etc
+
+        (ins0, ins) = L.break ((/= "") . snd) $ L.sortOn (L.length . snd) $ L.zip [(1 :: Word32) .. ] sectionNames
+        ios0 = fmap f' ins0
+            where
+                f' (i, _) = (i, 0)
+
+        (stringTable, ios, _) = f (BSL.singleton 0, [], L.reverse ins)
+
+        os = fmap snd $ L.sortOn fst $ ios0 ++ ios
+
+        -- create string table.  If one name is a suffix of another,
+        -- allocate only the longest name in string table
+        f x@(_, _, []) = x
+        f (st, iosf, (i, n) : insf) = f (st', iosf'', insf')
+
+            where
+
+                st' = st <> BSL8.pack n <> BSL.singleton 0
+                o = BSL.length st
+                iosf'' = (i, o) : iosf' ++ iosf
+
+                (iosf', insf') = ff insf
+
+                -- look if there exists a name that is a suffix for the currently allocated name
+                -- in the list of unallocated indexed section names
+                ff = L.foldr fff ([], [])
+                    where
+                        fff (i', n') (iosff, insff) = if n' `L.isSuffixOf` n
+                            then
+                                let
+                                    o' = o + fromIntegral (L.length n - L.length n')
+                                in
+                                    ((i', o') : iosff, insff)
+                            else (iosff, (i', n') : insff)
+
 serializeElf' :: forall a m . (SingI a, MonadThrow m) => [Elf a] -> m BSL.ByteString
 serializeElf' elfs = do
 
@@ -588,13 +635,7 @@ serializeElf' elfs = do
                 f ElfSection{..} = [ esName ]
                 f _ = []
 
-        (stringTable, nameIndexesReversed) = L.foldl f i sectionNames
-            where
-                i = (BSL.singleton 0, [])
-                f (st, ir) "" = (st, 0 : ir)
-                f (st, ir) s  = (st <> sbs, BSL.length st : ir)
-                    where
-                        sbs = (BSL.fromStrict $ BSC.pack s) <> BSL.singleton 0
+        (stringTable, nameIndexes) = mkStringTable sectionNames
 
         segmentN :: Num b => b
         segmentN = getSum $ foldMapElfList f elfs
@@ -733,7 +774,7 @@ serializeElf' elfs = do
 
             return $ foldMap f $ L.reverse wbsDataReversed
 
-    execStateT (mapM elf2WBuilder elfs) wbStateInit{ wbsNameIndexes = L.reverse nameIndexesReversed } >>= wbState2ByteString
+    execStateT (mapM elf2WBuilder elfs) wbStateInit{ wbsNameIndexes = nameIndexes } >>= wbState2ByteString
 
 serializeElf :: MonadThrow m => Elf' -> m BSL.ByteString
 serializeElf (classS :&: ElfList ls) = withSingI classS $ serializeElf' ls
@@ -755,7 +796,7 @@ data ElfSymbolTableEntry (c :: ElfClass) =
         }
 
 getStringFromData :: BSL.ByteString -> Word32 -> String
-getStringFromData stringTable offset = BSC.unpack $ toStrict $ BSL.takeWhile (/= 0) $ BSL.drop (fromIntegral offset) stringTable
+getStringFromData stringTable offset = BSL8.unpack $ BSL.takeWhile (/= 0) $ BSL.drop (fromIntegral offset) stringTable
 
 mkElfSymbolTableEntry :: SingI a => BSL.ByteString -> SymbolTableEntryXX a -> ElfSymbolTableEntry a
 mkElfSymbolTableEntry stringTable SymbolTableEntryXX{..} =

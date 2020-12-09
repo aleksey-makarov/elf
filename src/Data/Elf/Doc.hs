@@ -20,11 +20,12 @@ module Data.Elf.Doc
     , printHeaders
     , printRBuilder
     , printElf
+    , printStringTable
     ) where
 
+import Control.Monad
 import Control.Monad.Catch
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BC8
+import qualified Data.ByteString.Lazy.Char8 as BSL8
 import qualified Data.ByteString.Lazy as BSL
 import Data.Char
 import Data.Int
@@ -272,18 +273,16 @@ formatHex w = pretty $ case showHex w "" of
     [ d ] -> [ '0', d ]
     ww -> ww
 
-formatBytestringChar :: BS.ByteString -> Doc ()
-formatBytestringChar = hcat . L.map formatChar . BC8.unpack
+formatBytestringChar :: BSL.ByteString -> Doc ()
+formatBytestringChar = hcat . L.map formatChar . BSL8.unpack
 
-formatBytestringHex :: BS.ByteString -> Doc ()
-formatBytestringHex = hsep . L.map formatHex . BS.unpack
+formatBytestringHex :: BSL.ByteString -> Doc ()
+formatBytestringHex = hsep . L.map formatHex . BSL.unpack
 
 formatBytestringLine :: BSL.ByteString -> Doc ()
-formatBytestringLine s = (fill (16 * 2 + 15) $ formatBytestringHex sl)
+formatBytestringLine s = (fill (16 * 2 + 15) $ formatBytestringHex s)
                       <+> pretty '#'
-                      <+> formatBytestringChar sl
-    where
-        sl = BSL.toStrict s
+                      <+> formatBytestringChar s
 
 printData :: BSL.ByteString -> Doc ()
 printData bs = align $ vsep $
@@ -365,3 +364,17 @@ printElf (classS :&: ElfList elfs) = withSingI classS do
                 ]
 
     printElf' elfs
+
+--------------------------------------------------------------------
+--
+--------------------------------------------------------------------
+
+printStringTable :: MonadThrow m => BSL.ByteString -> m (Doc ())
+printStringTable bs =
+    case BSL.unsnoc bs of
+        Nothing -> return ""
+        Just (bs', e) -> do
+            when (e /= 0) $ $elfError "string table should end with 0"
+            return if (BSL.length bs' == 0)
+                then angles ""
+                else vsep $ map (angles . pretty) $ L.sort $ map BSL8.unpack $ BSL.splitWith (== 0) $ bs'
