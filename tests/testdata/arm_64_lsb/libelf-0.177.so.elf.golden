@@ -277,7 +277,7 @@ section 17 ".tbss" {
     Addr:      0x0000000000029910
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
-    Data:      e8 31 00 00                                     # .1..
+    Data:      
 }
 segment {
     Type:     PT_EXT 7
@@ -381,7 +381,7 @@ section 24 ".bss" {
     Addr:      0x000000000002a008
     AddrAlign: 0x0000000000000004
     EntSize:   0x0000000000000000
-    Data:      47 43 43 3a 20 28 47 4e 55 29 20 38 2e 33 2e 30 # GCC: (GNU) 8.3.0
+    Data:      
 }
 section 25 ".comment" {
     Type:      SHT_PROGBITS

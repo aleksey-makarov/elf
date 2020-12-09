@@ -35,7 +35,9 @@ module Data.Elf.Headers
     , wxxToIntegral
 
     , headerSize
+    -- FIXME: should be section table entry size
     , sectionSize
+    -- FIXME: should be segment table entry size
     , segmentSize
     , symbolTableEntrySize
 

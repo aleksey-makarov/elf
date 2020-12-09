@@ -146,7 +146,7 @@ section 17 ".plt" {
     Addr:      0x0000000000000340
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
-    Data:      00                                              # .
+    Data:      
 }
 section 18 ".init.plt" {
     Type:      SHT_NOBITS
@@ -154,7 +154,7 @@ section 18 ".init.plt" {
     Addr:      0x0000000000000341
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
-    Data:      00                                              # .
+    Data:      
 }
 section 19 ".text.ftrace_trampoline" {
     Type:      SHT_NOBITS
@@ -162,7 +162,7 @@ section 19 ".text.ftrace_trampoline" {
     Addr:      0x0000000000000342
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
-    Data:      00                                              # .
+    Data:      
 }
 section 20 ".bss" {
     Type:      SHT_NOBITS

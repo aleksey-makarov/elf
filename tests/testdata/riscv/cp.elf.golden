@@ -356,11 +356,7 @@ section 22 ".bss" {
     Addr:      0x000182d0
     AddrAlign: 0x00000004
     EntSize:   0x00000000
-    Data:      00 2e 73 68 73 74 72 74 61 62 00 2e 69 6e 74 65 # ..shstrtab..inte
-               72 70 00 2e 6e 6f 74 65 2e 41 42 49 2d 74 61 67 # rp..note.ABI-tag
-               ...
-               00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 # ................
-               total: 1184
+    Data:      
 }
 string table section 23 ".shstrtab"
 raw data {

@@ -397,11 +397,7 @@ section 26 ".bss" {
     Addr:      0x0804a040
     AddrAlign: 0x00000020
     EntSize:   0x00000000
-    Data:      47 43 43 3a 20 28 47 4e 55 29 20 36 2e 33 2e 31 # GCC: (GNU) 6.3.1
-               20 32 30 31 36 31 32 32 31 20 28 52 65 64 20 48 #  20161221 (Red H
-               ...
-               68 81 04 08 00 00 00 00 03 00 02 00 00 00 00 00 # h...............
-               total: 144
+    Data:      
 }
 section 27 ".comment" {
     Type:      SHT_PROGBITS

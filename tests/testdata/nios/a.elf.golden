@@ -80,8 +80,7 @@ section 5 ".sbss" {
     Addr:      0x0000fbe4
     AddrAlign: 0x00000004
     EntSize:   0x00000000
-    Data:      47 43 43 3a 20 28 41 6c 74 65 72 61 20 32 30 2e # GCC: (Altera 20.
-               33 20 42 75 69 6c 64 20                         # 3 Build 
+    Data:      
 }
 section 6 ".bss" {
     Type:      SHT_NOBITS
@@ -89,11 +88,7 @@ section 6 ".bss" {
     Addr:      0x0000fbfc
     AddrAlign: 0x00000004
     EntSize:   0x00000000
-    Data:      47 43 43 3a 20 28 41 6c 74 65 72 61 20 32 30 2e # GCC: (Altera 20.
-               33 20 42 75 69 6c 64 20 31 30 37 29 20 39 2e 33 # 3 Build 107) 9.3
-               ...
-               31 30 37 29 20 39 2e 33 2e 31 20 32 30 32 30 30 # 107) 9.3.1 20200
-               total: 40
+    Data:      
 }
 section 7 ".comment" {
     Type:      SHT_PROGBITS

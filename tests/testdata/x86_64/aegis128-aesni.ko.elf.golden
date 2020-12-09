@@ -161,7 +161,7 @@ section 20 ".bss" {
     Addr:      0x0000000000000000
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000000
-    Data:      00 47 43 43 3a 20 28 47                         # .GCC: (G
+    Data:      
 }
 section 21 ".comment" {
     Type:      SHT_PROGBITS

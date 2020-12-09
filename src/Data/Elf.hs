@@ -393,6 +393,8 @@ addRawData [] = []
 addRawData rBuilders = fst $ L.foldr f ([], lrbie) $ fmap fixRBuilder' rBuilders
     where
 
+        -- e, e', e'' and lrbie stand for the first occupied byte after the place being fixed
+
         lrbi@(I lrbib lrbis) = rBuilderInterval $ L.last rBuilders
         lrbie = if I.empty lrbi then lrbib else lrbib + lrbis
 
@@ -415,7 +417,6 @@ addRawData rBuilders = fst $ L.foldr f ([], lrbie) $ fmap fixRBuilder' rBuilders
         fixRBuilder' p@RBuilderSegment{..}            = RBuilderSegment{ rbpData = addRaw b newRbpData newE, ..}
             where
                 (I b s) = rBuilderInterval p
-                -- e, e' and e'' stand for the first occupied byte after the place being fixed
                 e = b + s
                 fixedRbpData = fmap fixRBuilder' rbpData
                 (newRbpData, newE) = L.foldr f ([], e) fixedRbpData
@@ -492,7 +493,9 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
                     then
                         ElfSectionDataStringTable
                     else
-                        ElfSectionData $ getSectionData bs s
+                        ElfSectionData if I.empty $ sectionInterval s
+                            then BSL.empty
+                            else getSectionData bs s
                 }
         rBuilderToElf RBuilderSegment{ rbpHeader = SegmentXX{..}, ..} = do
             d <- mapM rBuilderToElf rbpData

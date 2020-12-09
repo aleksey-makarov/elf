@@ -351,11 +351,7 @@ section 24 ".bss" {
     Addr:      0x00019e00
     AddrAlign: 0x00000008
     EntSize:   0x00000000
-    Data:      47 43 43 3a 20 28 47 4e 55 29 20 34 2e 37 2e 32 # GCC: (GNU) 4.7.2
-               00 47 43 43 3a 20 28 63 72 6f 73 73 74 6f 6f 6c # .GCC: (crosstool
-               ...
-               00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 # ................
-               total: 1476
+    Data:      
 }
 section 25 ".comment" {
     Type:      SHT_PROGBITS

@@ -284,7 +284,7 @@ section 18 ".bss" {
     Addr:      0x0000000000028728
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
-    Data:      6c 69 62 6c 75 61 2d 35                         # liblua-5
+    Data:      
 }
 section 19 ".gnu_debuglink" {
     Type:      SHT_PROGBITS
