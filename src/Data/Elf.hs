@@ -388,39 +388,40 @@ tail' :: [a] -> [a]
 tail' [] = []
 tail' (_ : xs) = xs
 
-addRawData :: SingI a => [RBuilder a] -> [RBuilder a]
+addRawData :: forall a . SingI a => [RBuilder a] -> [RBuilder a]
 addRawData [] = []
-addRawData rBuilders = fst $ L.foldr f ([], lrbie) $ fmap fixRBuilder' rBuilders
+addRawData rBuilders = snd $ addRawData' (lrbie, rBuilders)
     where
 
-        -- e, e', e'' and lrbie stand for the first occupied byte after the place being fixed
-
+        -- names: last rBuilder interval (begin, size)
         lrbi@(I lrbib lrbis) = rBuilderInterval $ L.last rBuilders
         lrbie = if I.empty lrbi then lrbib else lrbib + lrbis
 
-        addRaw :: SingI a => Word64 -> [RBuilder a] -> Word64 -> [RBuilder a]
-        addRaw b' rbs e' = case compare b' e' of
-            LT -> RBuilderRawData (I b' (e' - b')) : rbs
+        addRaw :: Word64 -> Word64 -> [RBuilder a] -> [RBuilder a]
+        addRaw b e rbs = case compare b e of
+            LT -> RBuilderRawData (I b (e - b)) : rbs
             EQ -> rbs
-            GT -> error "internal error" -- FIXME: add context
+            GT -> error "internal error: incorrect interval while adding raw data"
 
-        f rb (rbs, e') =
-            let
-                i@(I o' s') = rBuilderInterval rb
-                (e'', b'') = if I.empty i then (o', o') else (o', o' + s')
-                rbs' = addRaw b'' rbs e'
-            in
-                (rb : rbs', e'')
+        addRawData' :: (Word64, [RBuilder a]) -> (Word64, [RBuilder a])
+        addRawData' (e, rbs) = L.foldr f (e, []) $ fmap fixRBuilder rbs
+            where
+                f rb (e', rbs') =
+                    let
+                        i@(I b s) = rBuilderInterval rb
+                        b' = if I.empty i then b else b + s
+                        rbs'' = addRaw b' e' rbs'
+                    in
+                        (b, rb : rbs'')
 
-        fixRBuilder' :: SingI a => RBuilder a -> RBuilder a
-        fixRBuilder' p | I.empty $ rBuilderInterval p = p
-        fixRBuilder' p@RBuilderSegment{..}            = RBuilderSegment{ rbpData = addRaw b newRbpData newE, ..}
+        fixRBuilder :: RBuilder a -> RBuilder a
+        fixRBuilder p | I.empty $ rBuilderInterval p = p
+        fixRBuilder p@RBuilderSegment{..}            = RBuilderSegment{ rbpData = addRaw b e' rbs, ..}
             where
                 (I b s) = rBuilderInterval p
                 e = b + s
-                fixedRbpData = fmap fixRBuilder' rbpData
-                (newRbpData, newE) = L.foldr f ([], e) fixedRbpData
-        fixRBuilder' x = x
+                (e', rbs) = addRawData' (e, rbpData)
+        fixRBuilder x = x
 
 parseRBuilder :: (MonadCatch m, SingI a) => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> m [RBuilder a]
 parseRBuilder hdr@HeaderXX{..} ss ps = do
@@ -538,7 +539,7 @@ data WBuilderState (a :: ElfClass) =
         , wbsPhOff            :: WXX a
         , wbsShOff            :: WXX a
         , wbsShStrNdx         :: Word16
-        , wbsNameIndexes    :: [Int64]
+        , wbsNameIndexes      :: [Int64]
         }
 
 wbStateInit :: forall a . SingI a => WBuilderState a
