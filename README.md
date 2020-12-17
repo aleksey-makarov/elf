@@ -31,3 +31,10 @@ http://homepages.inf.ed.ac.uk/slindley/papers/hasochism.pdf
 # How to update elf.nix
 
 	cabal2nix . > ./elf.nix
+
+# Dynamic libraries
+
+http://www.yolinux.com/TUTORIALS/LibraryArchives-StaticAndDynamic.html
+https://wiki.osdev.org/Dynamic_Linker
+https://opensource.com/article/20/6/linux-libraries
+https://amir.rachum.com/blog/2016/09/17/shared-libraries/
