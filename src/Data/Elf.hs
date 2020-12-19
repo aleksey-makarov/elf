@@ -445,8 +445,8 @@ parseRBuilder hdr@HeaderXX{..} ss ps = do
     rbs <-addRBuilder header
         =<< maybe return addRBuilder maybeSectionTable
         =<< maybe return addRBuilder maybeSegmentTable
-        =<< addRBuildersToList segments
-        =<< addRBuildersToList sections []
+        =<< addRBuildersToList sections
+        =<< addRBuildersToList segments []
 
     return $ addRawData rbs
 
