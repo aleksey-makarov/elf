@@ -705,7 +705,9 @@ serializeElf' elfs = do
                 , ..
                 }
         elf2WBuilder' ElfSection{..} s = do
-            WBuilderState{..} <- align 0 (wxxToIntegral esAddrAlign) s
+            WBuilderState{..} <- if esType == SHT_NOBITS
+                then return s
+                else align 0 (wxxToIntegral esAddrAlign) s
             let
                 (d, shStrNdx) = case esData of
                     ElfSectionData bs -> (bs, wbsShStrNdx)
