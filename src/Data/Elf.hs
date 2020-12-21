@@ -620,6 +620,7 @@ mkStringTable sectionNames = (stringTable, os)
                                     ((i', o') : iosff, insff)
                             else (iosff, (i', n') : insff)
 
+-- FIXME: rewrite all this using lenses
 serializeElf' :: forall a m . (SingI a, MonadThrow m) => [Elf a] -> m BSL.ByteString
 serializeElf' elfs = do
 
@@ -681,6 +682,26 @@ serializeElf' elfs = do
         alignWord :: MonadThrow n => WBuilderState a -> n (WBuilderState a)
         alignWord = align 0 $ wordAlign $ fromSing $ sing @a
 
+        dataIsEmpty :: ElfSectionData -> Bool
+        dataIsEmpty (ElfSectionData bs)       = BSL.null bs
+        dataIsEmpty ElfSectionDataStringTable = BSL.null stringTable
+
+        emptyElf :: Elf a -> Bool
+        emptyElf ElfSection{..} = esType == SHT_NOBITS || dataIsEmpty esData
+        emptyElf ElfSegment{..} = L.all emptyElf epData
+        emptyElf _ = False
+
+        lastElfIsEmpty :: [Elf a] -> Bool
+        lastElfIsEmpty [] = True
+        lastElfIsEmpty l = emptyElf $ L.last l
+
+        add1 :: WBuilderState a -> WBuilderState a
+        add1 WBuilderState{..} = WBuilderState
+            { wbsDataReversed = (WBuilderDataByteStream $ BSL.singleton 0) : wbsDataReversed
+            , wbsOffset = wbsOffset + 1
+            , ..
+            }
+
         elf2WBuilder' :: MonadThrow n => Elf a -> WBuilderState a -> n (WBuilderState a)
         elf2WBuilder' ElfHeader{} WBuilderState{..} =
             return WBuilderState
@@ -737,8 +758,13 @@ serializeElf' elfs = do
             s' <- align (wxxToIntegral epVirtAddr) (wxxToIntegral epAlign) s
             let
                 offset = wbsOffset s'
-            WBuilderState{..} <- execStateT (mapM elf2WBuilder epData) s'
+            s'' <- execStateT (mapM elf2WBuilder epData) s'
             let
+                -- allocate one more byte in the end of segment if there exists an empty section/segment
+                -- at the end so that that empty section will go to the current segment
+                WBuilderState{..} = if lastElfIsEmpty epData && offset /= 0
+                    then add1 s''
+                    else s''
                 pType = epType
                 pFlags = epFlags
                 pOffset = wxxFromIntegral offset
