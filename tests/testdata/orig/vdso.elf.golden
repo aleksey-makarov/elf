@@ -29,9 +29,6 @@ segment {
                        05 00 00 00 00 00 00 00 02 00 00 00 08 00 00 00 # ................
                        total: 60
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 2 ".gnu.hash" {
             Type:      SHT_EXT 1879048182
             Flags:     0x0000000000000002
@@ -92,9 +89,6 @@ segment {
             EntSize:   0x0000000000000002
             Data:      00 00 02 00 02 00 02 00 02 00 02 00 02 00 02 00 # ................
                        02 00 02 00                                     # ....
-        }
-        raw data {
-            Data: 00 00 00 00 00 00                               # ......
         }
         section 6 ".gnu.version_d" {
             Type:      SHT_EXT 1879048189
@@ -195,9 +189,6 @@ segment {
                        00 41 0e 10 86 02 48 0d 06 60 c6 0c 07 08 00 00 # .A....H..`......
                        total: 328
         }
-        raw data {
-            Data: 00 00 00 00 00 00 00 00                         # ........
-        }
         section 12 ".text" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
@@ -248,7 +239,4 @@ section 15 ".comment" {
                total: 36
 }
 string table section 16 ".shstrtab"
-raw data {
-    Data: 00 00 00                                        # ...
-}
 section table

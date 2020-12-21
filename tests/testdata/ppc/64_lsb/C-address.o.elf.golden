@@ -44,9 +44,6 @@ section 4 ".rodata.str1.8" {
                7a 20 25 54 25 4e 25 63 25 4e 00 00 00 00 00 00 # z %T%N%c%N......
                total: 49
 }
-raw data {
-    Data: 00 00 00 00 00 00 00                            # .......
-}
 section 5 ".data.rel.ro.local" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000003
@@ -78,9 +75,6 @@ section 8 ".note.GNU-stack" {
     AddrAlign: 0x0000000000000001
     EntSize:   0x0000000000000000
     Data:      
-}
-raw data {
-    Data: 00 00 00 00 00 00 00                            # .......
 }
 symbol table section 9 ".symtab" {
     Type:  SHT_SYMTAB
@@ -122,9 +116,6 @@ section 10 ".strtab" {
                65 00 5f 6e 6c 5f 43 5f 63 6f 64 65 73 65 74 00 # e._nl_C_codeset.
                total: 43
 }
-raw data {
-    Data: 00 00 00 00 00                                  # .....
-}
 section 6 ".rela.data.rel.ro.local" {
     Type:      SHT_RELA
     Flags:     0x0000000000000040
@@ -138,7 +129,4 @@ section 6 ".rela.data.rel.ro.local" {
                total: 312
 }
 string table section 11 ".shstrtab"
-raw data {
-    Data: 00 00 00 00                                     # ....
-}
 section table

@@ -29,9 +29,6 @@ section 2 ".note.Linux" {
     Data:      06 00 00 00 01 00 00 00 00 01 00 00 4c 69 6e 75 # ............Linu
                78 00 00 00 00 00 00 00                         # x.......
 }
-raw data {
-    Data: 00 00 00 00                                     # ....
-}
 section 3 ".text" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000006
@@ -59,9 +56,6 @@ section 6 ".rodata.str1.8" {
     AddrAlign: 0x0000000000000008
     EntSize:   0x0000000000000001
     Data:      5f 5f 69 6e 6e 65 72 5f 6e 65 6f 6e 5f 5f 00    # __inner_neon__.
-}
-raw data {
-    Data: 00                                              # .
 }
 section 7 ".rodata" {
     Type:      SHT_PROGBITS
@@ -124,9 +118,6 @@ section 14 "__patchable_function_entries" {
     EntSize:   0x0000000000000000
     Data:      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-}
-raw data {
-    Data: 00 00 00 00                                     # ....
 }
 section 16 ".gnu.linkonce.this_module" {
     Type:      SHT_PROGBITS
@@ -192,9 +183,6 @@ section 22 ".note.GNU-stack" {
     EntSize:   0x0000000000000000
     Data:      
 }
-raw data {
-    Data: 00 00                                           # ..
-}
 symbol table section 23 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
@@ -234,9 +222,6 @@ section 24 ".strtab" {
                ...
                6f 72 5f 61 72 6d 36 34 5f 6e 65 6f 6e 5f 34 00 # or_arm64_neon_4.
                total: 372
-}
-raw data {
-    Data: 00 00 00 00                                     # ....
 }
 section 5 ".rela__ksymtab" {
     Type:      SHT_RELA
@@ -287,7 +272,4 @@ section 15 ".rela__patchable_function_entries" {
                total: 96
 }
 string table section 25 ".shstrtab"
-raw data {
-    Data: 00                                              # .
-}
 section table

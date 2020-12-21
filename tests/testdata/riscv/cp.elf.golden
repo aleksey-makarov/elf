@@ -47,9 +47,6 @@ segment {
                                total: 34
                 }
         }
-        raw data {
-            Data: 00 00                                           # ..
-        }
         segment {
             Type:     PT_NOTE
             Flags:    0x00000004
@@ -132,9 +129,6 @@ segment {
                        01 00 01 00 01 00 01 00 01 00 01 00 01 00 01 00 # ................
                        total: 280
         }
-        raw data {
-            Data: 00 00                                           # ..
-        }
         section 7 ".gnu.version_r" {
             Type:      SHT_EXT 1879048190
             Flags:     0x00000002
@@ -170,9 +164,6 @@ segment {
                        ...
                        00 00 00 00 68 82 01 00 05 7e 00 00 00 00 00 00 # ....h....~......
                        total: 1368
-        }
-        raw data {
-            Data: 00 00 00 00 00 00 00 00                         # ........
         }
         section 10 ".plt" {
             Type:      SHT_PROGBITS
@@ -243,13 +234,6 @@ segment {
                        ce c0 ff ff 8c 03 00 00 00 00 00 00 00 00 00 00 # ................
                        total: 84
         }
-}
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          ...
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          total: 1640
 }
 segment {
     Type:     PT_LOAD
@@ -359,7 +343,4 @@ section 22 ".bss" {
     Data:      
 }
 string table section 23 ".shstrtab"
-raw data {
-    Data: 00 00                                           # ..
-}
 section table

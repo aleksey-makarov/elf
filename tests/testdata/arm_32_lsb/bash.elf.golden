@@ -53,9 +53,6 @@ segment {
                                6d 68 66 2e 73 6f 2e 33 00                      # mhf.so.3.
                 }
         }
-        raw data {
-            Data: 00 00 00                                        # ...
-        }
         segment {
             Type:     PT_NOTE
             Flags:    0x00000004
@@ -150,9 +147,6 @@ segment {
                        00 00 01 00 01 00 01 00 01 00 01 00 01 00 02 00 # ................
                        total: 3542
         }
-        raw data {
-            Data: 00 00                                           # ..
-        }
         section 8 ".gnu.version_r" {
             Type:      SHT_EXT 1879048190
             Flags:     0x00000002
@@ -208,9 +202,6 @@ segment {
                        ...
                        9c f2 bc e5 00 c6 8f e2 94 ca 8c e2 94 f2 bc e5 # ................
                        total: 3392
-        }
-        raw data {
-            Data: 00 00 00 00                                     # ....
         }
         section 13 ".text" {
             Type:      SHT_PROGBITS
@@ -269,13 +260,6 @@ segment {
             EntSize:   0x00000000
             Data:      00 00 00 00                                     # ....
         }
-}
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          ...
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          total: 2076
 }
 segment {
     Type:     PT_LOAD
@@ -351,9 +335,6 @@ segment {
                        9c a4 01 00 9c a4 01 00 9c a4 01 00 00 00 00 00 # ................
                        total: 1140
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 23 ".data" {
             Type:      SHT_PROGBITS
             Flags:     0x00000003
@@ -400,7 +381,4 @@ section 26 ".ARM.attributes" {
                total: 53
 }
 string table section 27 ".shstrtab"
-raw data {
-    Data: 00 00 00                                        # ...
-}
 section table

@@ -62,9 +62,6 @@ section 9 ".data" {
     EntSize:   0x0000000000000000
     Data:      00 00 00 00                                     # ....
 }
-raw data {
-    Data: 00 00 00 00                                     # ....
-}
 section 10 ".data.rel.ro.local" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000003
@@ -93,9 +90,6 @@ section 13 ".comment" {
                ...
                2e 30 2d 72 31 20 70 33 29 20 39 2e 33 2e 30 00 # .0-r1 p3) 9.3.0.
                total: 99
-}
-raw data {
-    Data: 00 00 00 00 00                                  # .....
 }
 symbol table section 14 ".symtab" {
     Type:  SHT_SYMTAB
@@ -136,9 +130,6 @@ section 15 ".strtab" {
                ...
                69 6e 00 5f 5f 64 61 74 61 5f 73 74 61 72 74 00 # in.__data_start.
                total: 79
-}
-raw data {
-    Data: 00                                              # .
 }
 section 3 ".rela.text" {
     Type:      SHT_RELA
@@ -186,7 +177,4 @@ section 11 ".rela.data.rel.ro.local" {
                total: 72
 }
 string table section 16 ".shstrtab"
-raw data {
-    Data: 00 00 00 00 00 00 00                            # .......
-}
 section table

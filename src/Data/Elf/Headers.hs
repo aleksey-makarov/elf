@@ -40,6 +40,7 @@ module Data.Elf.Headers
     -- FIXME: should be segment table entry size
     , segmentSize
     , symbolTableEntrySize
+    , wordAlign
 
     , HeaderXX(..)
     , Header
@@ -270,6 +271,10 @@ segmentSize ELFCLASS32 = 32
 symbolTableEntrySize :: Num a => ElfClass -> a
 symbolTableEntrySize ELFCLASS64 = 24
 symbolTableEntrySize ELFCLASS32 = 16
+
+wordAlign :: Num a => ElfClass -> a
+wordAlign ELFCLASS64 = 8
+wordAlign ELFCLASS32 = 4
 
 getHeader' :: forall (c :: ElfClass) . Sing c -> ElfData -> Get Header
 getHeader' classS hData = do

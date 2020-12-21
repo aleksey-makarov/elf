@@ -20,9 +20,6 @@ section 1 ".text" {
                00 02 00 00 00 04 00 00 00 48 83 c3 05 ff 65 00 # .........H....e.
                total: 43175
 }
-raw data {
-    Data: 00                                              # .
-}
 section 3 ".data" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000003
@@ -71,9 +68,6 @@ section 8 ".comment" {
     EntSize:   0x0000000000000001
     Data:      00 47 48 43 20 38 2e 38 2e 33 00                # .GHC 8.8.3.
 }
-raw data {
-    Data: 00 00 00 00                                     # ....
-}
 symbol table section 9 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
@@ -114,9 +108,6 @@ section 10 ".strtab" {
                6e 74 54 61 62 6c 65 5f 63 6c 6f 73 75 72 65 00 # ntTable_closure.
                total: 16713
 }
-raw data {
-    Data: 00 00 00 00 00 00 00                            # .......
-}
 section 2 ".rela.text" {
     Type:      SHT_RELA
     Flags:     0x0000000000000040
@@ -142,7 +133,4 @@ section 4 ".rela.data" {
                total: 8448
 }
 string table section 11 ".shstrtab"
-raw data {
-    Data: 00 00 00 00 00                                  # .....
-}
 section table

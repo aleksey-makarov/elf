@@ -17,9 +17,6 @@ segment {
             Flags:      0x00000000
         }
         segment table
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 1 ".text" {
             Type:      SHT_PROGBITS
             Flags:     0x00000006
@@ -150,9 +147,6 @@ section 11 ".debug_line" {
                05 06 06 03 10 82 05 07 06 01 4a 02 04 00 01 01 # ..........J.....
                total: 84902
 }
-raw data {
-    Data: 00                                              # .
-}
 section 12 ".debug_frame" {
     Type:      SHT_PROGBITS
     Flags:     0x00000000
@@ -242,7 +236,4 @@ section 17 ".strtab" {
                total: 2635
 }
 string table section 18 ".shstrtab"
-raw data {
-    Data: 00                                              # .
-}
 section table

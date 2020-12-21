@@ -165,7 +165,7 @@ findStringSection rbs = do
 
 printRBuilder' :: MonadCatch m => (Sigma ElfClass (TyCon1 HeadersXX)) -> BSL.ByteString -> m (Doc ())
 printRBuilder' (classS :&: HeadersXX (hdr, ss, ps)) bs = withSingI classS do
-    rbs <- parseRBuilder hdr ss ps
+    rbs <- parseRBuilder hdr ss ps bs
     let
         stringSectionData = getSectionData bs <$> findStringSection rbs
         getString' n = case stringSectionData of

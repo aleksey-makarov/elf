@@ -53,9 +53,6 @@ segment {
                                2e 33 00                                        # .3.
                 }
         }
-        raw data {
-            Data: 00                                              # .
-        }
         segment {
             Type:     PT_NOTE
             Flags:    0x00000004
@@ -149,9 +146,6 @@ segment {
                        ...
                        02 00 02 00 02 00 02 00 02 00 02 00 02 00 02 00 # ................
                        total: 154
-        }
-        raw data {
-            Data: 00 00                                           # ..
         }
         section 8 ".gnu.version_r" {
             Type:      SHT_EXT 1879048190
@@ -378,7 +372,4 @@ section 26 ".ARM.attributes" {
                total: 53
 }
 string table section 27 ".shstrtab"
-raw data {
-    Data: 00 00 00                                        # ...
-}
 section table

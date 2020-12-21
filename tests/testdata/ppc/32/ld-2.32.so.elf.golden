@@ -78,9 +78,6 @@ segment {
                        33 00 47 4c 49 42 43 5f 50 52 49 56 41 54 45 00 # 3.GLIBC_PRIVATE.
                        total: 611
         }
-        raw data {
-            Data: 00                                              # .
-        }
         section 4 ".gnu.version" {
             Type:      SHT_EXT 1879048191
             Flags:     0x00000002
@@ -92,9 +89,6 @@ segment {
                        ...
                        00 08 00 08 00 08 00 08 00 08 00 08 00 08 00 08 # ................
                        total: 74
-        }
-        raw data {
-            Data: 00 00                                           # ..
         }
         section 5 ".gnu.version_d" {
             Type:      SHT_EXT 1879048189
@@ -131,9 +125,6 @@ segment {
                        ...
                        00 00 00 00 00 03 ff f8 00 00 10 15 00 00 00 00 # ................
                        total: 48
-        }
-        raw data {
-            Data: 00 00 00 00 00 00 00 00 00 00 00 00             # ............
         }
         section 8 ".text" {
             Type:      SHT_PROGBITS
@@ -192,13 +183,6 @@ segment {
                        ff ff 6e 54 00 00 00 90 00 56 09 41 00 44 06 41 # ..nT.....V.A.D.A
                        total: 16884
         }
-}
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          ...
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          total: 14284
 }
 segment {
     Type:     PT_LOAD
@@ -269,9 +253,6 @@ segment {
                     EntSize:   0x00000000
                     Data:      00 02 22 90 00 02 22 94 00 02 22 98 00 02 22 9c # .."..."..."...".
                 }
-                raw data {
-                    Data: 00 00 00 00                                     # ....
-                }
         }
         section 16 ".data" {
             Type:      SHT_PROGBITS
@@ -319,7 +300,4 @@ section 20 ".gnu.attributes" {
     Data:      41 00 00 00 0f 67 6e 75 00 01 00 00 00 07 04 01 # A....gnu........
 }
 string table section 21 ".shstrtab"
-raw data {
-    Data: 00 00                                           # ..
-}
 section table

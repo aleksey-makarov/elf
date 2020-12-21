@@ -53,9 +53,6 @@ segment {
                                72 63 68 36 34 2e 73 6f 2e 31 00                # rch64.so.1.
                 }
         }
-        raw data {
-            Data: 00                                              # .
-        }
         segment {
             Type:     PT_NOTE
             Flags:    0x00000004
@@ -94,9 +91,6 @@ segment {
             EntSize:   0x0000000000000000
             Data:      01 00 00 00 01 00 00 00 01 00 00 00 00 00 00 00 # ................
                        00 00 00 00 00 00 00 00 00 00 00 00             # ............
-        }
-        raw data {
-            Data: 00 00 00 00                                     # ....
         }
         symbol table section 5 ".dynsym" {
             Type:  SHT_DYNSYM
@@ -150,9 +144,6 @@ segment {
                        02 00 02 00 02 00 02 00 02 00 02 00 02 00 02 00 # ................
                        total: 152
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 8 ".gnu.version_r" {
             Type:      SHT_EXT 1879048190
             Flags:     0x0000000000000002
@@ -197,9 +188,6 @@ segment {
             EntSize:   0x0000000000000000
             Data:      fd 7b bf a9 fd 03 00 91 2f 04 00 94 fd 7b c1 a8 # .{....../....{..
                        c0 03 5f d6                                     # .._.
-        }
-        raw data {
-            Data: 00 00 00 00                                     # ....
         }
         section 12 ".plt" {
             Type:      SHT_PROGBITS
@@ -266,9 +254,6 @@ segment {
                                total: 1172
                 }
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 17 ".eh_frame" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
@@ -281,13 +266,6 @@ segment {
                        c0 d0 ff ff 18 00 00 00 00 00 00 00 00 00 00 00 # ................
                        total: 6032
         }
-}
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          ...
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          total: 4024
 }
 segment {
     Type:     PT_LOAD
@@ -401,7 +379,4 @@ section 25 ".comment" {
                total: 59
 }
 string table section 26 ".shstrtab"
-raw data {
-    Data: 00 00 00 00 00 00                               # ......
-}
 section table

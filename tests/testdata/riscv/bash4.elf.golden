@@ -47,9 +47,6 @@ segment {
                                total: 35
                 }
         }
-        raw data {
-            Data: 00                                              # .
-        }
         segment {
             Type:     PT_NOTE
             Flags:    0x00000004
@@ -92,9 +89,6 @@ segment {
                        70 bb 5b bb 69 5b 28 e0 94 38 34 8c bb e3 92 7c # p.[.i[(..84....|
                        total: 13412
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         symbol table section 5 ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
@@ -135,9 +129,6 @@ segment {
                        72 61 6d 65 00 47 4c 49 42 43 5f 32 2e 32 37 00 # rame.GLIBC_2.27.
                        total: 27573
         }
-        raw data {
-            Data: 00                                              # .
-        }
         section 7 ".gnu.version" {
             Type:      SHT_EXT 1879048191
             Flags:     0x0000000000000002
@@ -149,9 +140,6 @@ segment {
                        ...
                        00 00 01 00 01 00 01 00 01 00 00 00 02 00 01 00 # ................
                        total: 3654
-        }
-        raw data {
-            Data: 00 00 00 00                                     # ....
         }
         section 8 ".gnu.version_r" {
             Type:      SHT_EXT 1879048190
@@ -243,9 +231,6 @@ segment {
                                2c 00 00 00                                     # ,...
                 }
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 15 ".eh_frame" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
@@ -258,13 +243,6 @@ segment {
                        24 b5 f9 ff 2c 00 00 00 00 00 00 00 00 00 00 00 # $...,...........
                        total: 44
         }
-}
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          ...
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          total: 924
 }
 segment {
     Type:     PT_LOAD
@@ -398,7 +376,4 @@ section 26 ".gnu_debuglink" {
     Data:      62 61 73 68 34 2e 64 65 62 75 67 00 7e 0c 51 7a # bash4.debug.~.Qz
 }
 string table section 27 ".shstrtab"
-raw data {
-    Data: 00 00 00 00 00 00 00                            # .......
-}
 section table

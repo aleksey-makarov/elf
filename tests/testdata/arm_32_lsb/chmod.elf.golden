@@ -53,9 +53,6 @@ segment {
                                6d 68 66 2e 73 6f 2e 33 00                      # mhf.so.3.
                 }
         }
-        raw data {
-            Data: 00 00 00                                        # ...
-        }
         segment {
             Type:     PT_NOTE
             Flags:    0x00000004
@@ -150,9 +147,6 @@ segment {
                        03 00 03 00 03 00 03 00 03 00 03 00 03 00 03 00 # ................
                        total: 172
         }
-        raw data {
-            Data: 00 00                                           # ..
-        }
         section 8 ".gnu.version_r" {
             Type:      SHT_EXT 1879048190
             Flags:     0x00000002
@@ -208,9 +202,6 @@ segment {
                        ...
                        ac fb bc e5 00 c6 8f e2 18 ca 8c e2 a4 fb bc e5 # ................
                        total: 824
-        }
-        raw data {
-            Data: 00 00 00 00                                     # ....
         }
         section 13 ".text" {
             Type:      SHT_PROGBITS
@@ -270,13 +261,6 @@ segment {
             EntSize:   0x00000000
             Data:      00 00 00 00                                     # ....
         }
-}
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          ...
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          total: 820
 }
 segment {
     Type:     PT_LOAD

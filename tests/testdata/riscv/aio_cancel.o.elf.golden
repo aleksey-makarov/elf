@@ -57,9 +57,6 @@ section 6 ".comment" {
     Data:      00 47 43 43 3a 20 28 47 65 6e 74 6f 6f 20 37 2e # .GCC: (Gentoo 7.
                32 2e 30 20 70 31 2e 31 29 20 37 2e 32 2e 30 00 # 2.0 p1.1) 7.2.0.
 }
-raw data {
-    Data: 00                                              # .
-}
 symbol table section 7 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x00000000
@@ -100,9 +97,6 @@ section 8 ".strtab" {
                69 6c 00 61 69 6f 5f 63 61 6e 63 65 6c 36 34 00 # il.aio_cancel64.
                total: 691
 }
-raw data {
-    Data: 00                                              # .
-}
 section 2 ".rela.text" {
     Type:      SHT_RELA
     Flags:     0x00000040
@@ -116,7 +110,4 @@ section 2 ".rela.text" {
                total: 924
 }
 string table section 9 ".shstrtab"
-raw data {
-    Data: 00 00 00                                        # ...
-}
 section table

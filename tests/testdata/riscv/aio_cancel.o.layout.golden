@@ -8,19 +8,13 @@
 ╙ 0x000002de
 ╓ 0x000002df S6 ".comment" SHT_PROGBITS [SHF_EXT 16,SHF_EXT 32]
 ╙ 0x000002fe
-╓ 0x000002ff R
-╙ 0x000002ff
 ╓ 0x00000300 S7 ".symtab" SHT_SYMTAB []
 ╙ 0x00000d3f
 ╓ 0x00000d40 S8 ".strtab" SHT_STRTAB []
 ╙ 0x00000ff2
-╓ 0x00000ff3 R
-╙ 0x00000ff3
 ╓ 0x00000ff4 S2 ".rela.text" SHT_RELA [SHF_EXT 64]
 ╙ 0x0000138f
 ╓ 0x00001390 S9 ".shstrtab" SHT_STRTAB []
 ╙ 0x000013d8
-╓ 0x000013d9 R
-╙ 0x000013db
 ┎ 0x000013dc ST (10)
 ┖ 0x0000156b

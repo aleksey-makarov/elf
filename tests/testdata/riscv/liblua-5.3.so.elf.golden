@@ -38,9 +38,6 @@ segment {
                                total: 36
                 }
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 2 ".gnu.hash" {
             Type:      SHT_EXT 1879048182
             Flags:     0x0000000000000002
@@ -52,9 +49,6 @@ segment {
                        ...
                        58 8f 79 34 cf bf c4 c2 e5 d3 c5 1d d9 68 1d 71 # X.y4.........h.q
                        total: 1804
-        }
-        raw data {
-            Data: 00 00 00 00                                     # ....
         }
         symbol table section 3 ".dynsym" {
             Type:  SHT_DYNSYM
@@ -168,9 +162,6 @@ segment {
                        e2 64 42 69 a2 69 02 6a 45 61 82 80 01 45 82 80 # .dBi.i.jEa...E..
                        total: 103546
         }
-        raw data {
-            Data: 00 00 00 00 00 00                               # ......
-        }
         section 11 ".rodata" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
@@ -191,13 +182,6 @@ segment {
             EntSize:   0x0000000000000000
             Data:      00 00 00 00                                     # ....
         }
-}
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          ...
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          total: 2676
 }
 segment {
     Type:     PT_LOAD
@@ -296,7 +280,4 @@ section 19 ".gnu_debuglink" {
                62 75 67 00 d3 6b 5f 9f                         # bug..k_.
 }
 string table section 20 ".shstrtab"
-raw data {
-    Data: 00                                              # .
-}
 section table

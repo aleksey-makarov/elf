@@ -10,8 +10,6 @@
  ││╓ 0x00000154 S1 ".interp" SHT_PROGBITS [SHF_ALLOC]
  ││╙ 0x0000016c
  │└─ 0x0000016c
- │ ╓ 0x0000016d R
- │ ╙ 0x0000016f
  │┌─ 0x00000170 P PT_NOTE [PF_R]
  ││╓ 0x00000170 S2 ".note.ABI-tag" SHT_NOTE [SHF_ALLOC]
  ││╙ 0x0000018f
@@ -26,8 +24,6 @@
  │ ╙ 0x00010b1f
  │ ╓ 0x00010b20 S7 ".gnu.version" SHT_EXT 1879048191 [SHF_ALLOC]
  │ ╙ 0x000118f5
- │ ╓ 0x000118f6 R
- │ ╙ 0x000118f7
  │ ╓ 0x000118f8 S8 ".gnu.version_r" SHT_EXT 1879048190 [SHF_ALLOC]
  │ ╙ 0x00011987
  │ ╓ 0x00011988 S9 ".rel.dyn" SHT_REL [SHF_ALLOC]
@@ -38,8 +34,6 @@
  │ ╙ 0x0001249b
  │ ╓ 0x0001249c S12 ".plt" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
  │ ╙ 0x000131db
- │ ╓ 0x000131dc R
- │ ╙ 0x000131df
  │ ╓ 0x000131e0 S13 ".text" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
  │ ╙ 0x000880a3
  │ ╓ 0x000880a4 S14 ".fini" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
@@ -53,8 +47,6 @@
  │ ╓ 0x0009e6cc S17 ".eh_frame" SHT_PROGBITS [SHF_ALLOC]
  │ ╙ 0x0009e6cf
  └── 0x0009e6cf
-   ╓ 0x0009e6d0 R
-   ╙ 0x0009eeeb
 ┌─── 0x0009eeec P PT_LOAD [PF_W,PF_R]
 │┌── 0x0009eeec P PT_EXT 1685382482 [PF_R]
 ││ ╓ 0x0009eeec S18 ".init_array" SHT_EXT 14 [SHF_WRITE,SHF_ALLOC]
@@ -70,8 +62,6 @@
 │└── 0x0009efff
 │  ╓ 0x0009f000 S22 ".got" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
 │  ╙ 0x0009f473
-│  ╓ 0x0009f474 R
-│  ╙ 0x0009f477
 │  ╓ 0x0009f478 S23 ".data" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
 │  ╙ 0x000a0e7f
 └─── 0x000a0e7f
@@ -82,7 +72,5 @@
    ╙ 0x000a0f12
    ╓ 0x000a0f13 S27 ".shstrtab" SHT_STRTAB []
    ╙ 0x000a100c
-   ╓ 0x000a100d R
-   ╙ 0x000a100f
    ┎ 0x000a1010 ST (28)
    ┖ 0x000a146f

@@ -9,8 +9,6 @@
  ││╓ 0x00000200 S1 ".interp" SHT_PROGBITS [SHF_ALLOC]
  ││╙ 0x00000222
  │└─ 0x00000222
- │ ╓ 0x00000223 R
- │ ╙ 0x00000223
  │┌─ 0x00000224 P PT_NOTE [PF_R]
  ││╓ 0x00000224 S2 ".note.ABI-tag" SHT_NOTE [SHF_ALLOC]
  ││╙ 0x00000243
@@ -19,18 +17,12 @@
  │└─ 0x00000267
  │ ╓ 0x00000268 S4 ".gnu.hash" SHT_EXT 1879048182 [SHF_ALLOC]
  │ ╙ 0x000036cb
- │ ╓ 0x000036cc R
- │ ╙ 0x000036cf
  │ ╓ 0x000036d0 S5 ".dynsym" SHT_DYNSYM [SHF_ALLOC]
  │ ╙ 0x0000e217
  │ ╓ 0x0000e218 S6 ".dynstr" SHT_STRTAB [SHF_ALLOC]
  │ ╙ 0x00014dcc
- │ ╓ 0x00014dcd R
- │ ╙ 0x00014dcd
  │ ╓ 0x00014dce S7 ".gnu.version" SHT_EXT 1879048191 [SHF_ALLOC]
  │ ╙ 0x00015c13
- │ ╓ 0x00015c14 R
- │ ╙ 0x00015c17
  │ ╓ 0x00015c18 S8 ".gnu.version_r" SHT_EXT 1879048190 [SHF_ALLOC]
  │ ╙ 0x00015c77
  │ ╓ 0x00015c78 S9 ".rela.dyn" SHT_RELA [SHF_ALLOC]
@@ -47,13 +39,9 @@
  ││╓ 0x0007ea00 S14 ".eh_frame_hdr" SHT_PROGBITS [SHF_ALLOC]
  ││╙ 0x0007ea13
  │└─ 0x0007ea13
- │ ╓ 0x0007ea14 R
- │ ╙ 0x0007ea17
  │ ╓ 0x0007ea18 S15 ".eh_frame" SHT_PROGBITS [SHF_ALLOC]
  │ ╙ 0x0007ea43
  └── 0x0007ea43
-   ╓ 0x0007ea44 R
-   ╙ 0x0007eddf
 ┌─── 0x0007ede0 P PT_LOAD [PF_W,PF_R]
 │┌── 0x0007ede0 P PT_EXT 1685382482 [PF_R]
 ││ ╓ 0x0007ede0 S16 ".preinit_array" SHT_EXT 16 [SHF_WRITE,SHF_ALLOC]
@@ -82,7 +70,5 @@
    ╙ 0x000827c3
    ╓ 0x000827c4 S27 ".shstrtab" SHT_STRTAB []
    ╙ 0x000828d0
-   ╓ 0x000828d1 R
-   ╙ 0x000828d7
    ┎ 0x000828d8 ST (28)
    ┖ 0x00082fd7

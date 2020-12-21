@@ -162,9 +162,6 @@ section 18 ".strtab" {
     Data:      00 61 2e 63 00 6d 61 69 6e 00 70 72 69 6e 74 66 # .a.c.main.printf
                00                                              # .
 }
-raw data {
-    Data: 00 00 00                                        # ...
-}
 section 2 ".rela.text" {
     Type:      SHT_RELA
     Flags:     0x00000040
@@ -216,7 +213,4 @@ section 16 ".rela.debug_frame" {
                0c 02 00 00 00 00 00 00                         # ........
 }
 string table section 19 ".shstrtab"
-raw data {
-    Data: 00                                              # .
-}
 section table

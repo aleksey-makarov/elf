@@ -26,13 +26,6 @@ segment {
             Flags:      0x00000000
         }
         segment table
-        raw data {
-            Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-                  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-                  ...
-                  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-                  total: 48
-        }
         section 1 ".text" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
@@ -43,7 +36,4 @@ segment {
         }
 }
 string table section 2 ".shstrtab"
-raw data {
-    Data: 00 00 00                                        # ...
-}
 section table

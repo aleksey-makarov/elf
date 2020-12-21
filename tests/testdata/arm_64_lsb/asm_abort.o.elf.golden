@@ -56,9 +56,6 @@ section 6 ".note.GNU-stack" {
     EntSize:   0x0000000000000000
     Data:      
 }
-raw data {
-    Data: 00 00 00 00 00                                  # .....
-}
 section 7 ".eh_frame" {
     Type:      SHT_PROGBITS
     Flags:     0x0000000000000002
@@ -111,9 +108,6 @@ section 10 ".strtab" {
                5f 6c 69 62 61 73 6d 5f 66 69 6e 69 63 74 78 00 # _libasm_finictx.
                total: 49
 }
-raw data {
-    Data: 00 00 00 00 00 00 00                            # .......
-}
 section 2 ".rela.text" {
     Type:      SHT_RELA
     Flags:     0x0000000000000040
@@ -136,7 +130,4 @@ section 8 ".rela.eh_frame" {
                00 00 00 00 00 00 00 00                         # ........
 }
 string table section 11 ".shstrtab"
-raw data {
-    Data: 00 00 00 00 00 00 00                            # .......
-}
 section table

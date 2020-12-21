@@ -47,9 +47,6 @@ segment {
                                total: 36
                 }
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 2 ".gnu.hash" {
             Type:      SHT_EXT 1879048182
             Flags:     0x0000000000000002
@@ -102,9 +99,6 @@ segment {
                        5f 31 2e 37 00 47 4c 49 42 43 5f 32 2e 31 37 00 # _1.7.GLIBC_2.17.
                        total: 2181
         }
-        raw data {
-            Data: 00                                              # .
-        }
         section 5 ".gnu.version" {
             Type:      SHT_EXT 1879048191
             Flags:     0x0000000000000002
@@ -116,9 +110,6 @@ segment {
                        ...
                        02 00 02 00 06 00 0a 00 06 00 02 00 02 00 02 00 # ................
                        total: 340
-        }
-        raw data {
-            Data: 00 00 00 00 00 00                               # ......
         }
         section 6 ".gnu.version_d" {
             Type:      SHT_EXT 1879048189
@@ -177,9 +168,6 @@ segment {
             Data:      fd 7b bf a9 fd 03 00 91 1a 00 00 94 fd 7b c1 a8 # .{...........{..
                        c0 03 5f d6                                     # .._.
         }
-        raw data {
-            Data: 00 00 00 00 00 00 00 00 00 00 00 00             # ............
-        }
         section 11 ".plt" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
@@ -211,9 +199,6 @@ segment {
             AddrAlign: 0x0000000000000004
             EntSize:   0x0000000000000000
             Data:      fd 7b bf a9 fd 03 00 91 fd 7b c1 a8 c0 03 5f d6 # .{.......{...._.
-        }
-        raw data {
-            Data: 00 00 00 00                                     # ....
         }
         section 14 ".rodata" {
             Type:      SHT_PROGBITS
@@ -248,9 +233,6 @@ segment {
                                total: 1700
                 }
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 16 ".eh_frame" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
@@ -263,13 +245,6 @@ segment {
                        95 14 42 9a 0f 99 10 41 9b 0e 00 00 00 00 00 00 # ..B....A........
                        total: 12220
         }
-}
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          ...
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          total: 3620
 }
 segment {
     Type:     PT_EXT 7
@@ -396,7 +371,4 @@ section 25 ".comment" {
                total: 59
 }
 string table section 26 ".shstrtab"
-raw data {
-    Data: 00 00 00 00 00 00 00                            # .......
-}
 section table

@@ -14,14 +14,10 @@
 │ │╓ 0x000002c8 S2 ".note.gnu.build-id" SHT_NOTE [SHF_ALLOC]
 │ │╙ 0x000002eb
 │ └─ 0x000002eb
-│  ╓ 0x000002ec R
-│  ╙ 0x000002ef
 │  ╓ 0x000002f0 S3 ".hash" SHT_HASH [SHF_ALLOC]
 │  ╙ 0x0000044f
 │  ╓ 0x00000450 S4 ".gnu.hash" SHT_EXT 1879048182 [SHF_ALLOC]
 │  ╙ 0x000005eb
-│  ╓ 0x000005ec R
-│  ╙ 0x000005ef
 │  ╓ 0x000005f0 S5 ".dynsym" SHT_DYNSYM [SHF_ALLOC]
 │  ╙ 0x0000091f
 │  ╓ 0x00000920 S6 ".dynstr" SHT_STRTAB [SHF_ALLOC]
@@ -30,15 +26,11 @@
 │  ╙ 0x00000b87
 │  ╓ 0x00000b88 S8 ".gnu.version_d" SHT_EXT 1879048189 [SHF_ALLOC]
 │  ╙ 0x00000c2b
-│  ╓ 0x00000c2c R
-│  ╙ 0x00000c2f
 │  ╓ 0x00000c30 S9 ".rela.dyn" SHT_RELA [SHF_ALLOC]
 │  ╙ 0x0000104f
 │  ╓ 0x00001050 S10 ".rela.plt" SHT_RELA [SHF_ALLOC,SHF_EXT 64]
 │  ╙ 0x000010f7
 └─── 0x000010f7
-   ╓ 0x000010f8 R
-   ╙ 0x00001fff
   ┌─ 0x00002000 P PT_LOAD [PF_X,PF_R]
   │╓ 0x00002000 S11 ".plt" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
   │╙ 0x0000207f
@@ -49,8 +41,6 @@
   │╓ 0x00002100 S14 ".text" SHT_PROGBITS [SHF_ALLOC,SHF_EXECINSTR]
   │╙ 0x00021c23
   └─ 0x00021c23
-   ╓ 0x00021c24 R
-   ╙ 0x00021fff
  ┌── 0x00022000 P PT_LOAD [PF_R]
  │ ╓ 0x00022000 S15 ".rodata" SHT_PROGBITS [SHF_ALLOC]
  │ ╙ 0x00026c5a
@@ -63,22 +53,16 @@
  │ ╓ 0x00027388 S18 ".eh_frame" SHT_PROGBITS [SHF_ALLOC]
  │ ╙ 0x00029b9b
  └── 0x00029b9b
-   ╓ 0x00029b9c R
-   ╙ 0x0002a4bf
 ┌─── 0x0002a4c0 P PT_LOAD [PF_W,PF_R]
 │┌── 0x0002a4c0 P PT_EXT 1685382482 [PF_R]
 ││ ╓ 0x0002a4c0 S19 ".data.rel.ro" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
 ││ ╙ 0x0002ae03
-││ ╓ 0x0002ae04 R
-││ ╙ 0x0002ae07
 ││┌─ 0x0002ae08 P PT_DYNAMIC [PF_W,PF_R]
 │││╓ 0x0002ae08 S20 ".dynamic" SHT_DYNAMIC [SHF_WRITE,SHF_ALLOC]
 │││╙ 0x0002af97
 ││└─ 0x0002af97
 ││ ╓ 0x0002af98 S21 ".got" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
 ││ ╙ 0x0002aff7
-││ ╓ 0x0002aff8 R
-││ ╙ 0x0002afff
 │└── 0x0002afff
 │  ╓ 0x0002b000 S22 ".data" SHT_PROGBITS [SHF_WRITE,SHF_ALLOC]
 │  ╙ 0x0002bf97
@@ -86,8 +70,6 @@
    - 0x0002bf98 S23 ".bss" SHT_NOBITS [SHF_WRITE,SHF_ALLOC]
    ╓ 0x0002bf98 S24 ".comment" SHT_PROGBITS [SHF_EXT 16,SHF_EXT 32]
    ╙ 0x0002bfa9
-   ╓ 0x0002bfaa R
-   ╙ 0x0002bfab
    ╓ 0x0002bfac S25 ".note.stapsdt" SHT_NOTE []
    ╙ 0x0002c387
    ╓ 0x0002c388 S26 ".symtab" SHT_SYMTAB []
@@ -96,7 +78,5 @@
    ╙ 0x000310e2
    ╓ 0x000310e3 S28 ".shstrtab" SHT_STRTAB []
    ╙ 0x000311eb
-   ╓ 0x000311ec R
-   ╙ 0x000311ef
    ┎ 0x000311f0 ST (29)
    ┖ 0x0003192f

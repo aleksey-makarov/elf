@@ -8,9 +8,6 @@ header {
     Entry:      0x00000000
     Flags:      0x00008000
 }
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00             # ............
-}
 section 1 ".text" {
     Type:      SHT_PROGBITS
     Flags:     0x00000006
@@ -67,9 +64,6 @@ section 8 ".note.GNU-stack" {
     EntSize:   0x00000000
     Data:      
 }
-raw data {
-    Data: 00 00 00                                        # ...
-}
 section 9 ".eh_frame" {
     Type:      SHT_PROGBITS
     Flags:     0x00000002
@@ -121,9 +115,6 @@ section 12 ".strtab" {
                ...
                61 64 5f 6d 75 74 65 78 5f 75 6e 6c 6f 63 6b 00 # ad_mutex_unlock.
                total: 94
-}
-raw data {
-    Data: 00 00                                           # ..
 }
 section 2 ".rela.text" {
     Type:      SHT_RELA

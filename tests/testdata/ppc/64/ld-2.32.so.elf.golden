@@ -29,9 +29,6 @@ segment {
                        ed 70 d1 93 b2 3c 80 6b 42 a5 a9 55 ab d4 2c 4f # .p...<.kB..U..,O
                        total: 364
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         symbol table section 2 ".dynsym" {
             Type:  SHT_DYNSYM
             Flags: 0x0000000000000002
@@ -72,9 +69,6 @@ segment {
                        33 00 47 4c 49 42 43 5f 50 52 49 56 41 54 45 00 # 3.GLIBC_PRIVATE.
                        total: 593
         }
-        raw data {
-            Data: 00                                              # .
-        }
         section 4 ".gnu.version" {
             Type:      SHT_EXT 1879048191
             Flags:     0x0000000000000002
@@ -86,9 +80,6 @@ segment {
                        ...
                        00 06 00 06 00 06 00 06 00 06 00 06 00 06 00 06 # ................
                        total: 72
-        }
-        raw data {
-            Data: 00 00 00 00 00 00                               # ......
         }
         section 5 ".gnu.version_d" {
             Type:      SHT_EXT 1879048189
@@ -138,9 +129,6 @@ segment {
                        38 00 00 02 4b ff ff c0 38 00 00 03 4b ff ff b8 # 8...K...8...K...
                        total: 149428
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 9 ".rodata" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
@@ -186,13 +174,6 @@ segment {
                        00 00 39 6c ff ff 75 78 00 00 00 50 00 00 00 00 # ..9l..ux...P....
                        total: 14716
         }
-}
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          ...
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          total: 52028
 }
 segment {
     Type:     PT_LOAD
@@ -271,13 +252,6 @@ segment {
                     EntSize:   0x0000000000000000
                     Data:      
                 }
-                raw data {
-                    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-                          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-                          ...
-                          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-                          total: 144
-                }
                 section 17 ".got" {
                     Type:      SHT_PROGBITS
                     Flags:     0x0000000000000003
@@ -289,13 +263,6 @@ segment {
                                ...
                                00 00 00 00 00 02 7a 2c 00 00 00 00 00 02 7d 64 # ......z,......}d
                                total: 400
-                }
-                raw data {
-                    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-                          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-                          ...
-                          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-                          total: 112
                 }
         }
         section 18 ".sdata" {
@@ -329,7 +296,4 @@ section 20 ".bss" {
     Data:      
 }
 string table section 21 ".shstrtab"
-raw data {
-    Data: 00 00 00 00 00                                  # .....
-}
 section table

@@ -107,7 +107,7 @@ data RBuilder (c :: ElfClass)
     | RBuilderSegmentTable
         { rbptHeader :: HeaderXX c
         }
-    | RBuilderSection
+    | RBuilderSection -- FIXME: (?) add section name string
         { rbsHeader :: SectionXX c
         , rbsN      :: Word16
         }
@@ -388,20 +388,29 @@ tail' :: [a] -> [a]
 tail' [] = []
 tail' (_ : xs) = xs
 
-addRawData :: forall a . SingI a => [RBuilder a] -> [RBuilder a]
-addRawData [] = []
-addRawData rBuilders = snd $ addRawData' (lrbie, rBuilders)
+addRawData :: forall a . SingI a => BSL.ByteString -> [RBuilder a] -> [RBuilder a]
+addRawData _ [] = []
+addRawData bs rBuilders = snd $ addRawData' (lrbie, rBuilders)
     where
+
+        allEmpty :: Word64 -> Word64 -> Bool
+        allEmpty b s = BSL.all (== 0) bs'
+            where
+                bs' = cut bs (fromIntegral b) (fromIntegral s)
+
+        -- e, e' and lrbie stand for the first occupied byte after the place being fixed
 
         -- names: last rBuilder interval (begin, size)
         lrbi@(I lrbib lrbis) = rBuilderInterval $ L.last rBuilders
         lrbie = if I.empty lrbi then lrbib else lrbib + lrbis
 
         addRaw :: Word64 -> Word64 -> [RBuilder a] -> [RBuilder a]
-        addRaw b e rbs = case compare b e of
-            LT -> RBuilderRawData (I b (e - b)) : rbs
-            EQ -> rbs
-            GT -> error "internal error: incorrect interval while adding raw data"
+        addRaw b e rbs =
+            if b < e && (not $ allEmpty b s)
+                then RBuilderRawData (I b s) : rbs
+                else rbs
+            where
+                s = e - b
 
         addRawData' :: (Word64, [RBuilder a]) -> (Word64, [RBuilder a])
         addRawData' (e, rbs) = L.foldr f (e, []) $ fmap fixRBuilder rbs
@@ -423,8 +432,8 @@ addRawData rBuilders = snd $ addRawData' (lrbie, rBuilders)
                 (e', rbs) = addRawData' (e, rbpData)
         fixRBuilder x = x
 
-parseRBuilder :: (MonadCatch m, SingI a) => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> m [RBuilder a]
-parseRBuilder hdr@HeaderXX{..} ss ps = do
+parseRBuilder :: (MonadCatch m, SingI a) => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> m [RBuilder a]
+parseRBuilder hdr@HeaderXX{..} ss ps bs = do
 
     let
         mkRBuilderSection :: (SingI a, MonadCatch m) => (Word16, SectionXX a) -> m (RBuilder a)
@@ -448,7 +457,7 @@ parseRBuilder hdr@HeaderXX{..} ss ps = do
         =<< addRBuildersToList sections
         =<< addRBuildersToList segments []
 
-    return $ addRawData rbs
+    return $ addRawData bs rbs
 
 parseElf' :: forall a m . (MonadCatch m, SingI a) =>
                                        HeaderXX a ->
@@ -457,7 +466,7 @@ parseElf' :: forall a m . (MonadCatch m, SingI a) =>
                                    BSL.ByteString -> m (Elf')
 parseElf' hdr@HeaderXX{..} ss ps bs = do
 
-    rbs <- parseRBuilder hdr ss ps
+    rbs <- parseRBuilder hdr ss ps bs
 
     let
         firstJust f = listToMaybe . mapMaybe f
@@ -551,7 +560,7 @@ wbStateInit = WBuilderState
     , wbsPhOff            = wxxFromIntegral (0 :: Word32)
     , wbsShOff            = wxxFromIntegral (0 :: Word32)
     , wbsShStrNdx         = 0
-    , wbsNameIndexes    = []
+    , wbsNameIndexes      = []
     }
 
 zeroXX :: forall a . SingI a => WXX a
@@ -650,6 +659,28 @@ serializeElf' elfs = do
                 f ElfSectionTable =  Any True
                 f _ = Any False
 
+        align :: MonadThrow n => Word64 -> Word64 -> WBuilderState a -> n (WBuilderState a)
+        align _ 0 x = return x
+        align _ 1 x = return x
+        align t m WBuilderState{..} | m .&. (m - 1) /= 0 = $elfError $ "align module is not power of two " ++ (show m)
+                                    | otherwise =
+            let
+                o' = wbsOffset .&. complement (m - 1)
+                t' = t .&. (m - 1)
+                o'' = if o' + t' < wbsOffset
+                    then o' + m + t'
+                    else o' + t'
+                d = WBuilderDataByteStream $ BSL.replicate (fromIntegral $ o'' - wbsOffset) 0
+            in
+                return WBuilderState
+                    { wbsDataReversed = d : wbsDataReversed
+                    , wbsOffset = o''
+                    , ..
+                    }
+
+        alignWord :: MonadThrow n => WBuilderState a -> n (WBuilderState a)
+        alignWord = align 0 $ wordAlign $ fromSing $ sing @a
+
         elf2WBuilder' :: MonadThrow n => Elf a -> WBuilderState a -> n (WBuilderState a)
         elf2WBuilder' ElfHeader{} WBuilderState{..} =
             return WBuilderState
@@ -657,21 +688,24 @@ serializeElf' elfs = do
                 , wbsOffset = wbsOffset + headerSize elfClass
                 , ..
                 }
-        elf2WBuilder' ElfSectionTable WBuilderState{..} =
+        elf2WBuilder' ElfSectionTable s = do
+            WBuilderState{..} <- alignWord s
             return WBuilderState
                 { wbsDataReversed = WBuilderDataSectionTable : wbsDataReversed
                 , wbsOffset = wbsOffset + (sectionN + 1) * sectionSize elfClass
                 , wbsShOff = wxxFromIntegral wbsOffset
                 , ..
                 }
-        elf2WBuilder' ElfSegmentTable WBuilderState{..} =
+        elf2WBuilder' ElfSegmentTable s = do
+            WBuilderState{..} <- alignWord s
             return WBuilderState
                 { wbsDataReversed = WBuilderDataSegmentTable : wbsDataReversed
                 , wbsOffset = wbsOffset + segmentN * segmentSize elfClass
                 , wbsPhOff = wxxFromIntegral wbsOffset
                 , ..
                 }
-        elf2WBuilder' ElfSection{..} WBuilderState{..} =
+        elf2WBuilder' ElfSection{..} s = do
+            WBuilderState{..} <- align 0 (wxxToIntegral esAddrAlign) s
             let
                 (d, shStrNdx) = case esData of
                     ElfSectionData bs -> (bs, wbsShStrNdx)
@@ -689,19 +723,19 @@ serializeElf' elfs = do
                 sInfo = 0                              -- Word32 FIXME
                 sAddrAlign = esAddrAlign               -- WXX c
                 sEntSize = esEntSize                   -- WXX c
-            in
-                return WBuilderState
-                    { wbsSections = (esN, SectionXX{..}) : wbsSections
-                    , wbsDataReversed = (WBuilderDataByteStream d) : wbsDataReversed
-                    , wbsOffset = wbsOffset + (fromIntegral $ BSL.length d)
-                    , wbsShStrNdx = shStrNdx
-                    , wbsNameIndexes = ns
-                    , ..
-                    }
+            return WBuilderState
+                { wbsSections = (esN, SectionXX{..}) : wbsSections
+                , wbsDataReversed = (WBuilderDataByteStream d) : wbsDataReversed
+                , wbsOffset = wbsOffset + (fromIntegral $ BSL.length d)
+                , wbsShStrNdx = shStrNdx
+                , wbsNameIndexes = ns
+                , ..
+                }
         elf2WBuilder' ElfSegment{..} s = do
+            s' <- align (wxxToIntegral epVirtAddr) (wxxToIntegral epAlign) s
             let
-                offset = wbsOffset s
-            WBuilderState{..} <- execStateT (mapM elf2WBuilder epData) s
+                offset = wbsOffset s'
+            WBuilderState{..} <- execStateT (mapM elf2WBuilder epData) s'
             let
                 pType = epType
                 pFlags = epFlags

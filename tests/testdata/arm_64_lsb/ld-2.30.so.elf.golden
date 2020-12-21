@@ -47,9 +47,6 @@ segment {
                                total: 36
                 }
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 2 ".hash" {
             Type:      SHT_HASH
             Flags:     0x0000000000000002
@@ -73,9 +70,6 @@ segment {
                        ...
                        6b 80 3c b2 54 a9 a5 42 3d ad 39 0d 4f 2c d4 ab # k.<.T..B=.9.O,..
                        total: 364
-        }
-        raw data {
-            Data: 00 00 00 00                                     # ....
         }
         symbol table section 4 ".dynsym" {
             Type:  SHT_DYNSYM
@@ -141,9 +135,6 @@ segment {
                        22 02 00 00 08 00 00 00 17 02 00 00 00 00 00 00 # "...............
                        total: 92
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 8 ".rela.dyn" {
             Type:      SHT_RELA
             Flags:     0x0000000000000002
@@ -179,13 +170,6 @@ segment {
                        ...
                        70 01 00 d0 11 de 47 f9 10 e2 3e 91 20 02 1f d6 # p.....G...>. ...
                        total: 176
-        }
-        raw data {
-            Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-                  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-                  ...
-                  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-                  total: 48
         }
         section 11 ".text" {
             Type:      SHT_PROGBITS
@@ -232,9 +216,6 @@ segment {
                                total: 1692
                 }
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 14 ".eh_frame" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
@@ -247,13 +228,6 @@ segment {
                        e8 26 00 00 94 91 ff ff 28 00 00 00 00 00 00 00 # .&......(.......
                        total: 9976
         }
-}
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          ...
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          total: 1680
 }
 segment {
     Type:     PT_LOAD
@@ -282,9 +256,6 @@ segment {
                                ...
                                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
                                total: 2116
-                }
-                raw data {
-                    Data: 00 00 00 00                                     # ....
                 }
                 segment {
                     Type:     PT_DYNAMIC
@@ -350,9 +321,6 @@ section 20 ".comment" {
     Data:      47 43 43 3a 20 28 47 4e 55 29 20 39 2e 32 2e 30 # GCC: (GNU) 9.2.0
                00                                              # .
 }
-raw data {
-    Data: 00 00 00 00 00 00 00                            # .......
-}
 symbol table section 21 ".symtab" {
     Type:  SHT_SYMTAB
     Flags: 0x0000000000000000
@@ -394,7 +362,4 @@ section 22 ".strtab" {
                total: 7310
 }
 string table section 23 ".shstrtab"
-raw data {
-    Data: 00 00 00 00 00                                  # .....
-}
 section table

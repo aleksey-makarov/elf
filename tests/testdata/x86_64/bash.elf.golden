@@ -147,9 +147,6 @@ segment {
                        01 00 00 00 01 00 01 00 01 00 01 00 00 00 01 00 # ................
                        total: 3800
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 8 ".gnu.version_r" {
             Type:      SHT_EXT 1879048190
             Flags:     0x0000000000000002
@@ -175,10 +172,6 @@ segment {
                        total: 35328
         }
 }
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-}
 segment {
     Type:     PT_LOAD
     Flags:    0x00000005
@@ -196,9 +189,6 @@ segment {
             Data:      f3 0f 1e fa 48 83 ec 08 48 8b 05 e1 aa 0b 00 48 # ....H...H......H
                        85 c0 74 02 ff d0 48 83 c4 08 c3                # ..t...H....
         }
-        raw data {
-            Data: 00 00 00 00 00                                  # .....
-        }
         section 11 ".text" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
@@ -211,9 +201,6 @@ segment {
                        66 66 2e 0f 1f 84 00 00 00 00 00 f3 0f 1e fa c3 # ff..............
                        total: 563765
         }
-        raw data {
-            Data: 00 00 00                                        # ...
-        }
         section 12 ".fini" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000006
@@ -222,13 +209,6 @@ segment {
             EntSize:   0x0000000000000000
             Data:      f3 0f 1e fa 48 83 ec 08 48 83 c4 08 c3          # ....H...H....
         }
-}
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          ...
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          total: 1435
 }
 segment {
     Type:     PT_LOAD
@@ -271,9 +251,6 @@ segment {
                                total: 12956
                 }
         }
-        raw data {
-            Data: 00 00 00 00                                     # ....
-        }
         section 15 ".eh_frame" {
             Type:      SHT_PROGBITS
             Flags:     0x0000000000000002
@@ -286,13 +263,6 @@ segment {
                        f8 21 fd ff 05 00 00 00 00 00 00 00 00 00 00 00 # .!..............
                        total: 73064
         }
-}
-raw data {
-    Data: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          ...
-          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # ................
-          total: 1128
 }
 segment {
     Type:     PT_LOAD
@@ -406,7 +376,4 @@ section 23 ".comment" {
                total: 76
 }
 string table section 24 ".shstrtab"
-raw data {
-    Data: 00 00 00 00 00 00 00                            # .......
-}
 section table
