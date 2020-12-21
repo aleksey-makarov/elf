@@ -686,21 +686,11 @@ serializeElf' elfs = do
         dataIsEmpty (ElfSectionData bs)       = BSL.null bs
         dataIsEmpty ElfSectionDataStringTable = BSL.null stringTable
 
-        emptyElf :: Elf a -> Bool
-        emptyElf ElfSection{..} = esType == SHT_NOBITS || dataIsEmpty esData
-        emptyElf ElfSegment{..} = L.all emptyElf epData
-        emptyElf _ = False
-
-        lastElfIsEmpty :: [Elf a] -> Bool
-        lastElfIsEmpty [] = True
-        lastElfIsEmpty l = emptyElf $ L.last l
-
-        add1 :: WBuilderState a -> WBuilderState a
-        add1 WBuilderState{..} = WBuilderState
-            { wbsDataReversed = (WBuilderDataByteStream $ BSL.singleton 0) : wbsDataReversed
-            , wbsOffset = wbsOffset + 1
-            , ..
-            }
+        lastSectionIsEmpty :: [Elf a] -> Bool
+        lastSectionIsEmpty [] = False
+        lastSectionIsEmpty l = case L.last l of
+            ElfSection{..} -> esType == SHT_NOBITS || dataIsEmpty esData
+            _ -> False
 
         elf2WBuilder' :: MonadThrow n => Elf a -> WBuilderState a -> n (WBuilderState a)
         elf2WBuilder' ElfHeader{} WBuilderState{..} =
@@ -758,23 +748,27 @@ serializeElf' elfs = do
             s' <- align (wxxToIntegral epVirtAddr) (wxxToIntegral epAlign) s
             let
                 offset = wbsOffset s'
-            s'' <- execStateT (mapM elf2WBuilder epData) s'
+            WBuilderState{..} <- execStateT (mapM elf2WBuilder epData) s'
             let
-                -- allocate one more byte in the end of segment if there exists an empty section/segment
+                -- allocate one more byte in the end of segment if there exists an empty section
                 -- at the end so that that empty section will go to the current segment
-                WBuilderState{..} = if lastElfIsEmpty epData && offset /= 0
-                    then add1 s''
-                    else s''
+                add1 = lastSectionIsEmpty epData && offset /= wbsOffset
                 pType = epType
                 pFlags = epFlags
                 pOffset = wxxFromIntegral offset
                 pVirtAddr = epVirtAddr
                 pPhysAddr = epPhysAddr
-                pFileSize = wxxFromIntegral $ wbsOffset - offset
+                pFileSize = wxxFromIntegral $ wbsOffset - offset + if add1 then 1 else 0
                 pMemSize = epMemSize
                 pAlign = epAlign
             return WBuilderState
                 { wbsSegmentsReversed = SegmentXX{..} : wbsSegmentsReversed
+                , wbsDataReversed = if add1
+                    then (WBuilderDataByteStream $ BSL.singleton 0) : wbsDataReversed
+                    else wbsDataReversed
+                , wbsOffset = if add1
+                    then wbsOffset + 1
+                    else wbsOffset
                 , ..
                 }
         elf2WBuilder' ElfRawData{..} WBuilderState{..} =
