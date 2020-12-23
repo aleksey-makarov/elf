@@ -39,7 +39,7 @@ import Test.Tasty.Golden
 import Test.Tasty.HUnit
 
 import Data.Elf
-import Data.Elf.Doc
+import Data.Elf.PrettyPrint
 import Data.Elf.Exception
 import Data.Elf.Headers
 

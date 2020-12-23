@@ -41,7 +41,7 @@ library:
   exposed-modules:
     - Data.Elf
     - Data.Elf.Headers
-    - Data.Elf.Doc
+    - Data.Elf.PrettyPrint
     - Data.Elf.Exception
 
 tests:

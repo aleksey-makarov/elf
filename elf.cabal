@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b611bf15e2e80e8f1da16a266e5c45b0f985c3507a16643d4bb6857e2b12ca99
+-- hash: a49a9f0a260b012b3d01881d613eca62a33f055bb8e8bbbac1aceaa4796df843
 
 name:           elf
 version:        0.31
@@ -29,7 +29,7 @@ library
   exposed-modules:
       Data.Elf
       Data.Elf.Headers
-      Data.Elf.Doc
+      Data.Elf.PrettyPrint
       Data.Elf.Exception
   other-modules:
       Data.Elf.TH

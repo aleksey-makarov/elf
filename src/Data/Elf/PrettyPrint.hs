@@ -10,7 +10,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Data.Elf.Doc
+module Data.Elf.PrettyPrint
     ( formatPairs
     , formatList
     , formatPairsBlock
