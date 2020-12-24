@@ -81,10 +81,12 @@ import Data.Bits
 import Data.ByteString       as BS
 import Data.ByteString.Lazy  as BSL
 -- import Data.ByteString.Char8 as BSC
+import Data.Data (Data)
 -- import Data.Kind
 import qualified Data.List as L
 import Data.Singletons.Sigma
 import Data.Singletons.TH
+import Data.Typeable (Typeable)
 -- import Numeric.Interval as I
 -- import Numeric.Interval.NonEmpty as INE
 
@@ -191,61 +193,31 @@ instance Binary a => Binary (BList a) where
 -- WXX
 --------------------------------------------------------------------------
 
-class (
-       -- Typeable c,
-       -- Typeable (Addr c), Data (Addr c),
-       -- Typeable (Off c), Data (Off c),
-       -- Typeable (UnSymIx c), Data (UnSymIx c),
-       -- Typeable (UnRelType c), Data (UnRelType c),
-       Show (Addr c), Read (Addr c),
-       Show (Off c), Read (Off c),
-       -- Show (UnSymIx c), Read (UnSymIx c),
-       -- Show (UnRelType c), Read (UnRelType c),
-       Eq (Addr c), Ord (Addr c), Bounded (Addr c), Enum (Addr c),
-       Num (Addr c), Integral (Addr c), Real (Addr c),
-       Bits (Addr c), FiniteBits (Addr c),
-       Eq (Off c), Ord (Off c), Bounded (Off c), Enum (Off c),
-       Num (Off c), Integral (Off c), Real (Off c),
-       Bits (Off c), FiniteBits (Off c)
-       -- Eq (UnSymIx c), Ord (UnSymIx c), Bounded (UnSymIx c), Enum (UnSymIx c),
-       -- Ix (UnSymIx c), Num (UnSymIx c), Integral (UnSymIx c),
-       -- Real (UnSymIx c), Bits (UnSymIx c), FiniteBits (UnSymIx c),
-       -- Eq (UnRelType c), Ord (UnRelType c), Bounded (UnRelType c),
-       -- Enum (UnRelType c), Ix (UnRelType c)
-       ) => IsElfClass (c :: ElfClass) where
-    type Addr c
-    type Off c
-    -- type UnSymIx c
-    -- type UnRelType c
-    -- elfClass :: Proxy c -> ElfClass
-
--- -- | 32-bit ELF class type-level index.
--- data Elf32 = Elf32 deriving (Typeable, Data)
-
--- | 'Elf32' proxy value.
--- anElf32 :: Proxy Elf32
--- anElf32 = Proxy
+-- FIXME: StandaloneKindSignatures
+class ( Typeable c
+      , Typeable (WordXX c)
+      , Data (WordXX c)
+      , Show (WordXX c)
+      , Read (WordXX c)
+      , Eq (WordXX c)
+      , Ord (WordXX c)
+      , Bounded (WordXX c)
+      , Enum (WordXX c)
+      , Num (WordXX c)
+      , Integral (WordXX c)
+      , Real (WordXX c)
+      , Bits (WordXX c)
+      , FiniteBits (WordXX c)
+      , Binary (Be (WordXX c))
+      , Binary (Le (WordXX c))
+      ) => IsElfClass (c :: ElfClass) where
+    type WordXX c
 
 instance IsElfClass 'ELFCLASS32 where
-  type Addr 'ELFCLASS32 = Word32
-  type Off  'ELFCLASS32 = Word32
-  -- type UnSymIx Elf32 = Word24
-  -- type UnRelType Elf32 = Word8
-  -- fileClass _ = elf32FileClass
-
--- -- | 64-bit ELF class type-level index.
--- data Elf64 = Elf64 deriving (Typeable, Data)
-
--- -- | 'Elf64' proxy value.
--- anElf64 :: Proxy Elf64
--- anElf64 = Proxy
+  type WordXX 'ELFCLASS32 = Word32
 
 instance IsElfClass 'ELFCLASS64 where
-  type Addr 'ELFCLASS64 = Word64
-  type Off  'ELFCLASS64 = Word64
-  -- type UnSymIx Elf64 = Word32
-  -- type UnRelType Elf64 = Word32
-  -- fileClass _ = elf64FileClass
+  type WordXX 'ELFCLASS64 = Word64
 
 type family WXX (a :: ElfClass) = r | r -> a where
 -- type family WXX (a :: ElfClass) where
@@ -325,6 +297,7 @@ wordAlign :: Num a => ElfClass -> a
 wordAlign ELFCLASS64 = 8
 wordAlign ELFCLASS32 = 4
 
+-- getHeader' :: forall c . IsElfClass c => Sing c -> ElfData -> Get Header
 getHeader' :: forall (c :: ElfClass) . Sing c -> ElfData -> Get Header
 getHeader' classS hData = do
 
