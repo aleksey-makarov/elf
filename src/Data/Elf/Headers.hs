@@ -575,6 +575,7 @@ elfDecodeAllOrFail bs = do
     (off, a) <- elfDecodeOrFail' bs
     if off == (BSL.length bs) then return a else $elfError $ "leftover != 0 @" ++ show off
 
+-- FIXME: these should be instance Binary (Le a) => Binary (Le (Blist a))
 parseListA :: (MonadThrow m, Binary (Le a), Binary (Be a)) => ElfData -> BSL.ByteString -> m [a]
 parseListA d bs = case d of
     ELFDATA2LSB -> fmap fromLe <$> fromBList <$> elfDecodeAllOrFail bs
