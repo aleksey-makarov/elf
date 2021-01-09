@@ -68,12 +68,12 @@ printWord32 n = pretty $ padLeadingZeros 8 $ showHex n ""
 printWord64 :: Word64 -> Doc ()
 printWord64 n = pretty $ padLeadingZeros 16 $ showHex n ""
 
-printWXXS :: Sing a -> WXX a -> Doc ()
-printWXXS SELFCLASS32 = printWord32
-printWXXS SELFCLASS64 = printWord64
+printWordXXS :: Sing a -> WordXX a -> Doc ()
+printWordXXS SELFCLASS32 = printWord32
+printWordXXS SELFCLASS64 = printWord64
 
-printWXX :: SingI a => WXX a -> Doc ()
-printWXX = withSing printWXXS
+printWordXX :: SingI a => WordXX a -> Doc ()
+printWordXX = withSing printWordXXS
 
 printHeader :: forall a . SingI a => HeaderXX a -> Doc ()
 printHeader HeaderXX{..} =
@@ -84,9 +84,9 @@ printHeader HeaderXX{..} =
         , ("ABIVersion", viaShow hABIVersion     ) -- Word8
         , ("Type",       viaShow hType           ) -- ElfType
         , ("Machine",    viaShow hMachine        ) -- ElfMachine
-        , ("Entry",      printWXX hEntry         ) -- WXX c
-        , ("PhOff",      printWXX hPhOff         ) -- WXX c
-        , ("ShOff",      printWXX hShOff         ) -- WXX c
+        , ("Entry",      printWordXX hEntry      ) -- WordXX c
+        , ("PhOff",      printWordXX hPhOff      ) -- WordXX c
+        , ("ShOff",      printWordXX hShOff      ) -- WordXX c
         , ("Flags",      printWord32 hFlags      ) -- Word32
         , ("PhEntSize",  printWord16 hPhEntSize  ) -- Word16
         , ("PhNum",      viaShow hPhNum          ) -- Word16
@@ -98,31 +98,31 @@ printHeader HeaderXX{..} =
 printSection :: SingI a => (Int, SectionXX a) -> Doc ()
 printSection (n, SectionXX{..}) =
     formatPairs $
-        [ ("N",         viaShow n           )
-        , ("Name",      viaShow sName       ) -- Word32
-        , ("Type",      viaShow sType       ) -- ElfSectionType
-        , ("Flags",     printWXX sFlags     ) -- WXX c
-        , ("Addr",      printWXX sAddr      ) -- WXX c
-        , ("Offset",    printWXX sOffset    ) -- WXX c
-        , ("Size",      printWXX sSize      ) -- WXX c
-        , ("Link",      viaShow sLink       ) -- Word32
-        , ("Info",      viaShow sInfo       ) -- Word32
-        , ("AddrAlign", printWXX sAddrAlign ) -- WXX c
-        , ("EntSize",   printWXX sEntSize   ) -- WXX c
+        [ ("N",         viaShow n              )
+        , ("Name",      viaShow sName          ) -- Word32
+        , ("Type",      viaShow sType          ) -- ElfSectionType
+        , ("Flags",     printWordXX sFlags     ) -- WordXX c
+        , ("Addr",      printWordXX sAddr      ) -- WordXX c
+        , ("Offset",    printWordXX sOffset    ) -- WordXX c
+        , ("Size",      printWordXX sSize      ) -- WordXX c
+        , ("Link",      viaShow sLink          ) -- Word32
+        , ("Info",      viaShow sInfo          ) -- Word32
+        , ("AddrAlign", printWordXX sAddrAlign ) -- WordXX c
+        , ("EntSize",   printWordXX sEntSize   ) -- WordXX c
         ]
 
 printSegment :: SingI a => (Int, SegmentXX a) -> Doc ()
 printSegment (n, SegmentXX{..}) =
     formatPairs
-        [ ("N",        viaShow n          )
-        , ("Type",     viaShow pType      ) -- ElfSegmentType
-        , ("Flags",    printWord32 pFlags ) -- Word32
-        , ("Offset",   printWXX pOffset   ) -- WXX c
-        , ("VirtAddr", printWXX pVirtAddr ) -- WXX c
-        , ("PhysAddr", printWXX pPhysAddr ) -- WXX c
-        , ("FileSize", printWXX pFileSize ) -- WXX c
-        , ("MemSize",  printWXX pMemSize  ) -- WXX c
-        , ("Align",    printWXX pAlign    ) -- WXX c
+        [ ("N",        viaShow n             )
+        , ("Type",     viaShow pType         ) -- ElfSegmentType
+        , ("Flags",    printWord32 pFlags    ) -- Word32
+        , ("Offset",   printWordXX pOffset   ) -- WordXX c
+        , ("VirtAddr", printWordXX pVirtAddr ) -- WordXX c
+        , ("PhysAddr", printWordXX pPhysAddr ) -- WordXX c
+        , ("FileSize", printWordXX pFileSize ) -- WordXX c
+        , ("MemSize",  printWordXX pMemSize  ) -- WordXX c
+        , ("Align",    printWordXX pAlign    ) -- WordXX c
         ]
 
 printHeaders :: SingI a => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> Doc ()
@@ -142,7 +142,7 @@ printHeaders hdr ss ps =
 --
 --------------------------------------------------------------------
 
-printRBuilder :: SingI a => (Word32 -> String) -> [RBuilder a] -> Doc ()
+printRBuilder :: IsElfClass a => (Word32 -> String) -> [RBuilder a] -> Doc ()
 printRBuilder getStr rbs = vsep ldoc
 
     where
@@ -191,7 +191,7 @@ printRBuilder getStr rbs = vsep ldoc
                         doc = [ "S" <> viaShow rbsN
                               , dquotes $ pretty $ getStr sName
                               , viaShow sType
-                              , viaShow $ splitBits $ ElfSectionFlag $ wxxToIntegral sFlags
+                              , viaShow $ splitBits $ ElfSectionFlag $ fromIntegral sFlags
                               ]
                     in
                         if empty i
@@ -205,7 +205,7 @@ printRBuilder getStr rbs = vsep ldoc
                     let
                         doc = [ "P"
                               , viaShow pType
-                              , viaShow $ splitBits $ ElfSegmentFlag $ wxxToIntegral pFlags
+                              , viaShow $ splitBits $ ElfSegmentFlag $ fromIntegral pFlags
                               ]
                     in
                         if empty i
@@ -241,11 +241,11 @@ formatPairsBlock name pairs = vsep [ name <+> "{", indent 4 $ formatPairs pairs,
 printElfSymbolTableEntry :: SingI a => ElfSymbolTableEntry a -> Doc ()
 printElfSymbolTableEntry ElfSymbolTableEntry{..} =
     formatPairsBlock ("symbol" <+> (dquotes $ pretty steName))
-        [ ("Bind",  viaShow steBind   ) -- ElfSymbolBinding
-        , ("Type",  viaShow steType   ) -- ElfSymbolType
-        , ("ShNdx", viaShow steShNdx  ) -- ElfSectionIndex
-        , ("Value", printWXX steValue ) -- WXX c
-        , ("Size",  printWXX steSize  ) -- WXX c
+        [ ("Bind",  viaShow steBind      ) -- ElfSymbolBinding
+        , ("Type",  viaShow steType      ) -- ElfSymbolType
+        , ("ShNdx", viaShow steShNdx     ) -- ElfSectionIndex
+        , ("Value", printWordXX steValue ) -- WordXX c
+        , ("Size",  printWordXX steSize  ) -- WordXX c
         ]
 
 printElfSymbolTable :: SingI a => [ElfSymbolTableEntry a] -> Doc ()
@@ -318,7 +318,7 @@ printElf (classS :&: ElfList elfs) = withSingI classS do
                 , ("ABIVersion", viaShow ehABIVersion ) -- Word8
                 , ("Type",       viaShow ehType       ) -- ElfType
                 , ("Machine",    viaShow ehMachine    ) -- ElfMachine
-                , ("Entry",      printWXX ehEntry     ) -- WXX c
+                , ("Entry",      printWordXX ehEntry  ) -- WordXX c
                 , ("Flags",      printWord32 ehFlags  ) -- Word32
                 ]
         printElf'' s@ElfSection{ esData = (ElfSectionData bs), ..} =
@@ -327,17 +327,17 @@ printElf (classS :&: ElfList elfs) = withSingI classS do
                     stes <- parseSymbolTable hData' s elfs
                     return $ formatPairsBlock ("symbol table section" <+> (viaShow esN) <+> (dquotes $ pretty esName))
                         [ ("Type",       viaShow esType       )
-                        , ("Flags",      printWXX esFlags     )
+                        , ("Flags",      printWordXX esFlags     )
                         , ("Data",       if null stes then "" else line <> (indent 4 $ printElfSymbolTable stes) )
                         ]
                 else
                     return $ formatPairsBlock ("section" <+> (viaShow esN) <+> (dquotes $ pretty esName))
-                        [ ("Type",       viaShow esType       )
-                        , ("Flags",      printWXX esFlags     )
-                        , ("Addr",       printWXX esAddr      )
-                        , ("AddrAlign",  printWXX esAddrAlign )
-                        , ("EntSize",    printWXX esEntSize   )
-                        , ("Data",       printData bs         )
+                        [ ("Type",       viaShow esType          )
+                        , ("Flags",      printWordXX esFlags     )
+                        , ("Addr",       printWordXX esAddr      )
+                        , ("AddrAlign",  printWordXX esAddrAlign )
+                        , ("EntSize",    printWordXX esEntSize   )
+                        , ("Data",       printData bs            )
                         ]
         printElf'' ElfSection{ esData = ElfSectionDataStringTable, ..} =
             return $ "string table section" <+> (viaShow esN) <+> (dquotes $ pretty esName)
@@ -348,13 +348,13 @@ printElf (classS :&: ElfList elfs) = withSingI classS do
                     dataDoc' <- printElf' epData
                     return $ line <> (indent 4 dataDoc')
             return $ formatPairsBlock "segment"
-                [ ("Type",       viaShow epType       )
-                , ("Flags",      printWord32 epFlags  )
-                , ("VirtAddr",   printWXX epVirtAddr  )
-                , ("PhysAddr",   printWXX epPhysAddr  )
-                , ("MemSize",    printWXX epMemSize   )
-                , ("Align",      printWXX epAlign     )
-                , ("Data",       dataDoc              )
+                [ ("Type",       viaShow epType         )
+                , ("Flags",      printWord32 epFlags    )
+                , ("VirtAddr",   printWordXX epVirtAddr )
+                , ("PhysAddr",   printWordXX epPhysAddr )
+                , ("MemSize",    printWordXX epMemSize  )
+                , ("Align",      printWordXX epAlign    )
+                , ("Data",       dataDoc                )
                 ]
         printElf'' ElfSectionTable = return "section table"
         printElf'' ElfSegmentTable = return "segment table"

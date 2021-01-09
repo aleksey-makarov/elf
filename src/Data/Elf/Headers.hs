@@ -28,11 +28,8 @@ module Data.Elf.Headers
     ( ElfClass(..)
     , ElfData(..)
 
-    , WXX
-    , wxxFromIntegralS
-    , wxxFromIntegral
-    , wxxToIntegralS
-    , wxxToIntegral
+    , IsElfClass(..)
+    , withElfClass
 
     , headerSize
     -- FIXME: should be section table entry size
@@ -82,6 +79,7 @@ import Data.ByteString       as BS
 import Data.ByteString.Lazy  as BSL
 -- import Data.ByteString.Char8 as BSC
 import Data.Data (Data)
+import Data.Kind
 -- import Data.Kind
 import qualified Data.List as L
 import Data.Singletons.Sigma
@@ -127,14 +125,6 @@ instance Binary ElfData where
 
 elfSupportedVersion :: Word8
 elfSupportedVersion = 1
-
--- fromWordXX :: WordXX a -> Word64
--- fromWordXX (W32 w) = fromIntegral w
--- fromWordXX (W64 w) = w
---
--- getWordXX :: Sing a -> ElfData -> Get (WordXX a)
--- getWordXX SELFCLASS32 d = W32 <$> getEndian d
--- getWordXX SELFCLASS64 d = W64 <$> getEndian d
 
 -- at :: (Integral i) => [a] -> i -> Maybe a
 -- at (x : _)  0             = Just x
@@ -190,11 +180,12 @@ instance Binary a => Binary (BList a) where
             return $ BList $ a : as
 
 --------------------------------------------------------------------------
--- WXX
+-- WordXX
 --------------------------------------------------------------------------
 
--- FIXME: StandaloneKindSignatures
-class ( Typeable c
+type IsElfClass :: ElfClass -> Constraint
+class ( SingI c
+      , Typeable c
       , Typeable (WordXX c)
       , Data (WordXX c)
       , Show (WordXX c)
@@ -210,63 +201,30 @@ class ( Typeable c
       , FiniteBits (WordXX c)
       , Binary (Be (WordXX c))
       , Binary (Le (WordXX c))
-      ) => IsElfClass (c :: ElfClass) where
-    type WordXX c
+      ) => IsElfClass c where
+    type WordXX c = r | r -> c
 
 instance IsElfClass 'ELFCLASS32 where
-  type WordXX 'ELFCLASS32 = Word32
+    type WordXX 'ELFCLASS32 = Word32
 
 instance IsElfClass 'ELFCLASS64 where
-  type WordXX 'ELFCLASS64 = Word64
-
-type family WXX (a :: ElfClass) = r | r -> a where
--- type family WXX (a :: ElfClass) where
-    WXX 'ELFCLASS64 = Word64
-    WXX 'ELFCLASS32 = Word32
-
--- Can not define
--- instance forall (a :: ElfClass) . SingI a => Binary (Le (WXX a)) where
--- because WXX is a type family
-getWXX :: forall (a :: ElfClass) . Sing a -> ElfData -> Get (WXX a)
-getWXX SELFCLASS64 ELFDATA2LSB = getWord64le
-getWXX SELFCLASS64 ELFDATA2MSB = getWord64be
-getWXX SELFCLASS32 ELFDATA2LSB = getWord32le
-getWXX SELFCLASS32 ELFDATA2MSB = getWord32be
-
-putWXX :: forall (a :: ElfClass) . Sing a -> ElfData -> WXX a -> Put
-putWXX SELFCLASS64 ELFDATA2LSB = putWord64le
-putWXX SELFCLASS64 ELFDATA2MSB = putWord64be
-putWXX SELFCLASS32 ELFDATA2LSB = putWord32le
-putWXX SELFCLASS32 ELFDATA2MSB = putWord32be
-
-wxxFromIntegralS :: Integral i => Sing a -> i -> WXX a
-wxxFromIntegralS SELFCLASS64 = fromIntegral
-wxxFromIntegralS SELFCLASS32 = fromIntegral
-
-wxxFromIntegral :: (SingI a, Integral i) => i -> WXX a
-wxxFromIntegral = wxxFromIntegralS sing
-
-wxxToIntegralS :: Integral i => Sing a -> WXX a -> i
-wxxToIntegralS SELFCLASS64 = fromIntegral
-wxxToIntegralS SELFCLASS32 = fromIntegral
-
-wxxToIntegral :: (SingI a, Integral i) => WXX a -> i
-wxxToIntegral = wxxToIntegralS sing
+    type WordXX 'ELFCLASS64 = Word64
 
 --------------------------------------------------------------------------
 -- Header
 --------------------------------------------------------------------------
 
-data HeaderXX (c :: ElfClass) =
+type HeaderXX :: ElfClass -> Type
+data HeaderXX c =
     HeaderXX
         { hData       :: ElfData
         , hOSABI      :: ElfOSABI
         , hABIVersion :: Word8
         , hType       :: ElfType
         , hMachine    :: ElfMachine
-        , hEntry      :: WXX c
-        , hPhOff      :: WXX c
-        , hShOff      :: WXX c
+        , hEntry      :: WordXX c
+        , hPhOff      :: WordXX c
+        , hShOff      :: WordXX c
         , hFlags      :: Word32
         , hPhEntSize  :: Word16
         , hPhNum      :: Word16
@@ -297,15 +255,18 @@ wordAlign :: Num a => ElfClass -> a
 wordAlign ELFCLASS64 = 8
 wordAlign ELFCLASS32 = 4
 
--- getHeader' :: forall c . IsElfClass c => Sing c -> ElfData -> Get Header
-getHeader' :: forall (c :: ElfClass) . Sing c -> ElfData -> Get Header
-getHeader' classS hData = do
+withElfClass :: Sing c -> (IsElfClass c => a) -> a
+withElfClass SELFCLASS64 x = x
+withElfClass SELFCLASS32 x = x
+
+getHeader' :: IsElfClass c => Sing c -> Get Header
+getHeader' classS = do
+
+    hData <- get
 
     let
         getE :: (Binary (Le b), Binary (Be b)) => Get b
         getE = getEndian hData
-
-        getWXXE = getWXX classS hData
 
     verify "version1" elfSupportedVersion
     hOSABI <- get
@@ -317,9 +278,9 @@ getHeader' classS hData = do
     (hVersion2 :: Word32) <- getE
     when (hVersion2 /= 1) $ error "verification failed: version2"
 
-    hEntry <- getWXXE
-    hPhOff <- getWXXE
-    hShOff <- getWXXE
+    hEntry <- getE
+    hPhOff <- getE
+    hShOff <- getE
 
     hFlags <- getE
     (hSize :: Word16) <- getE
@@ -336,17 +297,18 @@ getHeader :: Get Header
 getHeader = do
     verify "magic" elfMagic
     hClass <- get
-    hData <- get
-    withSomeSing hClass $ flip getHeader' $ hData
+    let
+        f2 :: forall (c :: ElfClass) . Sing c -> Get Header
+        f2 x = withElfClass x (getHeader' x)
+
+    withSomeSing hClass f2
 
 putHeader :: Header -> Put
-putHeader (classS :&: HeaderXX{..}) = do
+putHeader (classS :&: HeaderXX{..}) = withElfClass classS do
 
     let
         putE :: (Binary (Le b), Binary (Be b)) => b -> Put
         putE = putEndian hData
-
-        putWXXE = putWXX classS hData
 
     put elfMagic
     put $ fromSing classS
@@ -360,9 +322,9 @@ putHeader (classS :&: HeaderXX{..}) = do
     putE hType
     putE hMachine
     putE (1 :: Word32)
-    putWXXE hEntry
-    putWXXE hPhOff
-    putWXXE hShOff
+    putE hEntry
+    putE hPhOff
+    putE hShOff
     putE hFlags
     putE (headerSize $ fromSing classS :: Word16)
     putE hPhEntSize
@@ -383,65 +345,61 @@ data SectionXX (c :: ElfClass) =
     SectionXX
         { sName      :: Word32
         , sType      :: ElfSectionType
-        , sFlags     :: WXX c
-        , sAddr      :: WXX c
-        , sOffset    :: WXX c
-        , sSize      :: WXX c
+        , sFlags     :: WordXX c
+        , sAddr      :: WordXX c
+        , sOffset    :: WordXX c
+        , sSize      :: WordXX c
         , sLink      :: Word32
         , sInfo      :: Word32
-        , sAddrAlign :: WXX c
-        , sEntSize   :: WXX c
+        , sAddrAlign :: WordXX c
+        , sEntSize   :: WordXX c
         }
 
-getSection :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (SectionXX c)
-getSection classS hData = do
+getSection :: IsElfClass c => ElfData -> Get (SectionXX c)
+getSection hData = do
 
     let
         getE :: (Binary (Le b), Binary (Be b)) => Get b
         getE = getEndian hData
 
-        getWXXE = getWXX classS hData
-
-    sName <- getE
-    sType <- getE
-    sFlags <- getWXXE
-    sAddr <- getWXXE
-    sOffset <- getWXXE
-    sSize <- getWXXE
-    sLink <- getE
-    sInfo <- getE
-    sAddrAlign <- getWXXE
-    sEntSize <- getWXXE
+    sName      <- getE
+    sType      <- getE
+    sFlags     <- getE
+    sAddr      <- getE
+    sOffset    <- getE
+    sSize      <- getE
+    sLink      <- getE
+    sInfo      <- getE
+    sAddrAlign <- getE
+    sEntSize   <- getE
 
     return SectionXX {..}
 
-putSection :: forall (c :: ElfClass) . Sing c -> ElfData -> SectionXX c -> Put
-putSection  classS hData (SectionXX{..}) = do
+putSection :: IsElfClass c => ElfData -> SectionXX c -> Put
+putSection hData (SectionXX{..}) = do
 
     let
         putE :: (Binary (Le b), Binary (Be b)) => b -> Put
         putE = putEndian hData
 
-        putWXXE = putWXX classS hData
-
     putE sName
     putE sType
-    putWXXE sFlags
-    putWXXE sAddr
-    putWXXE sOffset
-    putWXXE sSize
+    putE sFlags
+    putE sAddr
+    putE sOffset
+    putE sSize
     putE sLink
     putE sInfo
-    putWXXE sAddrAlign
-    putWXXE sEntSize
+    putE sAddrAlign
+    putE sEntSize
 
 instance forall (a :: ElfClass) . SingI a => Binary (Be (SectionXX a)) where
-    put = putSection sing ELFDATA2MSB . fromBe
-    get = Be <$> getSection sing ELFDATA2MSB
+    put = (withElfClass (sing @ a) putSection $ ELFDATA2MSB) . fromBe
+    get = Be <$> (withElfClass (sing @ a) getSection) ELFDATA2MSB
 
 instance forall (a :: ElfClass) . SingI a => Binary (Le (SectionXX a)) where
-    put = putSection sing ELFDATA2LSB . fromLe
-    get = Le <$> getSection sing ELFDATA2LSB
+    put = (withElfClass (sing @ a) putSection $ ELFDATA2LSB) . fromLe
+    get = Le <$> (withElfClass (sing @ a) getSection) ELFDATA2LSB
 
 --------------------------------------------------------------------------
 -- Segment
@@ -451,12 +409,12 @@ data SegmentXX (c :: ElfClass) =
     SegmentXX
         { pType     :: ElfSegmentType
         , pFlags    :: Word32
-        , pOffset   :: WXX c
-        , pVirtAddr :: WXX c
-        , pPhysAddr :: WXX c
-        , pFileSize :: WXX c
-        , pMemSize  :: WXX c
-        , pAlign    :: WXX c
+        , pOffset   :: WordXX c
+        , pVirtAddr :: WordXX c
+        , pPhysAddr :: WordXX c
+        , pFileSize :: WordXX c
+        , pMemSize  :: WordXX c
+        , pAlign    :: WordXX c
         }
 
 getSegment :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (SegmentXX c)
@@ -466,16 +424,14 @@ getSegment SELFCLASS64 hData = do
         getE :: (Binary (Le b), Binary (Be b)) => Get b
         getE = getEndian hData
 
-        getWXXE = getWXX SELFCLASS64 hData
-
-    pType <- getE
-    pFlags <- getE
-    pOffset <- getWXXE
-    pVirtAddr <- getWXXE
-    pPhysAddr <- getWXXE
-    pFileSize <- getWXXE
-    pMemSize <- getWXXE
-    pAlign <- getWXXE
+    pType     <- getE
+    pFlags    <- getE
+    pOffset   <- getE
+    pVirtAddr <- getE
+    pPhysAddr <- getE
+    pFileSize <- getE
+    pMemSize  <- getE
+    pAlign    <- getE
 
     return SegmentXX{..}
 
@@ -485,16 +441,14 @@ getSegment SELFCLASS32 hData = do
         getE :: (Binary (Le b), Binary (Be b)) => Get b
         getE = getEndian hData
 
-        getWXXE = getWXX SELFCLASS32 hData
-
-    pType <- getE
-    pOffset <- getWXXE
-    pVirtAddr <- getWXXE
-    pPhysAddr <- getWXXE
-    pFileSize <- getWXXE
-    pMemSize <- getWXXE
-    pFlags <- getE
-    pAlign <- getWXXE
+    pType     <- getE
+    pOffset   <- getE
+    pVirtAddr <- getE
+    pPhysAddr <- getE
+    pFileSize <- getE
+    pMemSize  <- getE
+    pFlags    <- getE
+    pAlign    <- getE
 
     return SegmentXX{..}
 
@@ -504,32 +458,28 @@ putSegment SELFCLASS64 hData (SegmentXX{..}) = do
         putE :: (Binary (Le b), Binary (Be b)) => b -> Put
         putE = putEndian hData
 
-        putWXXE = putWXX SELFCLASS64 hData
-
     putE pType
     putE pFlags
-    putWXXE pOffset
-    putWXXE pVirtAddr
-    putWXXE pPhysAddr
-    putWXXE pFileSize
-    putWXXE pMemSize
-    putWXXE pAlign
+    putE pOffset
+    putE pVirtAddr
+    putE pPhysAddr
+    putE pFileSize
+    putE pMemSize
+    putE pAlign
 
 putSegment SELFCLASS32 hData (SegmentXX{..}) = do
     let
         putE :: (Binary (Le b), Binary (Be b)) => b -> Put
         putE = putEndian hData
 
-        putWXXE = putWXX SELFCLASS32 hData
-
     putE pType
-    putWXXE pOffset
-    putWXXE pVirtAddr
-    putWXXE pPhysAddr
-    putWXXE pFileSize
-    putWXXE pMemSize
+    putE pOffset
+    putE pVirtAddr
+    putE pPhysAddr
+    putE pFileSize
+    putE pMemSize
     putE pFlags
-    putWXXE pAlign
+    putE pAlign
 
 
 instance forall (a :: ElfClass) . SingI a => Binary (Be (SegmentXX a)) where
@@ -540,12 +490,12 @@ instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
     put = putSegment sing ELFDATA2LSB . fromLe
     get = Le <$> getSegment sing ELFDATA2LSB
 
-sectionIsSymbolTable :: ElfSectionType -> Bool
-sectionIsSymbolTable sType  = sType `L.elem` [SHT_SYMTAB, SHT_DYNSYM]
-
 --------------------------------------------------------------------------
 -- symbol table entry
 --------------------------------------------------------------------------
+
+sectionIsSymbolTable :: ElfSectionType -> Bool
+sectionIsSymbolTable sType  = sType `L.elem` [SHT_SYMTAB, SHT_DYNSYM]
 
 data SymbolTableEntryXX (c :: ElfClass) =
     SymbolTableEntryXX
@@ -553,8 +503,8 @@ data SymbolTableEntryXX (c :: ElfClass) =
         , stInfo  :: Word8
         , stOther :: Word8
         , stShNdx :: ElfSectionIndex
-        , stValue :: WXX c
-        , stSize  :: WXX c
+        , stValue :: WordXX c
+        , stSize  :: WordXX c
         }
 
 getSymbolTableEntry :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (SymbolTableEntryXX c)
@@ -564,14 +514,12 @@ getSymbolTableEntry SELFCLASS64 hData = do
         getE :: (Binary (Le b), Binary (Be b)) => Get b
         getE = getEndian hData
 
-        getWXXE = getWXX SELFCLASS64 hData
-
     stName  <- getE
     stInfo  <- get
     stOther <- get
     stShNdx <- getE
-    stValue <- getWXXE
-    stSize  <- getWXXE
+    stValue <- getE
+    stSize  <- getE
 
     return SymbolTableEntryXX{..}
 
@@ -581,11 +529,9 @@ getSymbolTableEntry SELFCLASS32 hData = do
         getE :: (Binary (Le b), Binary (Be b)) => Get b
         getE = getEndian hData
 
-        getWXXE = getWXX SELFCLASS32 hData
-
     stName  <- getE
-    stValue <- getWXXE
-    stSize  <- getWXXE
+    stValue <- getE
+    stSize  <- getE
     stInfo  <- get
     stOther <- get
     stShNdx <- getE
@@ -598,27 +544,23 @@ putSymbolTableEntry SELFCLASS64 hData (SymbolTableEntryXX{..}) = do
         putE :: (Binary (Le b), Binary (Be b)) => b -> Put
         putE = putEndian hData
 
-        putWXXE = putWXX SELFCLASS64 hData
-
     putE stName
-    put stInfo
-    put stOther
+    put  stInfo
+    put  stOther
     putE stShNdx
-    putWXXE stValue
-    putWXXE stSize
+    putE stValue
+    putE stSize
 
 putSymbolTableEntry SELFCLASS32 hData (SymbolTableEntryXX{..}) = do
     let
         putE :: (Binary (Le b), Binary (Be b)) => b -> Put
         putE = putEndian hData
 
-        putWXXE = putWXX SELFCLASS32 hData
-
     putE stName
-    putWXXE stValue
-    putWXXE stSize
-    put stInfo
-    put stOther
+    putE stValue
+    putE stSize
+    put  stInfo
+    put  stOther
     putE stShNdx
 
 instance forall (a :: ElfClass) . SingI a => Binary (Be (SymbolTableEntryXX a)) where
@@ -660,12 +602,12 @@ serializeListA d as = case d of
     ELFDATA2LSB -> encode $ BList $ fmap Le $ as
     ELFDATA2MSB -> encode $ BList $ fmap Be $ as
 
-parseHeaders' :: (SingI a, MonadThrow m) => HeaderXX a -> BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
+parseHeaders' :: (IsElfClass a, MonadThrow m) => HeaderXX a -> BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
 parseHeaders' hxx@HeaderXX{..} bs =
     let
-        takeLen off len = BSL.take len $ BSL.drop off bs
-        bsSections = takeLen (wxxToIntegral hShOff) (fromIntegral hShEntSize * fromIntegral hShNum)
-        bsSegments = takeLen (wxxToIntegral hPhOff) (fromIntegral hPhEntSize * fromIntegral hPhNum)
+        takeLen off len = BSL.take (fromIntegral len) $ BSL.drop (fromIntegral off) bs
+        bsSections = takeLen hShOff (hShEntSize * hShNum)
+        bsSegments = takeLen hPhOff (hPhEntSize * hPhNum)
     in do
         ss <- parseListA hData bsSections
         ps <- parseListA hData bsSegments
@@ -674,4 +616,4 @@ parseHeaders' hxx@HeaderXX{..} bs =
 parseHeaders :: MonadThrow m => BSL.ByteString -> m (Sigma ElfClass (TyCon1 HeadersXX))
 parseHeaders bs = do
     ((classS :&: hxx) :: Header) <- elfDecodeOrFail bs
-    withSingI classS $ parseHeaders' hxx bs
+    (withElfClass classS parseHeaders') hxx bs

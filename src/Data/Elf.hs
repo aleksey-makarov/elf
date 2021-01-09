@@ -68,34 +68,20 @@ import Data.Singletons
 import Data.Singletons.Sigma
 -- import Data.Word
 
-headerInterval :: forall a . SingI a => HeaderXX a -> Interval Word64
+headerInterval :: forall a . IsElfClass a => HeaderXX a -> Interval (WordXX a)
 headerInterval _ = I 0 $ headerSize $ fromSing $ sing @a
 
-sectionTableInterval :: SingI a => HeaderXX a -> Interval Word64
-sectionTableInterval HeaderXX{..} = I o (s * n)
-    where
-        o = wxxToIntegral hShOff
-        s = fromIntegral  hShEntSize
-        n = fromIntegral  hShNum
+sectionTableInterval :: IsElfClass a => HeaderXX a -> Interval (WordXX a)
+sectionTableInterval HeaderXX{..} = I hShOff $ fromIntegral $ hShEntSize * hShNum
 
-segmentTableInterval :: SingI a => HeaderXX a -> Interval Word64
-segmentTableInterval HeaderXX{..} = I o (s * n)
-    where
-        o = wxxToIntegral hPhOff
-        s = fromIntegral  hPhEntSize
-        n = fromIntegral  hPhNum
+segmentTableInterval :: IsElfClass a => HeaderXX a -> Interval (WordXX a)
+segmentTableInterval HeaderXX{..} = I hPhOff $ fromIntegral $ hPhEntSize * hPhNum
 
-sectionInterval :: SingI a => SectionXX a -> Interval Word64
-sectionInterval SectionXX{..} = I o s
-    where
-        o = wxxToIntegral sOffset
-        s = if (sType == SHT_NOBITS) then 0 else wxxToIntegral sSize
+sectionInterval :: IsElfClass a => SectionXX a -> Interval (WordXX a)
+sectionInterval SectionXX{..} = I sOffset if (sType == SHT_NOBITS) then 0 else sSize
 
-segmentInterval :: SingI a => SegmentXX a -> Interval Word64
-segmentInterval SegmentXX{..} = I o s
-    where
-        o = wxxToIntegral pOffset
-        s = wxxToIntegral pFileSize
+segmentInterval :: IsElfClass a => SegmentXX a -> Interval (WordXX a)
+segmentInterval SegmentXX{..} = I pOffset pFileSize
 
 data RBuilder (c :: ElfClass)
     = RBuilderHeader
@@ -117,10 +103,10 @@ data RBuilder (c :: ElfClass)
         , rbpData   :: [RBuilder c]
         }
     | RBuilderRawData
-        { rbrdInterval :: Interval Word64
+        { rbrdInterval :: Interval (WordXX c)
         }
 
-rBuilderInterval :: SingI a => RBuilder a -> Interval Word64
+rBuilderInterval :: IsElfClass a => RBuilder a -> Interval (WordXX a)
 rBuilderInterval RBuilderHeader{..}       = headerInterval rbhHeader
 rBuilderInterval RBuilderSectionTable{..} = sectionTableInterval rbstHeader
 rBuilderInterval RBuilderSegmentTable{..} = segmentTableInterval rbptHeader
@@ -150,26 +136,26 @@ showRBuilber' RBuilderSection{..}    = "section " ++ show rbsN
 showRBuilber' RBuilderSegment{..}    = "segment " ++ show rbpN
 showRBuilber' RBuilderRawData{}      = "raw data" -- should not be called
 
-showRBuilber :: SingI a => RBuilder a -> String
+showRBuilber :: IsElfClass a => RBuilder a -> String
 showRBuilber v = showRBuilber' v ++ " (" ++ (show $ rBuilderInterval v) ++ ")"
 
 -- showERBList :: [ElfRBuilder a] -> String
 -- showERBList l = "[" ++ (L.concat $ L.intersperse ", " $ fmap showElfRBuilber l) ++ "]"
 
-intersectMessage :: SingI a => RBuilder a -> RBuilder a -> String
+intersectMessage :: IsElfClass a => RBuilder a -> RBuilder a -> String
 intersectMessage x y = showRBuilber x ++ " and " ++ showRBuilber y ++ " intersect"
 
-addRBuildersToList :: (SingI a, MonadCatch m) => [RBuilder a] -> [RBuilder a] -> m [RBuilder a]
+addRBuildersToList :: (IsElfClass a, MonadCatch m) => [RBuilder a] -> [RBuilder a] -> m [RBuilder a]
 addRBuildersToList newts l = foldM (flip addRBuilder) l newts
 
-addRBuilders :: (SingI a, MonadCatch m) => [RBuilder a] -> RBuilder a -> m (RBuilder a)
+addRBuilders :: (IsElfClass a, MonadCatch m) => [RBuilder a] -> RBuilder a -> m (RBuilder a)
 addRBuilders [] x = return x
 addRBuilders ts RBuilderSegment{..} = do
     d <- addRBuildersToList ts rbpData
     return RBuilderSegment{ rbpData = d, .. }
 addRBuilders (x:_) y = $elfError $ intersectMessage x y
 
-addOneRBuilder :: (SingI a, MonadCatch m) => RBuilder a -> RBuilder a -> m (RBuilder a)
+addOneRBuilder :: (IsElfClass a, MonadCatch m) => RBuilder a -> RBuilder a -> m (RBuilder a)
 addOneRBuilder t@RBuilderSegment{..} c | rBuilderInterval t == rBuilderInterval c = do
     d <- addRBuilder c rbpData
     return RBuilderSegment{ rbpData = d, .. }
@@ -178,7 +164,7 @@ addOneRBuilder t RBuilderSegment{..} = do
     return RBuilderSegment{ rbpData = d, .. }
 addOneRBuilder t c = $elfError $ intersectMessage t c
 
-addRBuilder :: (SingI a, MonadCatch m) => RBuilder a -> [RBuilder a] -> m [RBuilder a]
+addRBuilder :: (IsElfClass a, MonadCatch m) => RBuilder a -> [RBuilder a] -> m [RBuilder a]
 addRBuilder t ts =
     let
         ti  = rBuilderInterval t
@@ -270,7 +256,7 @@ data Elf (c :: ElfClass)
         , ehABIVersion :: Word8
         , ehType       :: ElfType
         , ehMachine    :: ElfMachine
-        , ehEntry      :: WXX c
+        , ehEntry      :: WordXX c
         , ehFlags      :: Word32
         }
     | ElfSectionTable
@@ -278,10 +264,10 @@ data Elf (c :: ElfClass)
     | ElfSection
         { esName      :: String -- NB: different
         , esType      :: ElfSectionType
-        , esFlags     :: WXX c
-        , esAddr      :: WXX c
-        , esAddrAlign :: WXX c
-        , esEntSize   :: WXX c
+        , esFlags     :: WordXX c
+        , esAddr      :: WordXX c
+        , esAddrAlign :: WordXX c
+        , esEntSize   :: WordXX c
         , esN         :: Word16
         , esLink      :: Word32
         , esData      :: ElfSectionData
@@ -289,10 +275,10 @@ data Elf (c :: ElfClass)
     | ElfSegment
         { epType     :: ElfSegmentType
         , epFlags    :: Word32
-        , epVirtAddr :: WXX c
-        , epPhysAddr :: WXX c
-        , epMemSize  :: WXX c
-        , epAlign    :: WXX c
+        , epVirtAddr :: WordXX c
+        , epPhysAddr :: WordXX c
+        , epMemSize  :: WordXX c
+        , epAlign    :: WordXX c
         , epData     :: [Elf c]
         }
     | ElfRawData
@@ -378,22 +364,22 @@ getString bs offset = BSL8.unpack $ BSL.takeWhile (/= 0) $ BSL.drop offset bs
 cut :: BSL.ByteString -> Int64 -> Int64 -> BSL.ByteString
 cut content offset size = BSL.take size $ BSL.drop offset content
 
-getSectionData :: SingI a => BSL.ByteString -> SectionXX a -> BSL.ByteString
+getSectionData :: IsElfClass a => BSL.ByteString -> SectionXX a -> BSL.ByteString
 getSectionData bs SectionXX{..} = cut bs o s
     where
-        o = wxxToIntegral sOffset
-        s = wxxToIntegral sSize
+        o = fromIntegral sOffset
+        s = fromIntegral sSize
 
 tail' :: [a] -> [a]
 tail' [] = []
 tail' (_ : xs) = xs
 
-addRawData :: forall a . SingI a => BSL.ByteString -> [RBuilder a] -> [RBuilder a]
+addRawData :: forall a . IsElfClass a => BSL.ByteString -> [RBuilder a] -> [RBuilder a]
 addRawData _ [] = []
 addRawData bs rBuilders = snd $ addRawData' (lrbie, rBuilders)
     where
 
-        allEmpty :: Word64 -> Word64 -> Bool
+        allEmpty :: WordXX a -> WordXX a -> Bool
         allEmpty b s = BSL.all (== 0) bs'
             where
                 bs' = cut bs (fromIntegral b) (fromIntegral s)
@@ -404,7 +390,7 @@ addRawData bs rBuilders = snd $ addRawData' (lrbie, rBuilders)
         lrbi@(I lrbib lrbis) = rBuilderInterval $ L.last rBuilders
         lrbie = if I.empty lrbi then lrbib else lrbib + lrbis
 
-        addRaw :: Word64 -> Word64 -> [RBuilder a] -> [RBuilder a]
+        addRaw :: WordXX a -> WordXX a -> [RBuilder a] -> [RBuilder a]
         addRaw b e rbs =
             if b < e && (not $ allEmpty b s)
                 then RBuilderRawData (I b s) : rbs
@@ -412,7 +398,7 @@ addRawData bs rBuilders = snd $ addRawData' (lrbie, rBuilders)
             where
                 s = e - b
 
-        addRawData' :: (Word64, [RBuilder a]) -> (Word64, [RBuilder a])
+        addRawData' :: (WordXX a, [RBuilder a]) -> (WordXX a, [RBuilder a])
         addRawData' (e, rbs) = L.foldr f (e, []) $ fmap fixRBuilder rbs
             where
                 f rb (e', rbs') =
@@ -432,7 +418,7 @@ addRawData bs rBuilders = snd $ addRawData' (lrbie, rBuilders)
                 (e', rbs) = addRawData' (e, rbpData)
         fixRBuilder x = x
 
-parseRBuilder :: (MonadCatch m, SingI a) => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> m [RBuilder a]
+parseRBuilder :: (IsElfClass a, MonadCatch m) => HeaderXX a -> [SectionXX a] -> [SegmentXX a] -> BSL.ByteString -> m [RBuilder a]
 parseRBuilder hdr@HeaderXX{..} ss ps bs = do
 
     let
@@ -451,7 +437,7 @@ parseRBuilder hdr@HeaderXX{..} ss ps bs = do
         maybeSectionTable = if hShNum == 0 then Nothing else  Just $ RBuilderSectionTable hdr
         maybeSegmentTable = if hPhNum == 0 then Nothing else  Just $ RBuilderSegmentTable hdr
 
-    rbs <-addRBuilder header
+    rbs <- addRBuilder header
         =<< maybe return addRBuilder maybeSectionTable
         =<< maybe return addRBuilder maybeSegmentTable
         =<< addRBuildersToList sections
@@ -459,11 +445,11 @@ parseRBuilder hdr@HeaderXX{..} ss ps bs = do
 
     return $ addRawData bs rbs
 
-parseElf' :: forall a m . (MonadCatch m, SingI a) =>
-                                       HeaderXX a ->
-                                    [SectionXX a] ->
-                                    [SegmentXX a] ->
-                                   BSL.ByteString -> m (Elf')
+parseElf' :: forall a m . (IsElfClass a, MonadCatch m) =>
+                                            HeaderXX a ->
+                                         [SectionXX a] ->
+                                         [SegmentXX a] ->
+                                        BSL.ByteString -> m (Elf')
 parseElf' hdr@HeaderXX{..} ss ps bs = do
 
     rbs <- parseRBuilder hdr ss ps bs
@@ -475,6 +461,7 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
         maybeStringData = firstJust isStringTable $ tail' $ Prelude.zip [0 .. ] ss
         stringData = maybe BSL.empty id maybeStringData
 
+        rBuilderToElf :: RBuilder a -> m (Elf a)
         rBuilderToElf RBuilderHeader{} =
             return ElfHeader
                 { ehData       = hData
@@ -527,7 +514,7 @@ parseElf' hdr@HeaderXX{..} ss ps bs = do
 parseElf :: MonadCatch m => BSL.ByteString -> m Elf'
 parseElf bs = do
     classS :&: HeadersXX (hdr, ss, ps) <- parseHeaders bs
-    withSingI classS $ parseElf' hdr ss ps bs
+    (withElfClass classS parseElf') hdr ss ps bs
 
 -------------------------------------------------------------------------------
 --
@@ -544,30 +531,27 @@ data WBuilderState (a :: ElfClass) =
         { wbsSections         :: [(Word16, SectionXX a)]
         , wbsSegmentsReversed :: [SegmentXX a]
         , wbsDataReversed     :: [WBuilderData a]
-        , wbsOffset           :: Word64 -- FIXME shold be WXX
-        , wbsPhOff            :: WXX a
-        , wbsShOff            :: WXX a
+        , wbsOffset           :: WordXX a
+        , wbsPhOff            :: WordXX a
+        , wbsShOff            :: WordXX a
         , wbsShStrNdx         :: Word16
         , wbsNameIndexes      :: [Int64]
         }
 
-wbStateInit :: forall a . SingI a => WBuilderState a
+wbStateInit :: forall a . IsElfClass a => WBuilderState a
 wbStateInit = WBuilderState
     { wbsSections         = []
     , wbsSegmentsReversed = []
     , wbsDataReversed     = []
     , wbsOffset           = 0
-    , wbsPhOff            = wxxFromIntegral (0 :: Word32)
-    , wbsShOff            = wxxFromIntegral (0 :: Word32)
+    , wbsPhOff            = 0
+    , wbsShOff            = 0
     , wbsShStrNdx         = 0
     , wbsNameIndexes      = []
     }
 
-zeroXX :: forall a . SingI a => WXX a
-zeroXX = wxxFromIntegral (0 :: Word32)
-
-zeroSection :: forall a . SingI a => SectionXX a
-zeroSection = SectionXX 0 0 zeroXX zeroXX zeroXX zeroXX 0 0 zeroXX zeroXX
+zeroSection :: forall a . IsElfClass a => SectionXX a
+zeroSection = SectionXX 0 0 0 0 0 0 0 0 0 0
 
 neighbours :: [a] -> (a -> a -> b) -> [b]
 neighbours [] _ = []
@@ -621,7 +605,7 @@ mkStringTable sectionNames = (stringTable, os)
                             else (iosff, (i', n') : insff)
 
 -- FIXME: rewrite all this using lenses
-serializeElf' :: forall a m . (SingI a, MonadThrow m) => [Elf a] -> m BSL.ByteString
+serializeElf' :: forall a m . (IsElfClass a, MonadThrow m) => [Elf a] -> m BSL.ByteString
 serializeElf' elfs = do
 
     (header', hData') <- do
@@ -660,7 +644,7 @@ serializeElf' elfs = do
                 f ElfSectionTable =  Any True
                 f _ = Any False
 
-        align :: MonadThrow n => Word64 -> Word64 -> WBuilderState a -> n (WBuilderState a)
+        align :: MonadThrow n => WordXX a -> WordXX a -> WBuilderState a -> n (WBuilderState a)
         align _ 0 x = return x
         align _ 1 x = return x
         align t m WBuilderState{..} | m .&. (m - 1) /= 0 = $elfError $ "align module is not power of two " ++ (show m)
@@ -704,7 +688,7 @@ serializeElf' elfs = do
             return WBuilderState
                 { wbsDataReversed = WBuilderDataSectionTable : wbsDataReversed
                 , wbsOffset = wbsOffset + (sectionN + 1) * sectionSize elfClass
-                , wbsShOff = wxxFromIntegral wbsOffset
+                , wbsShOff = wbsOffset
                 , ..
                 }
         elf2WBuilder' ElfSegmentTable s = do
@@ -712,13 +696,13 @@ serializeElf' elfs = do
             return WBuilderState
                 { wbsDataReversed = WBuilderDataSegmentTable : wbsDataReversed
                 , wbsOffset = wbsOffset + segmentN * segmentSize elfClass
-                , wbsPhOff = wxxFromIntegral wbsOffset
+                , wbsPhOff = wbsOffset
                 , ..
                 }
         elf2WBuilder' ElfSection{..} s = do
             WBuilderState{..} <- if esType == SHT_NOBITS
                 then return s
-                else align 0 (wxxToIntegral esAddrAlign) s
+                else align 0 esAddrAlign s
             let
                 (d, shStrNdx) = case esData of
                     ElfSectionData bs -> (bs, wbsShStrNdx)
@@ -730,8 +714,8 @@ serializeElf' elfs = do
                 sType = esType                         -- ElfSectionType
                 sFlags = esFlags                       -- WXX c
                 sAddr = esAddr                         -- WXX c
-                sOffset = wxxFromIntegral wbsOffset    -- WXX c
-                sSize = wxxFromIntegral $ BSL.length d -- WXX c
+                sOffset = wbsOffset                    -- WXX c
+                sSize = fromIntegral $ BSL.length d    -- WXX c
                 sLink = esLink                         -- Word32
                 sInfo = 0                              -- Word32 FIXME
                 sAddrAlign = esAddrAlign               -- WXX c
@@ -745,7 +729,7 @@ serializeElf' elfs = do
                 , ..
                 }
         elf2WBuilder' ElfSegment{..} s = do
-            s' <- align (wxxToIntegral epVirtAddr) (wxxToIntegral epAlign) s
+            s' <- align epVirtAddr epAlign s
             let
                 offset = wbsOffset s'
             WBuilderState{..} <- execStateT (mapM elf2WBuilder epData) s'
@@ -755,10 +739,10 @@ serializeElf' elfs = do
                 add1 = lastSectionIsEmpty epData && offset /= wbsOffset
                 pType = epType
                 pFlags = epFlags
-                pOffset = wxxFromIntegral offset
+                pOffset = offset
                 pVirtAddr = epVirtAddr
                 pPhysAddr = epPhysAddr
-                pFileSize = wxxFromIntegral $ wbsOffset - offset + if add1 then 1 else 0
+                pFileSize = wbsOffset - offset + if add1 then 1 else 0
                 pMemSize = epMemSize
                 pAlign = epAlign
             return WBuilderState
@@ -834,7 +818,7 @@ serializeElf' elfs = do
     execStateT (mapM elf2WBuilder elfs) wbStateInit{ wbsNameIndexes = nameIndexes } >>= wbState2ByteString
 
 serializeElf :: MonadThrow m => Elf' -> m BSL.ByteString
-serializeElf (classS :&: ElfList ls) = withSingI classS $ serializeElf' ls
+serializeElf (classS :&: ElfList ls) = (withElfClass classS serializeElf') ls
 
 -------------------------------------------------------------------------------
 --
@@ -848,8 +832,8 @@ data ElfSymbolTableEntry (c :: ElfClass) =
         , steBind  :: ElfSymbolBinding
         , steType  :: ElfSymbolType
         , steShNdx :: ElfSectionIndex
-        , steValue :: WXX c
-        , steSize  :: WXX c
+        , steValue :: WordXX c
+        , steSize  :: WordXX c
         }
 
 getStringFromData :: BSL.ByteString -> Word32 -> String

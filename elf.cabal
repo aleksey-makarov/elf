@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.34.3.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a49a9f0a260b012b3d01881d613eca62a33f055bb8e8bbbac1aceaa4796df843
+-- hash: d0ed27c017a7df561b7858cd924afe360bf125288397776dd401aa2cde6a2384
 
 name:           elf
 version:        0.31
@@ -18,7 +18,8 @@ maintainer:     aleksey.makarov@gmail.com
 copyright:      Erik Charlebois
 license:        BSD3
 license-file:   LICENSE
-tested-with:    GHC == 8.6.2, GHC == 8.4.4, GHC == 8.2.2, GHC == 8.0.2
+tested-with:
+    GHC == 8.6.2, GHC == 8.4.4, GHC == 8.2.2, GHC == 8.0.2
 build-type:     Simple
 
 source-repository head

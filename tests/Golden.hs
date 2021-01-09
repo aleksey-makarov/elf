@@ -7,6 +7,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module Main (main) where
@@ -75,37 +76,36 @@ decodeOrFailAssertion bs = case decodeOrFail bs of
     Left (_, off, err) -> assertFailure (err ++ " @" ++ show off)
     Right (_, off, a) -> return (off, a)
 
-mkTest'' :: forall (a :: ElfClass) . Sing a -> HeaderXX a -> ByteString -> Assertion
-mkTest'' classS HeaderXX{..} bs = do
+mkTest'' :: forall a . IsElfClass a => HeaderXX a -> ByteString -> Assertion
+mkTest'' HeaderXX{..} bs = do
 
     let
-        takeLen off len = BSL.take len $ BSL.drop off bs
-        bsSections = takeLen (wxxToIntegralS classS hShOff) (fromIntegral hShEntSize * fromIntegral hShNum)
-        bsSegments = takeLen (wxxToIntegralS classS hPhOff) (fromIntegral hPhEntSize * fromIntegral hPhNum)
+        takeLen off len = BSL.take (fromIntegral len) $ BSL.drop (fromIntegral off) bs
+        bsSections = takeLen hShOff (hShEntSize * hShNum)
+        bsSegments = takeLen hPhOff (hPhEntSize * hPhNum)
 
-    (off, s :: [SectionXX a]) <- withSingI classS $ case hData of -- FIXME: use parse/serializeListA (?)
+    (off, s :: [SectionXX a]) <- withSingI (sing @ a) $ case hData of -- FIXME: use parse/serializeListA (?)
         ELFDATA2LSB -> second (fmap fromLe . fromBList) <$> (decodeOrFailAssertion bsSections)
         ELFDATA2MSB -> second (fmap fromBe . fromBList) <$> (decodeOrFailAssertion bsSections)
 
     assertEqual "Not all section table could be parsed" (BSL.length bsSections) off
     let
-        encoded = withSingI classS $ case hData of -- FIXME: use parse/serializeListA (?)
+        encoded = case hData of -- FIXME: use parse/serializeListA (?)
             ELFDATA2LSB -> encode $ BList $ Le <$> s
             ELFDATA2MSB -> encode $ BList $ Be <$> s
     assertEqual "Section table round trip does not work" bsSections encoded
 
-    (offp, p :: [SegmentXX a]) <- withSingI classS $ case hData of  -- FIXME: use parse/serializeListA (?)
+    (offp, p :: [SegmentXX a]) <- case hData of  -- FIXME: use parse/serializeListA (?)
         ELFDATA2LSB -> second (fmap fromLe . fromBList) <$> (decodeOrFailAssertion bsSegments)
         ELFDATA2MSB -> second (fmap fromBe . fromBList) <$> (decodeOrFailAssertion bsSegments)
 
     assertEqual "Not all ssgment table could be parsed" (BSL.length bsSegments) offp
     let
-        encodedp = withSingI classS $ case hData of -- FIXME: use parse/serializeListA (?)
+        encodedp = case hData of -- FIXME: use parse/serializeListA (?)
             ELFDATA2LSB -> encode $ BList $ Le <$> p
             ELFDATA2MSB -> encode $ BList $ Be <$> p
     assertEqual "Segment table round trip does not work" bsSegments encodedp
 
-    -- assertFailure "Oh no no no"
     return ()
 
 mkTest' :: ByteString -> Assertion
@@ -114,7 +114,7 @@ mkTest' bs = do
     assertBool "Incorrect header size" ((headerSize ELFCLASS32 == off) || (headerSize ELFCLASS64 == off))
     assertEqual "Header round trip does not work" (BSL.take off bs) (encode elfh)
 
-    mkTest'' classS hxx bs
+    (withElfClass classS mkTest'') hxx bs
 
 mkTest :: FilePath -> TestTree
 mkTest p = testCase p $ withBinaryFile p ReadMode (BSL.hGetContents >=> mkTest')
@@ -164,7 +164,7 @@ findStringSection rbs = do
     findSection hShStrNdx rbs
 
 printRBuilder' :: MonadCatch m => (Sigma ElfClass (TyCon1 HeadersXX)) -> BSL.ByteString -> m (Doc ())
-printRBuilder' (classS :&: HeadersXX (hdr, ss, ps)) bs = withSingI classS do
+printRBuilder' (classS :&: HeadersXX (hdr, ss, ps)) bs = withElfClass classS do
     rbs <- parseRBuilder hdr ss ps bs
     let
         stringSectionData = getSectionData bs <$> findStringSection rbs
@@ -183,7 +183,7 @@ index' (_:xs) n | n > 0     = index' xs (n-1)
 index' _ _                  = $elfError "index': index too large."
 
 getStringTable :: MonadThrow m => (Sigma ElfClass (TyCon1 HeadersXX)) -> BSL.ByteString -> m BSL.ByteString
-getStringTable (classS :&: HeadersXX (HeaderXX{..}, ss, _)) bs = withSingI classS
+getStringTable (classS :&: HeadersXX (HeaderXX{..}, ss, _)) bs = withElfClass classS
     if hShStrNdx == 0
         then return BSL.empty
         else do
