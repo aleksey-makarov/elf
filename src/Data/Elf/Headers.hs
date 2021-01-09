@@ -144,15 +144,15 @@ verify msg orig = do
     a <- get
     when (orig /= a) $ error ("verification failed: " ++ msg)
 
-getTable :: (Binary (Le a), Binary (Be a)) => ElfData -> Word64 -> Word16 -> Word16 -> Get [a]
-getTable endianness offset entrySize entryNumber = lookAhead $ do
-    skip $ fromIntegral offset
-    getTable' entryNumber
-    where
-        getTable' 0 = return []
-        getTable' n = do
-            a <- isolate (fromIntegral entrySize) $ getEndian endianness
-            (a :) <$> getTable' (n - 1)
+-- getTable :: (Binary (Le a), Binary (Be a)) => ElfData -> Word64 -> Word16 -> Word16 -> Get [a]
+-- getTable endianness offset entrySize entryNumber = lookAhead $ do
+--     skip $ fromIntegral offset
+--     getTable' entryNumber
+--     where
+--         getTable' 0 = return []
+--         getTable' n = do
+--             a <- isolate (fromIntegral entrySize) $ getEndian endianness
+--             (a :) <$> getTable' (n - 1)
 
 getEndian :: (Binary (Le a), Binary (Be a)) => ElfData -> Get a
 getEndian ELFDATA2LSB = fromLe <$> get

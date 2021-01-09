@@ -1,26 +1,19 @@
-name: elf
-version: '0.31'
+name: melf
+version: '0.1'
 synopsis: An Elf parser
 description: Parser for ELF object format
 category: Data
-author: Erik Charlebois
+author: Aleksey Makarov
 maintainer: aleksey.makarov@gmail.com
-copyright: Erik Charlebois
+copyright: Aleksey Makarov
 license: BSD3
-homepage: https://github.com/aleksey-makarov/elf
+homepage: https://github.com/aleksey-makarov/melf
 dependencies:
 - base >=4.6 && <5.0
-# extra-source-files:
-# - testdata/tiny.elf
-# - testdata/bloated.elf
-# - testdata/vdso.elf
-# - testdata/HOWTO
-# - testdata/bloated.cpp
-# - testdata/tiny.asm
-tested-with: GHC == 8.6.2, GHC == 8.4.4, GHC == 8.2.2, GHC == 8.0.2
+tested-with: GHC == 8.10.2
 ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints
 
-github: aleksey-makarov/elf
+github: aleksey-makarov/melf
 
 library:
   dependencies:
@@ -45,50 +38,19 @@ library:
     - Data.Elf.Exception
 
 tests:
-#  tests:
-#    main: Spec.hs
-#    source-dirs: tests
-#    other-modules:
-#      - Data.ElfSpec
-#    dependencies:
-#      - base
-#      - binary
-#      - bytestring
-#      - hspec >= 2.4 && < 3
-#      - containers >= 0.5.9.2
-#      - elf
-# golden:
-#    main: Golden.hs
-#    source-dirs: tests
-#    other-modules:
-#      - Paths_elf
-#    dependencies:
-#      - base
-#      - binary
-#      - bytestring
-#      - directory
-#      - elf
-#      - filepath
-#      - typed-process
-#      - tasty
-#      - tasty-golden
-#      - tasty-hunit
   golden:
     main: Golden.hs
     source-dirs: tests
-    other-modules:
-      - Paths_elf
     dependencies:
       - base
       - binary
       - bytestring
       - directory
-      - elf
       - exceptions
       - filepath
+      - melf
       - prettyprinter
       - singletons
-      - typed-process
       - tasty
       - tasty-golden
       - tasty-hunit

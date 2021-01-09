@@ -12,6 +12,7 @@ import Data.Bits
 
 import Data.Elf.TH
 
+-- FIXME: these should go to a separate module
 newtype Be a = Be { fromBe :: a } deriving Eq
 newtype Le a = Le { fromLe :: a } deriving Eq
 

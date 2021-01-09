@@ -3,28 +3,26 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.3.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: d0ed27c017a7df561b7858cd924afe360bf125288397776dd401aa2cde6a2384
 
-name:           elf
-version:        0.31
+name:           melf
+version:        0.1
 synopsis:       An Elf parser
 description:    Parser for ELF object format
 category:       Data
-homepage:       https://github.com/aleksey-makarov/elf
-bug-reports:    https://github.com/aleksey-makarov/elf/issues
-author:         Erik Charlebois
+homepage:       https://github.com/aleksey-makarov/melf
+bug-reports:    https://github.com/aleksey-makarov/melf/issues
+author:         Aleksey Makarov
 maintainer:     aleksey.makarov@gmail.com
-copyright:      Erik Charlebois
+copyright:      Aleksey Makarov
 license:        BSD3
 license-file:   LICENSE
 tested-with:
-    GHC == 8.6.2, GHC == 8.4.4, GHC == 8.2.2, GHC == 8.0.2
+    GHC == 8.10.2
 build-type:     Simple
 
 source-repository head
   type: git
-  location: https://github.com/aleksey-makarov/elf
+  location: https://github.com/aleksey-makarov/melf
 
 library
   exposed-modules:
@@ -55,7 +53,7 @@ test-suite golden
   type: exitcode-stdio-1.0
   main-is: Golden.hs
   other-modules:
-      Paths_elf
+      Paths_melf
   hs-source-dirs:
       tests
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-redundant-constraints
@@ -64,13 +62,12 @@ test-suite golden
     , binary
     , bytestring
     , directory
-    , elf
     , exceptions
     , filepath
+    , melf
     , prettyprinter
     , singletons
     , tasty
     , tasty-golden
     , tasty-hunit
-    , typed-process
   default-language: Haskell2010

@@ -1,10 +1,10 @@
 { mkDerivation, base, binary, bytestring, directory, exceptions
 , filepath, hpack, lens, mtl, prettyprinter, singletons, stdenv
-, tasty, tasty-golden, tasty-hunit, template-haskell, typed-process
+, tasty, tasty-golden, tasty-hunit, template-haskell
 }:
 mkDerivation {
-  pname = "elf";
-  version = "0.31";
+  pname = "melf";
+  version = "0.1";
   src = ./.;
   libraryHaskellDepends = [
     base binary bytestring exceptions lens mtl prettyprinter singletons
@@ -13,10 +13,10 @@ mkDerivation {
   libraryToolDepends = [ hpack ];
   testHaskellDepends = [
     base binary bytestring directory exceptions filepath prettyprinter
-    singletons tasty tasty-golden tasty-hunit typed-process
+    singletons tasty tasty-golden tasty-hunit
   ];
   prePatch = "hpack";
-  homepage = "https://github.com/aleksey-makarov/elf";
+  homepage = "https://github.com/aleksey-makarov/melf";
   description = "An Elf parser";
   license = stdenv.lib.licenses.bsd3;
 }
