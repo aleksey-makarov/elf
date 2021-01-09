@@ -687,7 +687,7 @@ serializeElf' elfs = do
             WBuilderState{..} <- alignWord s
             return WBuilderState
                 { wbsDataReversed = WBuilderDataSectionTable : wbsDataReversed
-                , wbsOffset = wbsOffset + (sectionN + 1) * sectionSize elfClass
+                , wbsOffset = wbsOffset + (sectionN + 1) * sectionTableEntrySize elfClass
                 , wbsShOff = wbsOffset
                 , ..
                 }
@@ -695,7 +695,7 @@ serializeElf' elfs = do
             WBuilderState{..} <- alignWord s
             return WBuilderState
                 { wbsDataReversed = WBuilderDataSegmentTable : wbsDataReversed
-                , wbsOffset = wbsOffset + segmentN * segmentSize elfClass
+                , wbsOffset = wbsOffset + segmentN * segmentTableEntrySize elfClass
                 , wbsPhOff = wbsOffset
                 , ..
                 }
@@ -796,9 +796,9 @@ serializeElf' elfs = do
                                 hPhOff      = wbsPhOff
                                 hShOff      = wbsShOff
                                 hFlags      = ehFlags
-                                hPhEntSize  = segmentSize elfClass
+                                hPhEntSize  = segmentTableEntrySize elfClass
                                 hPhNum      = segmentN
-                                hShEntSize  = sectionSize elfClass
+                                hShEntSize  = sectionTableEntrySize elfClass
                                 hShNum      = if sectionTable then sectionN + 1 else 0
                                 hShStrNdx   = wbsShStrNdx
 

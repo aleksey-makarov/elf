@@ -274,11 +274,11 @@ hdrSizeTests :: TestTree
 hdrSizeTests = testGroup "header size" [ mkSizeTest "header 64" testHeader64 (headerSize ELFCLASS64)
                                        , mkSizeTest "header 32" testHeader32 (headerSize ELFCLASS32)
 
-                                       , mkSizeTest "section 64" (Le testSection64) (sectionSize ELFCLASS64)
-                                       , mkSizeTest "section 32" (Be testSection32) (sectionSize ELFCLASS32)
+                                       , mkSizeTest "section 64" (Le testSection64) (sectionTableEntrySize ELFCLASS64)
+                                       , mkSizeTest "section 32" (Be testSection32) (sectionTableEntrySize ELFCLASS32)
 
-                                       , mkSizeTest "segment 64" (Le testSegment64) (segmentSize ELFCLASS64)
-                                       , mkSizeTest "segment 32" (Be testSegment32) (segmentSize ELFCLASS32)
+                                       , mkSizeTest "segment 64" (Le testSegment64) (segmentTableEntrySize ELFCLASS64)
+                                       , mkSizeTest "segment 32" (Be testSegment32) (segmentTableEntrySize ELFCLASS32)
 
                                        , mkSizeTest "symbol table entry 64" (Le testSymbolTableEntry64) (symbolTableEntrySize ELFCLASS64)
                                        , mkSizeTest "symbol table entry 32" (Be testSymbolTableEntry32) (symbolTableEntrySize ELFCLASS32)

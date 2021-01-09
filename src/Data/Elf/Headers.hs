@@ -32,10 +32,8 @@ module Data.Elf.Headers
     , withElfClass
 
     , headerSize
-    -- FIXME: should be section table entry size
-    , sectionSize
-    -- FIXME: should be segment table entry size
-    , segmentSize
+    , sectionTableEntrySize
+    , segmentTableEntrySize
     , symbolTableEntrySize
     , wordAlign
 
@@ -251,13 +249,13 @@ headerSize :: Num a => ElfClass -> a
 headerSize ELFCLASS64 = 64
 headerSize ELFCLASS32 = 52
 
-sectionSize :: Num a => ElfClass -> a
-sectionSize ELFCLASS64 = 64
-sectionSize ELFCLASS32 = 40
+sectionTableEntrySize :: Num a => ElfClass -> a
+sectionTableEntrySize ELFCLASS64 = 64
+sectionTableEntrySize ELFCLASS32 = 40
 
-segmentSize :: Num a => ElfClass -> a
-segmentSize ELFCLASS64 = 56
-segmentSize ELFCLASS32 = 32
+segmentTableEntrySize :: Num a => ElfClass -> a
+segmentTableEntrySize ELFCLASS64 = 56
+segmentTableEntrySize ELFCLASS32 = 32
 
 symbolTableEntrySize :: Num a => ElfClass -> a
 symbolTableEntrySize ELFCLASS64 = 24
