@@ -160,9 +160,21 @@ getEndian :: (Binary (Le a), Binary (Be a)) => ElfData -> Get a
 getEndian ELFDATA2LSB = fromLe <$> get
 getEndian ELFDATA2MSB = fromBe <$> get
 
+getBe :: (Binary (Le b), Binary (Be b)) => Get b
+getBe = getEndian ELFDATA2MSB
+
+getLe :: (Binary (Le b), Binary (Be b)) => Get b
+getLe = getEndian ELFDATA2LSB
+
 putEndian :: (Binary (Le a), Binary (Be a)) => ElfData -> a -> Put
 putEndian ELFDATA2LSB = put . Le
 putEndian ELFDATA2MSB = put . Be
+
+putBe :: (Binary (Le b), Binary (Be b)) => b -> Put
+putBe = putEndian ELFDATA2MSB
+
+putLe :: (Binary (Le b), Binary (Be b)) => b -> Put
+putLe = putEndian ELFDATA2LSB
 
 splitBits :: (Num w, FiniteBits w) => w -> [w]
 splitBits w = fmap (shiftL 1) $ L.filter (testBit w) $ fmap (subtract 1) [ 1 .. (finiteBitSize w) ]
@@ -263,15 +275,15 @@ getHeader' :: IsElfClass c => Sing c -> Get Header
 getHeader' classS = do
 
     hData <- get
+    verify "version1" elfSupportedVersion
+    hOSABI <- get
+    hABIVersion <- get
+    skip 7
 
     let
         getE :: (Binary (Le b), Binary (Be b)) => Get b
         getE = getEndian hData
 
-    verify "version1" elfSupportedVersion
-    hOSABI <- get
-    hABIVersion <- get
-    skip 7
     hType <- getE
     hMachine <- getE
 
@@ -306,10 +318,6 @@ getHeader = do
 putHeader :: Header -> Put
 putHeader (classS :&: HeaderXX{..}) = withElfClass classS do
 
-    let
-        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
-        putE = putEndian hData
-
     put elfMagic
     put $ fromSing classS
     put hData
@@ -318,6 +326,10 @@ putHeader (classS :&: HeaderXX{..}) = withElfClass classS do
     put hABIVersion
 
     putByteString $ BS.replicate 7 0
+
+    let
+        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
+        putE = putEndian hData
 
     putE hType
     putE hMachine
@@ -355,12 +367,9 @@ data SectionXX (c :: ElfClass) =
         , sEntSize   :: WordXX c
         }
 
-getSection :: IsElfClass c => ElfData -> Get (SectionXX c)
-getSection hData = do
-
-    let
-        getE :: (Binary (Le b), Binary (Be b)) => Get b
-        getE = getEndian hData
+getSection ::                               IsElfClass c =>
+    (forall b . (Binary (Le b), Binary (Be b)) => Get b) -> Get (SectionXX c)
+getSection getE = do
 
     sName      <- getE
     sType      <- getE
@@ -375,12 +384,10 @@ getSection hData = do
 
     return SectionXX {..}
 
-putSection :: IsElfClass c => ElfData -> SectionXX c -> Put
-putSection hData (SectionXX{..}) = do
-
-    let
-        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
-        putE = putEndian hData
+putSection ::                                  IsElfClass c =>
+    (forall b . (Binary (Le b), Binary (Be b)) => b -> Put) ->
+                                                SectionXX c -> Put
+putSection putE (SectionXX{..}) = do
 
     putE sName
     putE sType
@@ -394,12 +401,12 @@ putSection hData (SectionXX{..}) = do
     putE sEntSize
 
 instance forall (a :: ElfClass) . SingI a => Binary (Be (SectionXX a)) where
-    put = (withElfClass (sing @ a) putSection $ ELFDATA2MSB) . fromBe
-    get = Be <$> (withElfClass (sing @ a) getSection) ELFDATA2MSB
+    put = (withElfClass (sing @ a) (putSection putBe)) . fromBe
+    get = Be <$> (withElfClass (sing @ a) (getSection getBe))
 
 instance forall (a :: ElfClass) . SingI a => Binary (Le (SectionXX a)) where
-    put = (withElfClass (sing @ a) putSection $ ELFDATA2LSB) . fromLe
-    get = Le <$> (withElfClass (sing @ a) getSection) ELFDATA2LSB
+    put = (withElfClass (sing @ a) (putSection putLe)) . fromLe
+    get = Le <$> (withElfClass (sing @ a) (getSection getLe))
 
 --------------------------------------------------------------------------
 -- Segment
@@ -417,12 +424,9 @@ data SegmentXX (c :: ElfClass) =
         , pAlign    :: WordXX c
         }
 
-getSegment :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (SegmentXX c)
-getSegment SELFCLASS64 hData = do
-
-    let
-        getE :: (Binary (Le b), Binary (Be b)) => Get b
-        getE = getEndian hData
+getSegment ::            forall (c :: ElfClass) . Sing c ->
+    (forall b . (Binary (Le b), Binary (Be b)) => Get b) -> Get (SegmentXX c)
+getSegment SELFCLASS64 getE = do
 
     pType     <- getE
     pFlags    <- getE
@@ -435,11 +439,7 @@ getSegment SELFCLASS64 hData = do
 
     return SegmentXX{..}
 
-getSegment SELFCLASS32 hData = do
-
-    let
-        getE :: (Binary (Le b), Binary (Be b)) => Get b
-        getE = getEndian hData
+getSegment SELFCLASS32 getE = do
 
     pType     <- getE
     pOffset   <- getE
@@ -452,11 +452,10 @@ getSegment SELFCLASS32 hData = do
 
     return SegmentXX{..}
 
-putSegment :: forall (c :: ElfClass) . Sing c -> ElfData -> SegmentXX c -> Put
-putSegment SELFCLASS64 hData (SegmentXX{..}) = do
-    let
-        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
-        putE = putEndian hData
+putSegment ::               forall (c :: ElfClass) . Sing c ->
+    (forall b . (Binary (Le b), Binary (Be b)) => b -> Put) ->
+                                                SegmentXX c -> Put
+putSegment SELFCLASS64 putE (SegmentXX{..}) = do
 
     putE pType
     putE pFlags
@@ -467,10 +466,7 @@ putSegment SELFCLASS64 hData (SegmentXX{..}) = do
     putE pMemSize
     putE pAlign
 
-putSegment SELFCLASS32 hData (SegmentXX{..}) = do
-    let
-        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
-        putE = putEndian hData
+putSegment SELFCLASS32 putE (SegmentXX{..}) = do
 
     putE pType
     putE pOffset
@@ -483,12 +479,12 @@ putSegment SELFCLASS32 hData (SegmentXX{..}) = do
 
 
 instance forall (a :: ElfClass) . SingI a => Binary (Be (SegmentXX a)) where
-    put = putSegment sing ELFDATA2MSB . fromBe
-    get = Be <$> getSegment sing ELFDATA2MSB
+    put = putSegment sing putBe . fromBe
+    get = Be <$> getSegment sing getBe
 
 instance forall (a :: ElfClass) . SingI a => Binary (Le (SegmentXX a)) where
-    put = putSegment sing ELFDATA2LSB . fromLe
-    get = Le <$> getSegment sing ELFDATA2LSB
+    put = putSegment sing putLe . fromLe
+    get = Le <$> getSegment sing getLe
 
 --------------------------------------------------------------------------
 -- symbol table entry
@@ -507,12 +503,9 @@ data SymbolTableEntryXX (c :: ElfClass) =
         , stSize  :: WordXX c
         }
 
-getSymbolTableEntry :: forall (c :: ElfClass) . Sing c -> ElfData -> Get (SymbolTableEntryXX c)
-getSymbolTableEntry SELFCLASS64 hData = do
-
-    let
-        getE :: (Binary (Le b), Binary (Be b)) => Get b
-        getE = getEndian hData
+getSymbolTableEntry ::    forall (c :: ElfClass) . Sing c ->
+     (forall b . (Binary (Le b), Binary (Be b)) => Get b) -> Get (SymbolTableEntryXX c)
+getSymbolTableEntry SELFCLASS64 getE = do
 
     stName  <- getE
     stInfo  <- get
@@ -523,11 +516,7 @@ getSymbolTableEntry SELFCLASS64 hData = do
 
     return SymbolTableEntryXX{..}
 
-getSymbolTableEntry SELFCLASS32 hData = do
-
-    let
-        getE :: (Binary (Le b), Binary (Be b)) => Get b
-        getE = getEndian hData
+getSymbolTableEntry SELFCLASS32 getE = do
 
     stName  <- getE
     stValue <- getE
@@ -538,11 +527,10 @@ getSymbolTableEntry SELFCLASS32 hData = do
 
     return SymbolTableEntryXX{..}
 
-putSymbolTableEntry :: forall (c :: ElfClass) . Sing c -> ElfData -> SymbolTableEntryXX c -> Put
-putSymbolTableEntry SELFCLASS64 hData (SymbolTableEntryXX{..}) = do
-    let
-        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
-        putE = putEndian hData
+putSymbolTableEntry ::      forall (c :: ElfClass) . Sing c ->
+    (forall b . (Binary (Le b), Binary (Be b)) => b -> Put) ->
+                                       SymbolTableEntryXX c -> Put
+putSymbolTableEntry SELFCLASS64 putE (SymbolTableEntryXX{..}) = do
 
     putE stName
     put  stInfo
@@ -551,10 +539,7 @@ putSymbolTableEntry SELFCLASS64 hData (SymbolTableEntryXX{..}) = do
     putE stValue
     putE stSize
 
-putSymbolTableEntry SELFCLASS32 hData (SymbolTableEntryXX{..}) = do
-    let
-        putE :: (Binary (Le b), Binary (Be b)) => b -> Put
-        putE = putEndian hData
+putSymbolTableEntry SELFCLASS32 putE (SymbolTableEntryXX{..}) = do
 
     putE stName
     putE stValue
@@ -564,12 +549,12 @@ putSymbolTableEntry SELFCLASS32 hData (SymbolTableEntryXX{..}) = do
     putE stShNdx
 
 instance forall (a :: ElfClass) . SingI a => Binary (Be (SymbolTableEntryXX a)) where
-    put = putSymbolTableEntry sing ELFDATA2MSB . fromBe
-    get = Be <$> getSymbolTableEntry sing ELFDATA2MSB
+    put = putSymbolTableEntry sing putBe . fromBe
+    get = Be <$> getSymbolTableEntry sing getBe
 
 instance forall (a :: ElfClass) . SingI a => Binary (Le (SymbolTableEntryXX a)) where
-    put = putSymbolTableEntry sing ELFDATA2LSB . fromLe
-    get = Le <$> getSymbolTableEntry sing ELFDATA2LSB
+    put = putSymbolTableEntry sing putLe . fromLe
+    get = Le <$> getSymbolTableEntry sing getLe
 
 --------------------------------------------------------------------------
 -- parseHeaders

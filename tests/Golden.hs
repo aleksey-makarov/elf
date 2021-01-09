@@ -151,9 +151,9 @@ findHeader rbs = getFirst $ foldMap f rbs
         f _ = First Nothing
 
 findSection :: SingI a => Word16 -> [RBuilder a] -> Maybe (SectionXX a)
-findSection n rbs = findSection' rbs
+findSection n = findSection'
     where
-        findSection' rbs' = getFirst $ foldMap f rbs'
+        findSection' rbs = getFirst $ foldMap f rbs
         f RBuilderSegment{..} = First $ findSection' rbpData
         f RBuilderSection{..} = if n == rbsN then First $ Just rbsHeader else First Nothing
         f _ = First Nothing
